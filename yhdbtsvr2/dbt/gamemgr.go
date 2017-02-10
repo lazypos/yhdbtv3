@@ -1,6 +1,8 @@
 package dbt
 
 import (
+	"fmt"
+	"net"
 	"sync"
 )
 
@@ -18,11 +20,11 @@ func (this *GameMgr) Start() {
 	this.mapPlayers = make(map[string]*Player)
 }
 
-func (this *GameMgr) OnConnect(remote string) *Player {
+func (this *GameMgr) OnConnect(remote string, conn net.Conn) *Player {
 	this.muxPlayer.Lock()
 	defer this.muxPlayer.Unlock()
 	play := &Player{}
-	play.InitPlayer(remote)
+	play.InitPlayer(remote, conn)
 	this.mapPlayers[remote] = play
 	return play
 }
@@ -33,42 +35,50 @@ func (this *GameMgr) OnLeave(remote string) {
 	delete(this.mapPlayers, remote)
 }
 
-func (this *GameMgr) GetPlayCounts() int {
+func (this *GameMgr) GetPlayCounts(p *Player) {
 	this.muxPlayer.Lock()
-	defer this.muxPlayer.Unlock()
-	return len(this.mapPlayers)
+	counts := len(this.mapPlayers)
+	this.muxPlayer.Unlock()
+	p.AddMessage(fmt.Sprintf(fmt_query, counts))
 }
 
-func (this *GameMgr) AddDesk(p *Player) (int, int) {
+func (this *GameMgr) AddDesk(p *Player) {
 	this.muxDesk.Lock()
 	defer this.muxDesk.Unlock()
-	deskNum := 0
+	deskNum := -1
+	siteNum := -1
+	var pDesk *DeskMgr
 	//找一个有空位的
 	for k, desk := range this.mapDesks {
 		site := desk.AddDesk(p)
 		if site != -1 {
-			return k, site
+			deskNum = k
+			siteNum = site
+			pDesk = desk
+			break
 		}
 		deskNum = k
 	}
-	//创建新桌子
-	deskNum++
-	newDesk := CreateDesk(deskNum)
-	this.mapDesks[deskNum] = newDesk
-	return deskNum, newDesk.AddDesk(p)
+	//或创建新桌子
+	if siteNum == -1 {
+		deskNum++
+		pDesk = CreateDesk(deskNum)
+		this.mapDesks[deskNum] = pDesk
+		siteNum = pDesk.AddDesk(p)
+	}
+	p.AddMessage(fmt.Sprintf(fmt_add, deskNum, siteNum))
+
+	//广播信息
+	this.BroadDeskInfo(pDesk)
 }
 
-type DeskInfo struct {
-	name  string
-	ready string
-}
-
-func (this *GameMgr) GetMessage(deskNum int) [4]*DeskInfo {
-	this.muxDesk.Lock()
-	defer this.muxDesk.Unlock()
-
+func (this *GameMgr) BroadDeskInfo(desk *DeskMgr) {
+	type DeskInfo struct {
+		name  string
+		ready string
+	}
+	//集中消息
 	arrDeskInfo := [4]*DeskInfo{}
-	desk := this.mapDesks[deskNum]
 	for i, v := range desk.ArrPlayer {
 		info := &DeskInfo{}
 		info.name = v.Remote
@@ -78,5 +88,17 @@ func (this *GameMgr) GetMessage(deskNum int) [4]*DeskInfo {
 		}
 		arrDeskInfo[i] = info
 	}
-	return arrDeskInfo
+	//广播
+	for _, p := range desk.ArrPlayer {
+		p.AddMessage(fmt.Sprintf(fmt_change, arrDeskInfo[0].name, arrDeskInfo[0].ready,
+			arrDeskInfo[1].name, arrDeskInfo[1].ready, arrDeskInfo[2].name, arrDeskInfo[2].ready,
+			arrDeskInfo[3].name, arrDeskInfo[3].ready))
+	}
+}
+
+func (this *GameMgr) ChangeState(m *Message) {
+	this.muxDesk.Lock()
+	defer this.muxDesk.Unlock()
+	pDesk := this.mapDesks[m.DeskNum]
+	pDesk.PostMsg(m)
 }

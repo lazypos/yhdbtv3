@@ -1,57 +1,65 @@
 package dbt
 
 import (
-	"fmt."
+	"encoding/json"
+	"fmt"
 	"log"
 )
 
 const (
-	fmt_query  = `{"opt":"query","num":"%d"}`
+	fmt_query  = `{"opt":"query","online":"%d"}`
 	fmt_add    = `{"opt":"add","desk":"%d","site":"%d"}`
-	fmt_getmsg = `{"opt":"getmsg","info":[
+	fmt_change = `{"opt":"change","info":[
 					{"site":"0","name":"%s","ready":"%d"},
 					{"site":"1","name":"%s","ready":"%d"},
 					{"site":"2","name":"%s","ready":"%d"},
-					{"site":"3","name":"%s","ready":"%d"}
-				 ]}`
+					{"site":"3","name":"%s","ready":"%d"}]}`
+	fmt_start = `{"opt":"start","cards":"%s"}`
 )
 
 type Message struct {
-	Opt     string `json:"opt"`
-	DeskNum int    `json:"desk"`
+	Opt     string `json:"opt"`  //操作
+	DeskNum int    `json:"desk"` //桌号
+	Site    int    `json:"site"` //位号
+	Type    string `json:"type"` //类型
 }
 
-func Dispatch_opt(msg *Message, p *Player) string {
-	rpy := ""
+func Dispatch_opt(content []byte, p *Player) error {
+	//解析收到的消息
+	msg := &Message{}
+	fmt.Println("recv:", string(content))
+	e := json.Unmarshal(content, msg)
+	if e != nil {
+		log.Println("json error", e)
+		return e
+	}
+
+	//处理消息
 	switch msg.Opt {
 	case "query":
-		rpy = opt_query()
+		opt_query(p)
 		break
 	case "add":
-		rpy = opt_add(p)
+		opt_add(p)
 		break
-	case "getmsg":
-		rpy = opt_getmsg(msg.DeskNum)
+	case "change":
+		opt_change(msg)
 		break
 	default:
 		log.Println("unknow opt.")
+		return fmt.Errorf("unknow opt")
 	}
-	return rpy
+	return nil
 }
 
-func opt_query() string {
-	player := GGameMgr.GetPlayCounts()
-	return fmt.Sprintf(fmt_query, player)
+func opt_query(p *Player) {
+	GGameMgr.GetPlayCounts(p)
 }
 
-func opt_add(p *Player) string {
-	desknum, site := GGameMgr.AddDesk(p)
-	return fmt.Sprintf(fmt_add, desknum, site)
+func opt_add(p *Player) {
+	GGameMgr.AddDesk(p)
 }
 
-func opt_getmsg(desk int) string {
-	arrInfo := GGameMgr.GetMessage(desk)
-	return fmt.Sprintf(fmt_getmsg, arrInfo[0].name, arrInfo[0].ready,
-		arrInfo[1].name, arrInfo[1].ready, arrInfo[2].name, arrInfo[2].ready,
-		arrInfo[3].name, arrInfo[3].ready)
+func opt_change(m *Message) {
+	GGameMgr.ChangeState(m)
 }

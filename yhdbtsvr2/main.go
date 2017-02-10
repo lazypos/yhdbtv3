@@ -2,7 +2,6 @@ package main
 
 import (
 	"./dbt"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -62,11 +61,11 @@ func recvMessage(conn net.Conn) ([]byte, error) {
 
 func process_connect(conn net.Conn) {
 	remote := conn.RemoteAddr().String()
-	log.Println("recv connect:", remote)
-	play := dbt.GGameMgr.OnConnect(remote)
+	log.Println(remote, "玩家上线")
+	play := dbt.GGameMgr.OnConnect(remote, conn)
 	defer func() {
 		dbt.GGameMgr.OnLeave(remote)
-		log.Println(remote, "下线")
+		log.Println(remote, "玩家下线")
 	}()
 	defer conn.Close()
 	conn.(*net.TCPConn).SetLinger(0)
@@ -74,16 +73,13 @@ func process_connect(conn net.Conn) {
 		contect, e := recvMessage(conn)
 		if e != nil {
 			log.Println("recv error", e)
-			return
+			break
 		}
-		msg := &dbt.Message{}
-		fmt.Println(string(contect))
-		e = json.Unmarshal(contect, msg)
+		e = dbt.Dispatch_opt(contect, play)
 		if e != nil {
-			log.Println("json error", e)
-			return
+			log.Println("process error", e)
+			break
 		}
-		dbt.Dispatch_opt(msg, play)
 	}
 }
 
