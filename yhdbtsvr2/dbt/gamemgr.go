@@ -29,7 +29,19 @@ func (this *GameMgr) OnConnect(remote string, conn net.Conn) *Player {
 	return play
 }
 
-func (this *GameMgr) OnLeave(remote string) {
+func (this *GameMgr) OnLeave(remote string, p *Player) {
+	this.muxDesk.Lock()
+	for _, desk := range this.mapDesks {
+		if !desk.IsStart {
+			for j, p := range desk.ArrPlayer {
+				if p.Remote == remote {
+					desk.ArrPlayer[j] = nil
+				}
+			}
+		}
+	}
+	this.muxDesk.Unlock()
+
 	this.muxPlayer.Lock()
 	defer this.muxPlayer.Unlock()
 	delete(this.mapPlayers, remote)

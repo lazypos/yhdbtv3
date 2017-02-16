@@ -68,7 +68,7 @@ bool CDeskScene::init()
 	Sprite* userInfo0 = Sprite::create();
 	userInfo0->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("nickname"));
 	userInfo0->setPosition(Vec2(visibleSize.width / 2, userInfo0->getContentSize().height / 2));
-	this->addChild(userInfo0, 2);
+	this->addChild(userInfo0);
 	Sprite* userInfo1 = Sprite::create();
 	userInfo1->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("nickname"));
 	userInfo1->setPosition(Vec2(visibleSize.width - userInfo1->getContentSize().width / 2, 
@@ -101,10 +101,10 @@ bool CDeskScene::init()
 	//四个人->自己
 	playerPtr ptr = make_shared<st_player_info>();
 	ptr->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr->_nickName->setPosition(Vec2(visibleSize.width / 2 - 135,
+	ptr->_nickName->setPosition(Vec2(visibleSize.width / 2 -35,
 		userInfo0->getContentSize().height / 2));
-	ptr->_nickName->setColor(Color3B::BLACK);
-	this->addChild(ptr->_nickName,3);
+	ptr->_nickName->setColor(Color3B::RED);
+	this->addChild(ptr->_nickName,30);
 	ptr->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
 	ptr->_surplus->setVisible(false);
 	this->addChild(ptr->_surplus);
@@ -124,15 +124,14 @@ bool CDeskScene::init()
 	this->addChild(ptr->_gone);
 	ptr->_x = visibleSize.width / 2 - 200;
 	ptr->_y = 250;
-	_vecPlayers.push_back(ptr);
-
+	_vecPlayers.emplace_back(ptr);
 	//->下家
 	playerPtr ptr1 = make_shared<st_player_info>();
 	ptr1->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 15);
 	ptr1->_nickName->setPosition(Vec2(visibleSize.width - 135,
 		userInfo1->getPosition().y));
-	ptr1->_nickName->setColor(Color3B::BLACK);
-	this->addChild(ptr1->_nickName);
+	ptr1->_nickName->setColor(Color3B::RED);
+	this->addChild(ptr1->_nickName,3);
 	ptr1->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
 	ptr1->_surplus->setPosition(Vec2(visibleSize.width - 135,
 		userInfo1->getPosition().y));
@@ -154,15 +153,14 @@ bool CDeskScene::init()
 	this->addChild(ptr1->_gone);
 	ptr1->_x = visibleSize.width / 2;
 	ptr1->_y = visibleSize.height / 2;
-	_vecPlayers.push_back(ptr1);
-
+	_vecPlayers.emplace_back(ptr1);
 	//对家
 	playerPtr ptr2 = make_shared<st_player_info>();
 	ptr2->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 15);
-	ptr2->_nickName->setPosition(Vec2(visibleSize.width / 2 - 135,
+	ptr2->_nickName->setPosition(Vec2(visibleSize.width / 2 - 35,
 		userInfo3->getPosition().y));
-	ptr2->_nickName->setColor(Color3B::BLACK);
-	this->addChild(ptr2->_nickName);
+	ptr2->_nickName->setColor(Color3B::RED);
+	this->addChild(ptr2->_nickName,3);
 	ptr2->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
 	ptr2->_surplus->setPosition(Vec2(visibleSize.width /2 - 35,
 		userInfo3->getPosition().y));
@@ -186,14 +184,14 @@ bool CDeskScene::init()
 	this->addChild(ptr2->_gone);
 	ptr2->_x = visibleSize.width / 2 - 200;
 	ptr2->_y = visibleSize.height / 2 + 200;
-	_vecPlayers.push_back(ptr2);
+	_vecPlayers.emplace_back(ptr2);
 	//上家
 	playerPtr ptr3 = make_shared<st_player_info>();
 	ptr3->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 15);
 	ptr3->_nickName->setPosition(Vec2(70,
 		userInfo1->getPosition().y));
-	ptr3->_nickName->setColor(Color3B::BLACK);
-	this->addChild(ptr3->_nickName);
+	ptr3->_nickName->setColor(Color3B::RED);
+	this->addChild(ptr3->_nickName,3);
 	ptr3->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
 	ptr3->_surplus->setPosition(Vec2(70,
 		userInfo1->getPosition().y));
@@ -215,7 +213,7 @@ bool CDeskScene::init()
 	this->addChild(ptr3->_gone);
 	ptr3->_x = 0;
 	ptr3->_y = visibleSize.height / 2;
-	_vecPlayers.push_back(ptr3);
+	_vecPlayers.emplace_back(ptr3);
 
 	this->scheduleUpdate();
 	this->schedule(CC_SCHEDULE_SELECTOR(CDeskScene::playerSchedule), 1.0);
@@ -236,7 +234,7 @@ void CDeskScene::onReady(Ref *pSender, ui::Widget::TouchEventType type)
 		_btReady->setVisible(false);
 		_mapPlayers[_seatNum]->_ready->setVisible(true);
 		ostringstream os;
-		os << "{\"opt\":\"change\",\"type\":\"ready\",\"desk\":\"" << _deskNum << "\",\"site\":\"" << _seatNum << "\"}";
+		os << "{\"opt\":\"change\",\"type\":\"ready\",\"desk\":" << _deskNum << ",\"site\":" << _seatNum << "}";
 		messageQueue::instance()->sendMessage(os.str());
 		//清桌面
 		clearDesk(-1);
@@ -251,12 +249,8 @@ void CDeskScene::onReturn(Ref *pSender, ui::Widget::TouchEventType type)
 			_isExit = true;
 			return;
 		}
-
 		ostringstream os;
-		if (_isSatrting) 
-			os << "{\"opt\":\"run\", \"site\":\"" << _seatNum << "\", \"name\":\""<< _playerName <<"\"}";
-		else 
-			os << "{\"opt\":\"change\",\"type\":\"leave\",\"desk\":\""<< _deskNum <<"\",\"site\":\""<< _seatNum <<"\"}";
+		os << "{\"opt\":\"change\",\"type\":\"leave\",\"desk\":"<< _deskNum <<",\"site\":"<< _seatNum <<"}";
 		messageQueue::instance()->sendMessage(os.str());
 		Scene *hScene = CHallScene::createScene();
 		Director::getInstance()->replaceScene(hScene);
@@ -268,7 +262,9 @@ void CDeskScene::onNoput(Ref *pSender, ui::Widget::TouchEventType type)
 	if (type == ui::Widget::TouchEventType::ENDED) {
 		_btPut->setVisible(false);
 		_btNoput->setVisible(false);
-		messageQueue::instance()->sendMessage("{\"opt\":\"game\"}");
+		ostringstream os;
+		os << "{\"opt\":\"game\",\"desk\":" << _deskNum << ",\"site\":"<<_seatNum<<",\"cards\":\"\"}";
+		messageQueue::instance()->sendMessage(os.str());
 	}
 }
 
@@ -293,181 +289,181 @@ void CDeskScene::onPut(Ref *pSender, ui::Widget::TouchEventType type)
 
 void CDeskScene::update(float dt)
 {
-	msgptr ptr = messageQueue::instance()->getMessage();
-	if (ptr != nullptr){
-		if (ptr->opt == "over"){
-		}
-	}
-
-
-	lock_guard<mutex> lg(_muxRecv);
-	if (!_recvType.empty()){
-		if (_recvType == "getmsg"){
-			auto it = _mapRecv.find("desknum");//桌号
-			if (it != _mapRecv.end())
-				_labelDeskNum->setString(it->second);
-			_seatNum = atoi(_mapRecv["id"].c_str());
-			int i = _seatNum;
-			for (auto it : _vecPlayers) {
-				_mapPlayers[i % 4] = it;
-				it->id = i % 4;
-				i++;
-			}
-			string players = _mapRecv["player"];
-			//当前桌子上的人员信息
-			if (players.length() > 0) {
-				list<string> tmp;
-				stringToList(players, tmp, "|");
-				for (const auto& it : tmp)
-					playerAdd(it);
-			}
-		}else if (_recvType == "play"){
-			playerPtr ptr = _mapPlayers[atoi(_mapRecv["id"].c_str())];
-			//准备
-			if (_mapRecv["state"] == "ready") {
-				ptr->_ready->setVisible(true);
-			}
-			//游戏开始
-			else if (_mapRecv["state"] == "start") {
-				_isSatrting = true;
-				_btReady->setVisible(false);
-				for (const auto&it : _mapPlayers) {
-					it.second->_surplus->setString("54");
-					it.second->_ready->setVisible(false);
-				}
-				vector<string> ctmp;
-				stringToVector(_mapRecv["cards"], ctmp, ",");
-				for (auto it : ctmp)
-					_vecStartCards.push_back(atoi(it.c_str()));
-				sort(_vecStartCards.begin(), _vecStartCards.end());
-				_recvtype = recv_start;
-				//谁出牌
-				int putid = atoi(_mapRecv["now"].c_str());
-				putCard(putid, true);
-			}
-			//玩家离开
-			else if (_mapRecv["state"] == "leave") {
-				playerLeave(ptr);
-			}
-			//玩家加入
-			else if (_mapRecv["state"] == "add") {
-				playerAdd(_mapRecv["player"]);
-			}
-			//玩家出牌/不出
-			else if (_mapRecv["state"] == "put") {
-				string cards = _mapRecv["cards"];
-				int perid = atoi(_mapRecv["per"].c_str());
-				int putid = atoi(_mapRecv["now"].c_str());
-				int surplus = atoi(_mapRecv["surplus"].c_str());
-				putPerCard(perid, cards, surplus, _mapRecv["go"]);
-				if (putid != -1)
-					putCard(putid, _mapRecv["clear"] == "1");
-			}
-			//玩家得分
-			else if (_mapRecv["state"] == "score") {
-				if (_seatNum % 2 == 0) {
-					_labelWeScore->setString(_mapRecv["0"]);
-					_labelTheyScore->setString(_mapRecv["1"]);
-				}
-				else {
-					_labelWeScore->setString(_mapRecv["1"]);
-					_labelTheyScore->setString(_mapRecv["0"]);
-				}
-			}
-			//游戏结束
-			else if (_mapRecv["state"] == "over") {
-				//把一些状态清空
-				_isSatrting = false;
-				_card_select_per = nullptr;
-				_isExit = false;
-				updateScore(0, atoi(_mapRecv["s0"].c_str()));
-				updateScore(1, atoi(_mapRecv["s1"].c_str()));
-				updateScore(2, atoi(_mapRecv["s2"].c_str()));
-				updateScore(3, atoi(_mapRecv["s3"].c_str()));
-				ostringstream os;
-				os << _mapRecv["n0"] << " " << _mapRecv["s0"] << "\r\n"
-					<< _mapRecv["n1"] << " " << _mapRecv["s1"] << "\r\n"
-					<< _mapRecv["n2"] << " " << _mapRecv["s2"] << "\r\n"
-					<< _mapRecv["n3"] << " " << _mapRecv["s3"] << "\r\n";
-				MessageBox(os.str().c_str(), "游戏结束");
-				_over = true;
-				_clear = true;
-			}
-		}
-		_recvType.clear();
-	}
-
-	//一开始的手牌
-	if (_recvtype == recv_start){
-		_recvtype = 0;
-		auto visibleSize = Director::getInstance()->getVisibleSize();
-		for (size_t i = 0; i < _vecStartCards.size(); i++) {
-			auto cardSprite = CardSprite::createCardSprite(_vecStartCards[i]);
-			cardSprite->setPosition(Vec2(visibleSize.width / 2 - (_vecStartCards.size()-1) * DEF_cardsep / 2 + i * DEF_cardsep + cardSprite->getContentSize().width / 4,
-				45));
-			this->addChild(cardSprite, 1);
-			_lstCards.push_back(cardSprite);
-		}
-	}
-	//重新整理手牌
-	if (_recvtype == recv_review){
-		_recvtype = 0;
-		auto visibleSize = Director::getInstance()->getVisibleSize();
-		int i = 0;
-		for (auto &it : _lstCards){
-			it->setPosition(Vec2(visibleSize.width / 2 - (_lstCards.size() - 1) * DEF_cardsep / 2 + i * DEF_cardsep + it->getContentSize().width / 4,
-				45));
-			i++;
-		}
-	}
-	//上一次出牌
-	if (_perptr){
-		int i = 0;
-		for (auto it:_vecPerCards){
-			auto cardSprite = CardSprite::createCardSprite(it);
-			cardSprite->setPosition(Vec2(_perptr->_x+cardSprite->getContentSize().width + i*DEF_cardsep,
-				_perptr->_y));
-			_perptr->perCards.push_back(cardSprite);
-			this->addChild(cardSprite);
-			i++;
-			//如果是自己，整理手牌
-			if (_perptr->id == _seatNum) {
-				auto itper = _lstCards.begin();
-				while (itper != _lstCards.end()) {
-					if ((*itper)->getSeq() == it){
-						this->removeChild(*itper);
-						_lstCards.erase(itper);
-						break;
-					}
-					++itper;
-				}
-				_recvtype = recv_review;
-			}
-		}
-		_perptr = nullptr;
-	}
-	if (_clear){
-		_clear = false;
-		for (auto it : _mapPlayers) {
-			for (auto iit : it.second->perCards)
-				this->removeChild(iit);
-		}
-	}
-	if (_over){
-		_over = false;
-		_vecPerCards.clear();
-		_timenow = nullptr;
-		_mustput = false;
-		_labelWeScore->setString("0");
-		_labelTheyScore->setString("0");
-		_btReady->setVisible(true);
-		for (auto &it : _lstCards)
-			this->removeChild(it);
-		for (auto &it : _mapPlayers) {
-			it.second->_gone->setVisible(false);
-			it.second->_surplus->setString("0");
-		}
-	}
+// 	msgptr ptr = messageQueue::instance()->getMessage();
+// 	if (ptr != nullptr){
+// 		if (ptr->opt == "over"){
+// 		}
+// 	}
+// 
+// 
+// 	lock_guard<mutex> lg(_muxRecv);
+// 	if (!_recvType.empty()){
+// 		if (_recvType == "getmsg"){
+// 			auto it = _mapRecv.find("desknum");//桌号
+// 			if (it != _mapRecv.end())
+// 				_labelDeskNum->setString(it->second);
+// 			_seatNum = atoi(_mapRecv["id"].c_str());
+// 			int i = _seatNum;
+// 			for (auto it : _vecPlayers) {
+// 				_mapPlayers[i % 4] = it;
+// 				it->id = i % 4;
+// 				i++;
+// 			}
+// 			string players = _mapRecv["player"];
+// 			//当前桌子上的人员信息
+// 			if (players.length() > 0) {
+// 				list<string> tmp;
+// 				stringToList(players, tmp, "|");
+// 				for (const auto& it : tmp)
+// 					playerAdd(it);
+// 			}
+// 		}else if (_recvType == "play"){
+// 			playerPtr ptr = _mapPlayers[atoi(_mapRecv["id"].c_str())];
+// 			//准备
+// 			if (_mapRecv["state"] == "ready") {
+// 				ptr->_ready->setVisible(true);
+// 			}
+// 			//游戏开始
+// 			else if (_mapRecv["state"] == "start") {
+// 				_isSatrting = true;
+// 				_btReady->setVisible(false);
+// 				for (const auto&it : _mapPlayers) {
+// 					it.second->_surplus->setString("54");
+// 					it.second->_ready->setVisible(false);
+// 				}
+// 				vector<string> ctmp;
+// 				stringToVector(_mapRecv["cards"], ctmp, ",");
+// 				for (auto it : ctmp)
+// 					_vecStartCards.push_back(atoi(it.c_str()));
+// 				sort(_vecStartCards.begin(), _vecStartCards.end());
+// 				_recvtype = recv_start;
+// 				//谁出牌
+// 				int putid = atoi(_mapRecv["now"].c_str());
+// 				putCard(putid, true);
+// 			}
+// 			//玩家离开
+// 			else if (_mapRecv["state"] == "leave") {
+// 				playerLeave(ptr);
+// 			}
+// 			//玩家加入
+// 			else if (_mapRecv["state"] == "add") {
+// 				playerAdd(_mapRecv["player"]);
+// 			}
+// 			//玩家出牌/不出
+// 			else if (_mapRecv["state"] == "put") {
+// 				string cards = _mapRecv["cards"];
+// 				int perid = atoi(_mapRecv["per"].c_str());
+// 				int putid = atoi(_mapRecv["now"].c_str());
+// 				int surplus = atoi(_mapRecv["surplus"].c_str());
+// 				putPerCard(perid, cards, surplus, _mapRecv["go"]);
+// 				if (putid != -1)
+// 					putCard(putid, _mapRecv["clear"] == "1");
+// 			}
+// 			//玩家得分
+// 			else if (_mapRecv["state"] == "score") {
+// 				if (_seatNum % 2 == 0) {
+// 					_labelWeScore->setString(_mapRecv["0"]);
+// 					_labelTheyScore->setString(_mapRecv["1"]);
+// 				}
+// 				else {
+// 					_labelWeScore->setString(_mapRecv["1"]);
+// 					_labelTheyScore->setString(_mapRecv["0"]);
+// 				}
+// 			}
+// 			//游戏结束
+// 			else if (_mapRecv["state"] == "over") {
+// 				//把一些状态清空
+// 				_isSatrting = false;
+// 				_card_select_per = nullptr;
+// 				_isExit = false;
+// 				updateScore(0, atoi(_mapRecv["s0"].c_str()));
+// 				updateScore(1, atoi(_mapRecv["s1"].c_str()));
+// 				updateScore(2, atoi(_mapRecv["s2"].c_str()));
+// 				updateScore(3, atoi(_mapRecv["s3"].c_str()));
+// 				ostringstream os;
+// 				os << _mapRecv["n0"] << " " << _mapRecv["s0"] << "\r\n"
+// 					<< _mapRecv["n1"] << " " << _mapRecv["s1"] << "\r\n"
+// 					<< _mapRecv["n2"] << " " << _mapRecv["s2"] << "\r\n"
+// 					<< _mapRecv["n3"] << " " << _mapRecv["s3"] << "\r\n";
+// 				MessageBox(os.str().c_str(), "游戏结束");
+// 				_over = true;
+// 				_clear = true;
+// 			}
+// 		}
+// 		_recvType.clear();
+// 	}
+// 
+// 	//一开始的手牌
+// 	if (_recvtype == recv_start){
+// 		_recvtype = 0;
+// 		auto visibleSize = Director::getInstance()->getVisibleSize();
+// 		for (size_t i = 0; i < _vecStartCards.size(); i++) {
+// 			auto cardSprite = CardSprite::createCardSprite(_vecStartCards[i]);
+// 			cardSprite->setPosition(Vec2(visibleSize.width / 2 - (_vecStartCards.size()-1) * DEF_cardsep / 2 + i * DEF_cardsep + cardSprite->getContentSize().width / 4,
+// 				45));
+// 			this->addChild(cardSprite, 1);
+// 			_lstCards.push_back(cardSprite);
+// 		}
+// 	}
+// 	//重新整理手牌
+// 	if (_recvtype == recv_review){
+// 		_recvtype = 0;
+// 		auto visibleSize = Director::getInstance()->getVisibleSize();
+// 		int i = 0;
+// 		for (auto &it : _lstCards){
+// 			it->setPosition(Vec2(visibleSize.width / 2 - (_lstCards.size() - 1) * DEF_cardsep / 2 + i * DEF_cardsep + it->getContentSize().width / 4,
+// 				45));
+// 			i++;
+// 		}
+// 	}
+// 	//上一次出牌
+// 	if (_perptr){
+// 		int i = 0;
+// 		for (auto it:_vecPerCards){
+// 			auto cardSprite = CardSprite::createCardSprite(it);
+// 			cardSprite->setPosition(Vec2(_perptr->_x+cardSprite->getContentSize().width + i*DEF_cardsep,
+// 				_perptr->_y));
+// 			_perptr->perCards.push_back(cardSprite);
+// 			this->addChild(cardSprite);
+// 			i++;
+// 			//如果是自己，整理手牌
+// 			if (_perptr->id == _seatNum) {
+// 				auto itper = _lstCards.begin();
+// 				while (itper != _lstCards.end()) {
+// 					if ((*itper)->getSeq() == it){
+// 						this->removeChild(*itper);
+// 						_lstCards.erase(itper);
+// 						break;
+// 					}
+// 					++itper;
+// 				}
+// 				_recvtype = recv_review;
+// 			}
+// 		}
+// 		_perptr = nullptr;
+// 	}
+// 	if (_clear){
+// 		_clear = false;
+// 		for (auto it : _mapPlayers) {
+// 			for (auto iit : it.second->perCards)
+// 				this->removeChild(iit);
+// 		}
+// 	}
+// 	if (_over){
+// 		_over = false;
+// 		_vecPerCards.clear();
+// 		_timenow = nullptr;
+// 		_mustput = false;
+// 		_labelWeScore->setString("0");
+// 		_labelTheyScore->setString("0");
+// 		_btReady->setVisible(true);
+// 		for (auto &it : _lstCards)
+// 			this->removeChild(it);
+// 		for (auto &it : _mapPlayers) {
+// 			it.second->_gone->setVisible(false);
+// 			it.second->_surplus->setString("0");
+// 		}
+// 	}
 }
 
 
@@ -508,40 +504,69 @@ void CDeskScene::playerSchedule(float dt)
 void CDeskScene::deskSchedule(float dt)
 {
 	auto ptr = messageQueue::instance()->getMessage();
-	//change
+	//变更
 	if (ptr && ptr->opt == "change") {
-		
+		for (int i = 0; i < 4; i++){
+			_mapPlayers[i]->_nickName->setString(ptr->arrPlayInfo[i].name);
+			if (ptr->arrPlayInfo[i].ready == 1)
+				_mapPlayers[i]->_ready->setVisible(true);
+			else
+				_mapPlayers[i]->_ready->setVisible(false);
+		}
 	}
 	//开始
-	if (ptr && ptr->opt == "change") {
-		
+	if (ptr && ptr->opt == "start") {
+		gameSatrt();
+		vector<string> ctmp;
+		stringToVector(ptr->cards, ctmp, ",");
+		for (auto it : ctmp)
+			_vecStartCards.push_back(atoi(it.c_str()));
+		sort(_vecStartCards.begin(), _vecStartCards.end());
+		auto visibleSize = Director::getInstance()->getVisibleSize();
+		for (size_t i = 0; i < _vecStartCards.size(); i++) {
+			auto cardSprite = CardSprite::createCardSprite(_vecStartCards[i]);
+			cardSprite->setPosition(Vec2(visibleSize.width / 2 - (_vecStartCards.size() - 1) * DEF_cardsep / 2 + i * DEF_cardsep + cardSprite->getContentSize().width / 4,
+				45));
+			this->addChild(cardSprite, 1);
+			_lstCards.push_back(cardSprite);
+		}
 	}
 	//逃跑
-	if (ptr && ptr->opt == "change") {
-		
+	if (ptr && ptr->opt == "run") {
+		ostringstream os;
+		for (int i = 0; i < 4; i++)
+			os << ptr->site << "->" << ptr->arrPlayInfo[i].name << ":-10\r\n";
+		MessageBox(os.str().c_str(), "玩家逃跑，游戏结束");
 	}
 	//结束
-	if (ptr && ptr->opt == "change") {
-		
+	if (ptr && ptr->opt == "over") {
+		ostringstream os;
+		for (int i = 0; i < 4; i++)
+			os << ptr->arrPlayInfo[i].name << ":" << ptr->arrPlayInfo[i].result << "\r\n";
+		MessageBox(os.str().c_str(),"游戏结束");
+	}
+	//主游戏
+	if (ptr && ptr->opt == "game") {
+
 	}
 }
 
 void CDeskScene::ObserverPlaying(Ref* sendmsg)
 {
-	lock_guard<mutex> lg(_muxRecv);
-	__String* p = (__String*)sendmsg;
-	map<string, string> mapRst;
-	stringToMap(p->_string, mapRst, ";");
-	//获取信息
-	if (mapRst["type"] == "getmsg"){
-		_recvType = "getmsg";
-		_mapRecv = mapRst;
-	}
-	//游戏
-	if (mapRst["type"] == "play"){
-		_recvType = "play";
-		_mapRecv = mapRst;
-	}
+// 	lock_guard<mutex> lg(_muxRecv);
+// 	__String* p = (__String*)sendmsg;
+// 	map<string, string> mapRst;
+// 	stringToMap(p->_string, mapRst, ";");
+// 	//获取信息
+// 	if (mapRst["type"] == "getmsg"){
+// 		_recvType = "getmsg";
+// 		_mapRecv = mapRst;
+// 	}
+// 	//游戏
+// 	if (mapRst["type"] == "play"){
+// 		_recvType = "play";
+// 		_mapRecv = mapRst;
+// 	}
 }
 
 std::vector<int> CDeskScene::getSelectCardList()
@@ -551,7 +576,6 @@ std::vector<int> CDeskScene::getSelectCardList()
 		if (p->getSelect())
 			vec.push_back(p->getSeq());
 	});
-	sort(vec.begin(), vec.end());
 	return vec;
 }
 
@@ -699,6 +723,14 @@ void CDeskScene::gameOver()
 	_isSatrting = false;
 	_isExit = false;
 	_btReady->setVisible(true);
+}
+
+void CDeskScene::gameSatrt()
+{
+	_isSatrting = true;
+	for (const auto& it : _mapPlayers) {
+		it.second->_ready->setVisible(false);
+	}
 }
 
 void CDeskScene::clearDesk(int siteid)

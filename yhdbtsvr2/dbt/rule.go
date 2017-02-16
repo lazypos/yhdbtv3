@@ -22,7 +22,7 @@ const (
 var GRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 //创建手牌
-func Create4Cards() [4]string {
+func Create4Cards() ([4]string, [4][]int) {
 	arrCards := make([]int, 216)
 	for i := 0; i < 216; i++ {
 		arrCards[i] = i / 4
@@ -37,12 +37,15 @@ func Create4Cards() [4]string {
 
 	//拆分4组
 	arrCardsString := [4]string{}
+	arrCardsInt := [4][]int{}
 	for i := 0; i < 4; i++ {
 		buf := bytes.NewBufferString("")
+		arrCardsInt[i] = make([]int, 54)
 		for j := 0; j < 54; j++ {
 			buf.WriteString(fmt.Sprintf("%d,", arrCards[i*54+j]))
+			arrCardsInt[i] = append(arrCardsInt[i], arrCards[i*54+j])
 		}
 		arrCardsString[i] = buf.String()[:buf.Len()-2]
 	}
-	return arrCardsString
+	return arrCardsString, arrCardsInt
 }

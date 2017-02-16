@@ -42,7 +42,7 @@ func process_connect(conn net.Conn) {
 	log.Println(remote, "玩家上线")
 	play := dbt.GGameMgr.OnConnect(remote, conn)
 	defer func() {
-		dbt.GGameMgr.OnLeave(remote)
+		dbt.GGameMgr.OnLeave(remote, play)
 		log.Println(remote, "玩家下线")
 	}()
 	defer conn.Close()

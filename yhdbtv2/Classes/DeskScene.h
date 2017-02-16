@@ -62,10 +62,13 @@ public:
 
 	inline void	setDeskInfo(int desk, int site, const string& name) {
 		_deskNum = desk; _seatNum = site; _playerName = name;
+		for (int i = 0; i < 4; i++)
+			_mapPlayers[(_seatNum + i) % 4] = _vecPlayers[i];
 	};
 
 protected:
 	void	gameOver();
+	void	gameSatrt();
 	void	clearDesk(int siteid);
 
 private:

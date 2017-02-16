@@ -42,7 +42,7 @@ func (this *DeskMgr) GameSchedule() {
 				//断线
 			}
 		case m := <-this.Chmsg:
-			switch m.Opt {
+			switch m.Type {
 			case "leave":
 				this.PlayerLeave(m.Site)
 			case "ready":
@@ -61,17 +61,35 @@ func (this *DeskMgr) PlayerReady(site int) {
 	this.muxPlay.Lock()
 	this.muxPlay.Unlock()
 	this.ArrPlayer[site].Ready = true
-	if this.ArrPlayer[0].Ready && this.ArrPlayer[1].Ready &&
-		this.ArrPlayer[2].Ready && this.ArrPlayer[3].Ready {
+	if this.IsAllReady() {
 		this.IsStart = true
 		this.ForceExit = -1
 		this.TimeTick = 0
 		this.NowSite = -1
-		arrCards := Create4Cards()
+		arrCards, arrCardsInt := Create4Cards()
 		for i, p := range this.ArrPlayer {
+			this.ArrPlayer[i].ArrCards = arrCardsInt[i]
 			p.AddMessage(fmt.Sprintf(fmt_start, arrCards[i]))
 		}
+		put := GRand.Intn(3)
+		for _, p := range this.ArrPlayer {
+			p.AddMessage(fmt.Sprintf(fmt_game_put, 0, "", 54, put))
+		}
+	} else {
+		this.BroadDeskInfo()
 	}
+}
+
+func (this *DeskMgr) IsAllReady() bool {
+	for _, p := range this.ArrPlayer {
+		if p == nil {
+			return false
+		}
+		if !p.Ready {
+			return false
+		}
+	}
+	return true
 }
 
 func (this *DeskMgr) PlayerRun(site int, name string) {
@@ -136,19 +154,18 @@ func (this *DeskMgr) PlayerLeave(site int) {
 func (this *DeskMgr) BroadDeskInfo() {
 	type DeskInfo struct {
 		name  string
-		ready string
+		ready int
 	}
 	//集中消息
 	arrDeskInfo := [4]*DeskInfo{}
 	for i, v := range this.ArrPlayer {
 		info := &DeskInfo{}
-		if v == nil {
-			info.name = ""
-		} else {
+		info.name = ""
+		info.ready = 0
+		if v != nil {
 			info.name = v.Remote
-			info.ready = "0"
 			if v.Ready {
-				info.ready = "1"
+				info.ready = 1
 			}
 		}
 		arrDeskInfo[i] = info

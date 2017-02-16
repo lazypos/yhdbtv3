@@ -37,7 +37,8 @@ bool CHallScene::init()
 		visibleSize.height/2 - 50));
 	this->addChild(_infoLabel, 2);
 
-	this->schedule(CC_SCHEDULE_SELECTOR(CHallScene::onlineSchedule), 1.0);
+	this->schedule(CC_SCHEDULE_SELECTOR(CHallScene::onlineSchedule), 0.1);
+	messageQueue::instance()->sendMessage("{\"opt\":\"query\"}");
     return true;
 }
 
@@ -50,8 +51,8 @@ void CHallScene::OnFastAddDesk(Ref *pSender, ui::Widget::TouchEventType type)
 
 void CHallScene::onlineSchedule(float delta)
 {
-	int static times = 0;
-	if (times % 10 == 0)
+	int static times = 1;
+	if (times % 100 == 0)
 		messageQueue::instance()->sendMessage("{\"opt\":\"query\"}");
 	times++;
 	

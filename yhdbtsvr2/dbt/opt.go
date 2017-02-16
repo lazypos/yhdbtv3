@@ -21,19 +21,21 @@ const (
                     {"site":"1","name":"%s","result":"%d"},
                     {"site":"2","name":"%s","result":"%d"},
                     {"site":"3","name":"%s","result":"%d"}]}`
+	fmt_game_put = `{"opt":"game","per":"%d","cards":"%s","surplus":"%d", "now":"%d"}`
 )
 
 type Message struct {
-	Opt     string `json:"opt"`  //操作
-	DeskNum int    `json:"desk"` //桌号
-	Site    int    `json:"site"` //位号
-	Type    string `json:"type"` //类型
+	Opt     string `json:"opt"`   //操作
+	DeskNum int    `json:"desk"`  //桌号
+	Site    int    `json:"site"`  //位号
+	Type    string `json:"type"`  //类型
+	Cards   string `json:"cards"` //出牌
 }
 
 func Dispatch_opt(content []byte, p *Player) error {
 	//解析收到的消息
 	msg := &Message{}
-	fmt.Println("recv:", string(content))
+	log.Println("recv:", string(content))
 	e := json.Unmarshal(content, msg)
 	if e != nil {
 		log.Println("json error", e)
