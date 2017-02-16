@@ -77,14 +77,12 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     register_all_packages();
 
-    // create a scene. it's an autorelease object
-    //auto scene = HelloWorld::createScene();
  	if (!messageQueue::instance()->start()) {
- 		//MessageBox("连接服务器失败！请检查网络是否正常。", "错误");
- 		//return false;
+ 		MessageBox("连接服务器失败！请检查网络是否正常。", "错误");
+ 		return false;
  	}
  	resourceMgr::instance()->loadResource();
-	auto scene = CDeskScene::createScene();
+	auto scene = CHallScene::createScene();
 
     // run
     director->runWithScene(scene);

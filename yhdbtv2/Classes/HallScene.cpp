@@ -8,11 +8,6 @@
 #include "CommonFunction.h"
 
 USING_NS_CC;
-bool		changeScene = false;
-bool		bsend = false;
-string 						_hallrecvType;
-map<string, string>			_hallmapRecv;
-mutex						_hallmuxRecv;
 
 Scene* CHallScene::createScene()
 {
@@ -31,17 +26,15 @@ bool CHallScene::init()
 
 	//加入按钮 
 	_btFastAdd = ui::Button::create("add_desk_fast.png", "add_desk_fast_press.png", "add_desk_fast_press.png");
-	_btFastAdd->setAnchorPoint(Vec2(0,0));
 	_btFastAdd->setPosition(Vec2(visibleSize.width/2, visibleSize.height / 2));
 	_btFastAdd->addTouchEventListener(CC_CALLBACK_2(CHallScene::OnFastAddDesk, this));
 	this->addChild(_btFastAdd);
 
 	//当前在线人数
-	_infoLabel = Label::createWithTTF("online: 0", "fonts/arial.ttf", 15);
+	_infoLabel = Label::createWithTTF("online: 0", "fonts/arial.ttf", 25);
 	_infoLabel->setColor(Color3B::WHITE);
-	_infoLabel->setAnchorPoint(Vec2(0, 0));
 	_infoLabel->setPosition(Vec2(visibleSize.width / 2,
-		visibleSize.height/2 - 20));
+		visibleSize.height/2 - 50));
 	this->addChild(_infoLabel, 2);
 
 	this->schedule(CC_SCHEDULE_SELECTOR(CHallScene::onlineSchedule), 1.0);
@@ -60,15 +53,14 @@ void CHallScene::onlineSchedule(float delta)
 	int static times = 0;
 	if (times % 10 == 0)
 		messageQueue::instance()->sendMessage("{\"opt\":\"query\"}");
+	times++;
 	
 	auto ptr = messageQueue::instance()->getMessage();
 	if (ptr && ptr->opt == "query") 
 		_infoLabel->setString("online:" + ptr->online);
 	//加入桌子
 	if (ptr && ptr->opt == "add") {
-		Scene *pScene = CDeskScene::createScene(ptr->deskNum);
+		Scene *pScene = CDeskScene::createScene(ptr->desk, ptr->site, ptr->name);
 		Director::getInstance()->replaceScene(pScene);
 	}
-	
-	times++;
 }

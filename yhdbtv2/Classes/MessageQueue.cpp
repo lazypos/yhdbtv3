@@ -18,13 +18,6 @@ CMessageQueue::~CMessageQueue()
 
 bool CMessageQueue::start()
 {
-	/*string strRecv = "{qwe:\"123\",ww:\"222\"}";
-	Document doc;
-	doc.Parse<0>(strRecv.c_str());
-	if (doc.HasParseError()) 
-		return false;
-	string s = doc["qwe"].GetString();*/
-
 	struct  sockaddr_in _servAddr;
 	memset(&_servAddr, 0, sizeof(_servAddr));
 	_servAddr.sin_family = AF_INET;
@@ -106,9 +99,26 @@ void CMessageQueue::threadWork()
 		if (!recvMessage(strRecv))
 			break;
 
+		Document doc;
+		doc.Parse<0>(strRecv.c_str());
+		if (doc.HasParseError())
+			break;
+
 		msgptr ptr = make_shared<stmsg>();
+		string opt = doc["opt"].GetString();
+		ptr->opt = opt;
+		if (opt == "query"){
+			ptr->online = doc["online"].GetString();
+		}else if (opt == "add"){
+			ptr->desk = atoi(doc["desk"].GetString());
+			ptr->site = atoi(doc["site"].GetString());
+			ptr->name = doc["name"].GetString();
+		}else if (opt == "change"){
+		}
+
 		_muxMsg.lock();
 		_lstMessage.emplace_back(ptr);
 		_muxMsg.unlock();
 	}
+	MessageBox("与服务器断开连接!", "error");
 }

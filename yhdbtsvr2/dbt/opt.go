@@ -8,13 +8,19 @@ import (
 
 const (
 	fmt_query  = `{"opt":"query","online":"%d"}`
-	fmt_add    = `{"opt":"add","desk":"%d","site":"%d"}`
+	fmt_add    = `{"opt":"add","desk":"%d","site":"%d","name":"%s"}`
 	fmt_change = `{"opt":"change","info":[
 					{"site":"0","name":"%s","ready":"%d"},
 					{"site":"1","name":"%s","ready":"%d"},
 					{"site":"2","name":"%s","ready":"%d"},
 					{"site":"3","name":"%s","ready":"%d"}]}`
 	fmt_start = `{"opt":"start","cards":"%s"}`
+	fmt_run   = `{"opt":"run","site":"%d","name":"%s"}`
+	fmt_over  = `{"opt":"over","info"::[
+                    {"site":"0","name":"%s","result":"%d"},
+                    {"site":"1","name":"%s","result":"%d"},
+                    {"site":"2","name":"%s","result":"%d"},
+                    {"site":"3","name":"%s","result":"%d"}]}`
 )
 
 type Message struct {
@@ -38,13 +44,12 @@ func Dispatch_opt(content []byte, p *Player) error {
 	switch msg.Opt {
 	case "query":
 		opt_query(p)
-		break
 	case "add":
 		opt_add(p)
-		break
 	case "change":
 		opt_change(msg)
-		break
+	case "game":
+		opt_game(msg)
 	default:
 		log.Println("unknow opt.")
 		return fmt.Errorf("unknow opt")
@@ -61,5 +66,9 @@ func opt_add(p *Player) {
 }
 
 func opt_change(m *Message) {
+	GGameMgr.ChangeState(m)
+}
+
+func opt_game(m *Message) {
 	GGameMgr.ChangeState(m)
 }

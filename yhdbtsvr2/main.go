@@ -6,7 +6,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"unsafe"
 )
 
 func initlog() {
@@ -16,7 +15,8 @@ func initlog() {
 		return
 	}
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	log.SetOutput(h)
+	log.Println(h)
+	//log.SetOutput(h)
 }
 
 func start() {
@@ -37,28 +37,6 @@ func start() {
 	}
 }
 
-func recvMessage(conn net.Conn) ([]byte, error) {
-	buf := make([]byte, 4)
-	n, e := conn.Read(buf)
-	if n != 4 || e != nil {
-		return []byte{}, e
-	}
-	var msglen int = *(*int)(unsafe.Pointer(&buf[0]))
-	buf = make([]byte, msglen)
-	recvLen := 0
-	for {
-		if recvLen >= msglen {
-			break
-		}
-		n, e = conn.Read(buf[recvLen:])
-		if e != nil || n == 0 {
-			break
-		}
-		recvLen += n
-	}
-	return buf, e
-}
-
 func process_connect(conn net.Conn) {
 	remote := conn.RemoteAddr().String()
 	log.Println(remote, "玩家上线")
@@ -70,7 +48,7 @@ func process_connect(conn net.Conn) {
 	defer conn.Close()
 	conn.(*net.TCPConn).SetLinger(0)
 	for {
-		contect, e := recvMessage(conn)
+		contect, e := dbt.RecvMessage(conn)
 		if e != nil {
 			log.Println("recv error", e)
 			break
@@ -84,6 +62,7 @@ func process_connect(conn net.Conn) {
 }
 
 func main() {
+	fmt.Println("start server !")
 	initlog()
 	dbt.GGameMgr.Start()
 	start()

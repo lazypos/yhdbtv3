@@ -66,34 +66,10 @@ func (this *GameMgr) AddDesk(p *Player) {
 		this.mapDesks[deskNum] = pDesk
 		siteNum = pDesk.AddDesk(p)
 	}
-	p.AddMessage(fmt.Sprintf(fmt_add, deskNum, siteNum))
+	p.AddMessage(fmt.Sprintf(fmt_add, deskNum, siteNum, p.Remote))
 
 	//广播信息
-	this.BroadDeskInfo(pDesk)
-}
-
-func (this *GameMgr) BroadDeskInfo(desk *DeskMgr) {
-	type DeskInfo struct {
-		name  string
-		ready string
-	}
-	//集中消息
-	arrDeskInfo := [4]*DeskInfo{}
-	for i, v := range desk.ArrPlayer {
-		info := &DeskInfo{}
-		info.name = v.Remote
-		info.ready = "0"
-		if v.Ready {
-			info.ready = "1"
-		}
-		arrDeskInfo[i] = info
-	}
-	//广播
-	for _, p := range desk.ArrPlayer {
-		p.AddMessage(fmt.Sprintf(fmt_change, arrDeskInfo[0].name, arrDeskInfo[0].ready,
-			arrDeskInfo[1].name, arrDeskInfo[1].ready, arrDeskInfo[2].name, arrDeskInfo[2].ready,
-			arrDeskInfo[3].name, arrDeskInfo[3].ready))
-	}
+	pDesk.BroadDeskInfo()
 }
 
 func (this *GameMgr) ChangeState(m *Message) {

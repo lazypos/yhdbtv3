@@ -18,11 +18,11 @@ int							_recvtype = 0;
 bool						_clear = false;
 bool						_over = false;
 
-Scene* CDeskScene::createScene(int n)
+Scene* CDeskScene::createScene(int desk, int site, const string& name)
 {
 	auto _scene = Scene::create();
     auto layer = CDeskScene::create();
-	layer->setDeskNum(n);
+	layer->setDeskInfo(desk, site, name);
 	_scene->addChild(layer);
     return _scene;
 }
@@ -219,6 +219,7 @@ bool CDeskScene::init()
 
 	this->scheduleUpdate();
 	this->schedule(CC_SCHEDULE_SELECTOR(CDeskScene::playerSchedule), 1.0);
+	this->schedule(CC_SCHEDULE_SELECTOR(CDeskScene::deskSchedule), 1.0);
 	//注册触摸事件
 	auto dispatcher = Director::getInstance()->getEventDispatcher();
 	auto listener = EventListenerTouchOneByOne::create();
@@ -226,7 +227,6 @@ bool CDeskScene::init()
 	listener->onTouchMoved = CC_CALLBACK_2(CDeskScene::onTouchMoved, this);
 	dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
-	messageQueue::instance()->sendMessage("{\"opt\":\"getmsg\"}");
     return true;
 }
 
@@ -235,7 +235,9 @@ void CDeskScene::onReady(Ref *pSender, ui::Widget::TouchEventType type)
 	if (type == ui::Widget::TouchEventType::ENDED) {
 		_btReady->setVisible(false);
 		_mapPlayers[_seatNum]->_ready->setVisible(true);
-		messageQueue::instance()->sendMessage("{\"opt\":\"ready\"}");
+		ostringstream os;
+		os << "{\"opt\":\"change\",\"type\":\"ready\",\"desk\":\"" << _deskNum << "\",\"site\":\"" << _seatNum << "\"}";
+		messageQueue::instance()->sendMessage(os.str());
 		//清桌面
 		clearDesk(-1);
 	}
@@ -249,7 +251,13 @@ void CDeskScene::onReturn(Ref *pSender, ui::Widget::TouchEventType type)
 			_isExit = true;
 			return;
 		}
-		messageQueue::instance()->sendMessage("{\"opt\":\"quit\"}");
+
+		ostringstream os;
+		if (_isSatrting) 
+			os << "{\"opt\":\"run\", \"site\":\"" << _seatNum << "\", \"name\":\""<< _playerName <<"\"}";
+		else 
+			os << "{\"opt\":\"change\",\"type\":\"leave\",\"desk\":\""<< _deskNum <<"\",\"site\":\""<< _seatNum <<"\"}";
+		messageQueue::instance()->sendMessage(os.str());
 		Scene *hScene = CHallScene::createScene();
 		Director::getInstance()->replaceScene(hScene);
 	}
@@ -260,7 +268,7 @@ void CDeskScene::onNoput(Ref *pSender, ui::Widget::TouchEventType type)
 	if (type == ui::Widget::TouchEventType::ENDED) {
 		_btPut->setVisible(false);
 		_btNoput->setVisible(false);
-		messageQueue::instance()->sendMessage("{\"opt\":\"noput\"}");
+		messageQueue::instance()->sendMessage("{\"opt\":\"game\"}");
 	}
 }
 
@@ -496,6 +504,27 @@ void CDeskScene::playerSchedule(float dt)
 	}
 }
 
+
+void CDeskScene::deskSchedule(float dt)
+{
+	auto ptr = messageQueue::instance()->getMessage();
+	//change
+	if (ptr && ptr->opt == "change") {
+		
+	}
+	//开始
+	if (ptr && ptr->opt == "change") {
+		
+	}
+	//逃跑
+	if (ptr && ptr->opt == "change") {
+		
+	}
+	//结束
+	if (ptr && ptr->opt == "change") {
+		
+	}
+}
 
 void CDeskScene::ObserverPlaying(Ref* sendmsg)
 {

@@ -1,6 +1,7 @@
 package dbt
 
 import (
+	"log"
 	"net"
 	"time"
 )
@@ -30,6 +31,8 @@ func (this *Player) SendQueue() {
 		case <-time.After(time.Second * 5):
 			break
 		case m := <-this.Chmsg:
+			log.Println("发送数据:", this.Remote, m)
+			SendMessage(this.conn, []byte(m))
 		}
 	}
 }

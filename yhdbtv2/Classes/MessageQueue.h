@@ -12,7 +12,9 @@ USING_NS_CC;
 typedef struct stMsg {
 	string opt;
 	string online;
-	int deskNum;
+	string name;
+	int desk = -1;
+	int site = -1;
 }stmsg;
 typedef shared_ptr<stmsg> msgptr;
 

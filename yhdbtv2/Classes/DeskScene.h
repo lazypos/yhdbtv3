@@ -33,7 +33,7 @@ bool inline mycompair(CardSprite* c1, CardSprite* c2) {
 class CDeskScene : public cocos2d::Layer
 {
 public:
-    static cocos2d::Scene* createScene(int n);
+    static cocos2d::Scene* createScene(int desk, int site, const string& name);
 
     virtual bool init();
    
@@ -58,8 +58,11 @@ public:
 	void onTouchMoved(Touch *touch, Event *event);
 
 	void    playerSchedule(float dt);
+	void	deskSchedule(float dt);
 
-	inline void	setDeskNum(int n) { _deskNum = n; };
+	inline void	setDeskInfo(int desk, int site, const string& name) {
+		_deskNum = desk; _seatNum = site; _playerName = name;
+	};
 
 protected:
 	void	gameOver();
@@ -79,6 +82,10 @@ private:
 	Label*	_labelWeScore;
 	Label*	_labelTheyScore;
 
+	int							_seatNum;	//自己的座位号
+	int							_deskNum;	//桌号
+	string						_playerName;//玩家名
+
 	LabelAtlas*					_timenow = nullptr;
 	bool						_mustput = false;
 
@@ -88,8 +95,6 @@ private:
 	map<int, playerPtr>			_mapPlayers;
 	vector<int>					_vecPerCards; //上一次出的牌
 	playerPtr					_perptr = nullptr;
-	int							_seatNum; //自己的座位号
-	int							_deskNum; //桌号
 	int							_putId;
 
 #define recv_start 1
