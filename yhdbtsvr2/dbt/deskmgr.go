@@ -2,6 +2,7 @@ package dbt
 
 import (
 	"fmt"
+	"log"
 	"sync"
 	"time"
 )
@@ -14,7 +15,12 @@ type DeskMgr struct {
 	ForceExit int
 	TimeTick  int
 	NowSite   int //当前谁出牌
+	LastSite  int //上一轮谁出牌
 	Chmsg     chan *Message
+	PerCards  string //上一次出的牌
+	Score     int
+	P0Score   int
+	P1Score   int
 }
 
 func CreateDesk(id int) *DeskMgr {
@@ -40,13 +46,72 @@ func (this *DeskMgr) GameSchedule() {
 			//玩家超时
 			if this.IsStart && this.TimeTick >= 65 {
 				//断线
+				log.Println("玩家断线", this.NowSite)
+				this.PlayerRun(this.NowSite, this.ArrPlayer[this.NowSite].Remote)
 			}
 		case m := <-this.Chmsg:
-			switch m.Type {
-			case "leave":
-				this.PlayerLeave(m.Site)
-			case "ready":
-				this.PlayerReady(m.Site)
+			if m.Opt == "change" {
+				switch m.Type {
+				case "leave":
+					this.PlayerLeave(m.Site)
+				case "ready":
+					this.PlayerReady(m.Site)
+				}
+			} else if m.Opt == "game" {
+				this.ProcessGame(m)
+			}
+		}
+	}
+}
+
+func (this *DeskMgr) GetNextPut(site int) int {
+	for i := 1; i < 4; i++ {
+		seq := (site + i) % 4
+		if len(this.ArrPlayer[seq].ArrCards) != 0 {
+			return seq
+		}
+	}
+	return -1
+}
+
+func (this *DeskMgr) ProcessGame(m *Message) {
+	this.muxPlay.Lock()
+	this.muxPlay.Unlock()
+	next := this.GetNextPut(m.Site)
+	//没出牌
+	if len(m.Cards) == 0 {
+		//又是同一个了，必须出
+		must := 0
+		if next == this.LastSite {
+			must = 1
+			if this.LastSite%2 == 0 {
+				this.P0Score += this.Score
+			} else {
+				this.P1Score += this.Score
+			}
+			this.Score = 0
+		}
+		for _, p := range this.ArrPlayer {
+			p.AddMessage(fmt.Sprintf(fmt_game_put, m.Site, "", len(p.ArrCards), this.Score, next, must))
+			if must == 1 {
+				p.AddMessage(fmt.Sprintf(fmt_score, this.P0Score, this.P1Score))
+			}
+		}
+	} else { //出牌
+		this.LastSite = m.Site
+		ok, score := this.ArrPlayer[m.Site].PutCards(m.Cards)
+		if ok {
+			if IsOver() {
+				next = -1
+			}
+			this.Score += score
+			for _, p := range this.ArrPlayer {
+				p.AddMessage(fmt.Sprintf(fmt_game_put, m.Site, m.Cards, len(p.ArrCards), this.Score, next, 0))
+			}
+			if next == -1 {
+				this.GameOver(false)
+			} else {
+				this.NowSite = next
 			}
 		}
 	}
@@ -66,14 +131,19 @@ func (this *DeskMgr) PlayerReady(site int) {
 		this.ForceExit = -1
 		this.TimeTick = 0
 		this.NowSite = -1
+		this.Score = 0
+		this.P0Score = 0
+		this.P1Score = 0
 		arrCards, arrCardsInt := Create4Cards()
 		for i, p := range this.ArrPlayer {
 			this.ArrPlayer[i].ArrCards = arrCardsInt[i]
 			p.AddMessage(fmt.Sprintf(fmt_start, arrCards[i]))
 		}
 		put := GRand.Intn(3)
+		this.NowSite = put
+		this.LastSite = put
 		for _, p := range this.ArrPlayer {
-			p.AddMessage(fmt.Sprintf(fmt_game_put, 0, "", 54, put))
+			p.AddMessage(fmt.Sprintf(fmt_game_put, -1, "", 54, 0, put))
 		}
 	} else {
 		this.BroadDeskInfo()

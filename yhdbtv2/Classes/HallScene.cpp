@@ -37,7 +37,7 @@ bool CHallScene::init()
 		visibleSize.height/2 - 50));
 	this->addChild(_infoLabel, 2);
 
-	this->schedule(CC_SCHEDULE_SELECTOR(CHallScene::onlineSchedule), 0.1);
+	this->schedule(CC_SCHEDULE_SELECTOR(CHallScene::onlineSchedule), float(0.1));
 	messageQueue::instance()->sendMessage("{\"opt\":\"query\"}");
     return true;
 }

@@ -21,7 +21,8 @@ const (
                     {"site":"1","name":"%s","result":"%d"},
                     {"site":"2","name":"%s","result":"%d"},
                     {"site":"3","name":"%s","result":"%d"}]}`
-	fmt_game_put = `{"opt":"game","per":"%d","cards":"%s","surplus":"%d", "now":"%d"}`
+	fmt_game_put = `{"opt":"game","per":"%d","cards":"%s","surplus":"%d","score":"%d","now":"%d","must":"%d"}`
+	fmt_score    = `{"opt":"score","p0":"%d","p1":"%d"}`
 )
 
 type Message struct {

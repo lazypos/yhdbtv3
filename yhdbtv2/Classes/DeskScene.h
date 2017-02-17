@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "UI/UIButton.h"
 #include "CardSprite.h"
+#include "MessageQueue.h"
 #include <chrono>
 USING_NS_CC;
 
@@ -12,11 +13,11 @@ typedef struct
 	Label* _nickName;
 	Label* _score;
 	Label* _total;
-	Label* _win;
 	Label* _surplus;
 	Sprite*_ready;
 	LabelAtlas* _time;
-	LabelAtlas* _gone;
+	Label* _gone;
+	Label* _buchu;
 	int 	_x;
 	int		_y;
 	int		id;
@@ -45,11 +46,7 @@ public:
 	void onPut(Ref *pSender, ui::Widget::TouchEventType type);
 
 	void update(float dt);
-	void ObserverPlaying(Ref* sendmsg);
-	vector<int>	getSelectCardList();
 
-	void	playerLeave(playerPtr ptr);
-	void	playerAdd(const string& content);
 	void	putPerCard(int id, const string& cards, int surplus, const string& go="");
 	void	putCard(int id, bool isclear = false);
 	void	updateScore(int id, int score);
@@ -57,8 +54,9 @@ public:
 	bool onTouchBegan(Touch *touch, Event *event);
 	void onTouchMoved(Touch *touch, Event *event);
 
-	void    playerSchedule(float dt);
+	//void    playerSchedule(float dt);
 	void	deskSchedule(float dt);
+	void	timeSchedule(float dt);
 
 	inline void	setDeskInfo(int desk, int site, const string& name) {
 		_deskNum = desk; _seatNum = site; _playerName = name;
@@ -67,12 +65,16 @@ public:
 	};
 
 protected:
+
 	void	gameOver();
 	void	gameSatrt();
-	void	clearDesk(int siteid);
+	void	clearDesk(int siteid); 
+	void    perPutCards(msgptr ptr); //处理上一家
+	void	nowPutCards(msgptr ptr); //处理当前家
+
+	void	getSelectCardList(vector<int>& vec, vector<int>& pos);
 
 private:
-	//static Scene	*_scene;
 	ui::Button* _btReturn;
 	ui::Button* _btReady;
 	ui::Button* _btNoput; 
@@ -84,25 +86,28 @@ private:
 	Label*	_labelDeskNum;
 	Label*	_labelWeScore;
 	Label*	_labelTheyScore;
+	Label*  _labelDeskScore;
 
 	int							_seatNum;	//自己的座位号
 	int							_deskNum;	//桌号
 	string						_playerName;//玩家名
+	int							_nowPut = -1; //当前出牌
+
+
 
 	LabelAtlas*					_timenow = nullptr;
 	bool						_mustput = false;
+	vector<int>					_vecPerCards; //上一次出的牌
+
+
 
 	vector<CardSprite*>			_lstCards; //自己的手牌
 	CardSprite*					_card_select_per =	nullptr; 
 	vector<playerPtr>			_vecPlayers; //初始化的时候放在这里，然后根据A的id插入到map里
 	map<int, playerPtr>			_mapPlayers;
-	vector<int>					_vecPerCards; //上一次出的牌
 	playerPtr					_perptr = nullptr;
 	int							_putId;
 
-#define recv_start 1
-#define recv_review 2
-	vector<int>					_vecStartCards;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

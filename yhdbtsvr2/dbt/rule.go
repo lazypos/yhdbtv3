@@ -43,9 +43,27 @@ func Create4Cards() ([4]string, [4][]int) {
 		arrCardsInt[i] = make([]int, 54)
 		for j := 0; j < 54; j++ {
 			buf.WriteString(fmt.Sprintf("%d,", arrCards[i*54+j]))
-			arrCardsInt[i] = append(arrCardsInt[i], arrCards[i*54+j])
+			arrCardsInt[i][j] = arrCards[i*54+j]
 		}
 		arrCardsString[i] = buf.String()[:buf.Len()-2]
 	}
 	return arrCardsString, arrCardsInt
+}
+
+func IsBigger(per, now string) bool {
+	return true
+}
+
+func IsOver() bool {
+	return false
+}
+
+func GetCardScore(seq int) int {
+	if seq/4 == 4 {
+		return 5
+	}
+	if seq/4 == 12 || seq/4 == 9 {
+		return 10
+	}
+	return 0
 }

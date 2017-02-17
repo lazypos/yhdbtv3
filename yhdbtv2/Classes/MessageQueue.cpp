@@ -126,7 +126,17 @@ void CMessageQueue::threadWork()
 				ptr->arrPlayInfo[i].result = atoi(doc["info"][i]["result"].GetString());
 			}
 		}else if (opt == "game") {
+			ptr->per = atoi(doc["per"].GetString());
+			ptr->surplus = doc["surplus"].GetString();
+			ptr->now = atoi(doc["now"].GetString());
+			ptr->cards = doc["cards"].GetString();
+			ptr->score = atoi(doc["score"].GetString());
+			ptr->must = atoi(doc["must"].GetString());
+		}else if (opt == "score") {
+			ptr->p0score = doc["p0"].GetString();
+			ptr->p1score = doc["p1"].GetString();
 		}
+
 
 		_muxMsg.lock();
 		_lstMessage.emplace_back(ptr);

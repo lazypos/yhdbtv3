@@ -34,7 +34,7 @@ func (this *GameMgr) OnLeave(remote string, p *Player) {
 	for _, desk := range this.mapDesks {
 		if !desk.IsStart {
 			for j, p := range desk.ArrPlayer {
-				if p.Remote == remote {
+				if p != nil && p.Remote == remote {
 					desk.ArrPlayer[j] = nil
 				}
 			}

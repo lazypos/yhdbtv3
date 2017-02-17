@@ -25,6 +25,13 @@ typedef struct stMsg {
 	int desk = -1;
 	int site = -1;
 	string cards;
+	int per = -1;
+	string	surplus;
+	int now = -1;
+	int score = 0;
+	int must = 0;
+	string p0score;
+	string p1score;
 	stplayinfo arrPlayInfo[4];
 }stmsg;
 typedef shared_ptr<stmsg> msgptr;

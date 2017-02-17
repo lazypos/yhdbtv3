@@ -76,7 +76,8 @@ bool CDBTRule::isPairs(const std::vector<int>& cards)
 	if (cards.size() == 2 && getValue(cards[0]) == getValue(cards[1])){
 		//jocker颜色一样
 		if ((cards[0] == 53 && cards[1] == 54) || (cards[0] == 54 && cards[1] == 53))
-			return true;
+			return false;
+		return true;
 	}
 	return false;
 }
@@ -234,8 +235,10 @@ std::pair<CDBTRule::cards_type, int> CDBTRule::getType(const std::vector<int>& c
 	return std::make_pair(type_unknow, 0);
 }
 
-bool CDBTRule::isBigger(const std::vector<int>& cards_per, std::vector<int>& cards_now)
+bool CDBTRule::isBigger(std::vector<int>& cards_per, std::vector<int>& cards_now)
 {
+	sort(cards_now.begin(), cards_now.end());
+	sort(cards_per.begin(), cards_per.end());
 	if (cards_per.size() == 0)
 		return true;
 	if (!checkCards(cards_now) || cards_now.size() == 0)
