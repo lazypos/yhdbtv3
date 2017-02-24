@@ -25,5 +25,7 @@
 {"opt":"game","per":"0","cards":"12,12,32,32,45,45","surplus":"34","score":"120","now":"1"}
 得分
 {"opt":"score","p0":"12","p1":"22"}
+逃跑
+{"opt":"run","site":"1","name":"player1"}
 
 

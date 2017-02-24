@@ -135,6 +135,9 @@ void CMessageQueue::threadWork()
 		}else if (opt == "score") {
 			ptr->p0score = doc["p0"].GetString();
 			ptr->p1score = doc["p1"].GetString();
+		}else if (opt == "run"){
+			ptr->site = atoi(doc["site"].GetString());
+			ptr->name = doc["name"].GetString();
 		}
 
 

@@ -11,16 +11,18 @@ type DeskMgr struct {
 	DeskNum   int
 	ArrPlayer [4]*Player //座位号
 	muxPlay   sync.Mutex
-	IsStart   bool
-	ForceExit int
-	TimeTick  int
-	NowSite   int //当前谁出牌
-	LastSite  int //上一轮谁出牌
-	Chmsg     chan *Message
-	PerCards  string //上一次出的牌
-	Score     int
-	P0Score   int
-	P1Score   int
+	Chmsg     chan *Message //消息通道
+	IsStart   bool          //游戏是否开始
+	ForceExit int           //强制退出
+	TimeTick  int           //计时器
+	NowSite   int           //当前谁出牌
+	LastSite  int           //上一轮谁出牌
+	PerCards  string        //上一次出的牌
+	Score     int           //当前桌面分数
+	P0Score   int           //0,2号玩家得分
+	P1Score   int           //1,3号玩家得分
+	RunCounts int           //逃跑数量
+	LastCards []int         //最后出的牌
 }
 
 func CreateDesk(id int) *DeskMgr {
@@ -83,13 +85,19 @@ func (this *DeskMgr) ProcessGame(m *Message) {
 		//又是同一个了，必须出
 		must := 0
 		if next == this.LastSite {
+			this.LastCards = []int{}
 			must = 1
+			//某家得分
 			if this.LastSite%2 == 0 {
 				this.P0Score += this.Score
 			} else {
 				this.P1Score += this.Score
 			}
 			this.Score = 0
+			//如果出完了，对家出
+			if this.ArrPlayer[next].RunNum != -1 {
+				next = (next + 2) % 4
+			}
 		}
 		for _, p := range this.ArrPlayer {
 			p.AddMessage(fmt.Sprintf(fmt_game_put, m.Site, "", len(p.ArrCards), this.Score, next, must))
@@ -98,22 +106,27 @@ func (this *DeskMgr) ProcessGame(m *Message) {
 			}
 		}
 	} else { //出牌
+		if !IsBigger(this.LastCards, m.Cards) {
+			this.ArrPlayer[m.Site].AddMessage(fmt_error)
+			return
+		}
 		this.LastSite = m.Site
 		ok, score := this.ArrPlayer[m.Site].PutCards(m.Cards)
 		if ok {
-			if IsOver() {
-				next = -1
+			//跑一个
+			if len(this.ArrPlayer[m.Site].ArrCards) == 0 {
+				this.ArrPlayer[m.Site].RunNum = this.RunCounts
+				this.RunCounts++
 			}
 			this.Score += score
 			for _, p := range this.ArrPlayer {
 				p.AddMessage(fmt.Sprintf(fmt_game_put, m.Site, m.Cards, len(p.ArrCards), this.Score, next, 0))
 			}
-			if next == -1 {
-				this.GameOver(false)
-			} else {
-				this.NowSite = next
-			}
+			this.NowSite = next
 		}
+	}
+	if IsOver() {
+		this.GameOver(false)
 	}
 }
 
@@ -134,6 +147,10 @@ func (this *DeskMgr) PlayerReady(site int) {
 		this.Score = 0
 		this.P0Score = 0
 		this.P1Score = 0
+		this.RunCounts = 0
+		for _, p := range this.ArrPlayer {
+			p.RunNum = -1
+		}
 		arrCards, arrCardsInt := Create4Cards()
 		for i, p := range this.ArrPlayer {
 			this.ArrPlayer[i].ArrCards = arrCardsInt[i]

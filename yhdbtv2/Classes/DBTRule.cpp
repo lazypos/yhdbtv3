@@ -33,32 +33,27 @@ bool CDBTRule::checkCards(std::vector<int>& cards)
 		if (cards[i] < 0 || cards[i] > 53)
 			return false;
 	}
-	sort(cards.begin(), cards.end());
 	return true;
 }
 
 int CDBTRule::getWeight(int card)
 {
 	//与序号相关，A/2/Jocket/5特殊处理
-	int nWeight = card - 8;
-	if (getValue(card) == 0 || getValue(card) == 1)
-		nWeight += 48;
-	if (isJoker(card))
-		nWeight += 8;
 	if (isRedFive(card))
-		nWeight = 54;
-	return nWeight;
+		return 1000;
+	return getWeightNoRedFive(card);
 }
 
 int CDBTRule::getWeightNoRedFive(int card)
 {
 	//与序号相关，A/2/Jocket特殊处理
-	int nWeight = card - 8;
-	if (getValue(card) == 0 || getValue(card) == 1)
-		nWeight += 48;
 	if (isJoker(card))
-		nWeight += 8;
-	return nWeight;
+		return card + 100;
+
+	if (getValue(card) == 0 || getValue(card) == 1)
+		return card + 54;
+
+	return card;
 }
 
 bool CDBTRule::isNormal(const cards_type ty)
@@ -66,30 +61,41 @@ bool CDBTRule::isNormal(const cards_type ty)
 	return (ty != type_boom && ty != type_atom);
 }
 
-bool CDBTRule::isSingle(const std::vector<int>& cards)
+pair<bool, int> CDBTRule::isSingle(const std::vector<int>& cards)
 {
-	return cards.size() == 1;
+	if (cards.size() == 1)
+		return pair<bool, int>(true, getWeight(cards[0]));
+	return pair<bool, int>(false, 0);
 }
 
-bool CDBTRule::isPairs(const std::vector<int>& cards)
+pair<bool, int> CDBTRule::isPairs(const std::vector<int>& cards)
 {
-	if (cards.size() == 2 && getValue(cards[0]) == getValue(cards[1])){
-		//jocker颜色一样
-		if ((cards[0] == 53 && cards[1] == 54) || (cards[0] == 54 && cards[1] == 53))
-			return false;
-		return true;
+	if (cards.size()!=2)
+		return pair<bool, int>(false, 0);
+	//点数必须一样
+	if (getValue(cards[0]) != getValue(cards[1]))
+		return pair<bool, int>(false, 0);
+	//jocker颜色一样
+	if (isJoker(cards[0])){
+		if (cards[0] != cards[1])
+			return pair<bool, int>(false, 0);
+		return pair<bool, int>(true, getWeight(cards[0]));
 	}
-	return false;
+	if (isRedFive(cards[0]) && isRedFive(cards[1]))
+		return pair<bool, int>(true, getWeight(cards[0]));
+	return pair<bool, int>(true, getWeightNoRedFive(cards[1]));
 }
 
-bool CDBTRule::isthree(const std::vector<int>& cards)
+pair<bool, int> CDBTRule::isthree(const std::vector<int>& cards)
 {
-	if (cards.size() != 3 || isAtom(cards) || isJoker(cards[0]))
-		return false;
-
-	if (getValue(cards[0]) == getValue(cards[1]) && getValue(cards[0]) == getValue(cards[2]))
-		return true;
-	return false;
+	if (cards.size() != 3)
+		return pair<bool, int>(false, 0);
+	if (getValue(cards[0]) != getValue(cards[1])|| getValue(cards[0]) != getValue(cards[2]))
+		return pair<bool, int>(false, 0);
+	//花色必须不一样
+	if (getColor(cards[0]) == getColor(cards[1]) && getColor(cards[0]) == getColor(cards[2]))
+		return pair<bool, int>(false, 0);
+	return pair<bool, int>(true, getWeightNoRedFive(cards[2]));
 }
 
 bool CDBTRule::isAtom(const std::vector<int>& cards)
@@ -239,8 +245,7 @@ bool CDBTRule::isBigger(std::vector<int>& cards_per, std::vector<int>& cards_now
 {
 	sort(cards_now.begin(), cards_now.end());
 	sort(cards_per.begin(), cards_per.end());
-	if (cards_per.size() == 0)
-		return true;
+
 	if (!checkCards(cards_now) || cards_now.size() == 0)
 		return false;
 	auto per = getType(cards_per);
@@ -257,11 +262,37 @@ bool CDBTRule::isBigger(std::vector<int>& cards_per, std::vector<int>& cards_now
 		return false;
 	}
 	if (!isNormal(per.first) && !isNormal(now.first)) {
-		if ((per.first == type_boom && now.first == type_boom)
-			|| (per.first == type_atom && now.first == type_atom)){
+		if (per.first == type_boom && now.first == type_boom){
 			//数量多的大
 			if (cards_per.size() == cards_now.size())
 				return now.second > per.second;
+			return cards_now.size() > cards_per.size();
+		}
+		if (per.first == type_atom && now.first == type_atom) {
+			//数量一样
+			if (cards_per.size() == cards_now.size()) {
+				//特殊情况
+				if (now.second == 54 || cards_now[0] == 54)
+					return true;
+				if (cards_now[0] == 53 && cards_per[0]==54)
+					return false;
+				if (cards_now[0] == 53 && cards_per[0] != 54)
+					return true;
+				if (cards_per[0] == 54)
+					return false;
+				if (cards_per[0] == 53 && cards_now[0] != 54)
+					return false;
+					
+				//看花色
+				int colorper = getColor(cards_per[0]);
+				int colornow = getColor(cards_now[0]);
+				//花色一样看权重
+				if (colornow == colorper){
+					return now.second > per.second;
+				}
+				return colornow > colorper;
+			}
+			//数量不一样，必须大于
 			return cards_now.size() > cards_per.size();
 		}
 		if (per.first == type_atom && now.first == type_boom)

@@ -14,6 +14,7 @@ type Player struct {
 	Ready    bool
 	Chmsg    chan string
 	conn     net.Conn
+	RunNum   int
 }
 
 func (this *Player) InitPlayer(remote string, conn net.Conn) {

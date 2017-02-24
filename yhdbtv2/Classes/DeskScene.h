@@ -45,16 +45,9 @@ public:
 	void onNoput(Ref *pSender, ui::Widget::TouchEventType type);
 	void onPut(Ref *pSender, ui::Widget::TouchEventType type);
 
-	void update(float dt);
-
-	void	putPerCard(int id, const string& cards, int surplus, const string& go="");
-	void	putCard(int id, bool isclear = false);
-	void	updateScore(int id, int score);
-
 	bool onTouchBegan(Touch *touch, Event *event);
 	void onTouchMoved(Touch *touch, Event *event);
 
-	//void    playerSchedule(float dt);
 	void	deskSchedule(float dt);
 	void	timeSchedule(float dt);
 
@@ -93,20 +86,11 @@ private:
 	string						_playerName;//玩家名
 	int							_nowPut = -1; //当前出牌
 
-
-
-	LabelAtlas*					_timenow = nullptr;
-	bool						_mustput = false;
 	vector<int>					_vecPerCards; //上一次出的牌
-
-
-
 	vector<CardSprite*>			_lstCards; //自己的手牌
-	CardSprite*					_card_select_per =	nullptr; 
 	vector<playerPtr>			_vecPlayers; //初始化的时候放在这里，然后根据A的id插入到map里
 	map<int, playerPtr>			_mapPlayers;
-	playerPtr					_perptr = nullptr;
-	int							_putId;
+	CardSprite*					_card_select_per = nullptr;
 
 };
 

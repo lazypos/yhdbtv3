@@ -3,6 +3,7 @@
 #include <random>
 #include <vector>
 #include <map>
+using namespace std;
 
 class CDBTRule
 {
@@ -49,9 +50,9 @@ public:
 	static	int		getWeightNoRedFive(int card);
 	static	bool	isNormal(const cards_type ty);
 
-	static	bool	isSingle(const std::vector<int>& cards);
-	static  bool	isPairs(const std::vector<int>& cards);
-	static	bool	isthree(const std::vector<int>& cards);
+	static	pair<bool,int>	isSingle(const std::vector<int>& cards);
+	static  pair<bool, int>	isPairs(const std::vector<int>& cards);
+	static	pair<bool, int>	isthree(const std::vector<int>& cards);
 	static	bool	isAtom(const std::vector<int>& cards);
 	static	bool	isBoom(const std::vector<int>& cards);
 	static	bool	isSister(const std::vector<int>& cards);

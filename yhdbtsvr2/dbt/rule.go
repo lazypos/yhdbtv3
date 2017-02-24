@@ -67,3 +67,92 @@ func GetCardScore(seq int) int {
 	}
 	return 0
 }
+
+func CheckCardsVailds(cards []int) bool {
+	for _, c := range cards {
+		if c > 53 || c < 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func GetValue(n int) int {
+	return n / 4
+}
+
+func GetColor(n int) int {
+	return n % 4
+}
+
+func IsJoker(n int) bool {
+	return GetValue(n) == 13
+}
+
+func IsRedFive(n int) bool {
+	return GetValue(n) == 4 && GetColor(n) == 3
+}
+
+func GetWeight(n int) int {
+	if isRedFive(n) {
+		return 10000
+	}
+	return GetWeightWithOutRedFive()
+}
+
+func GetWeightWithOutRedFive(n int) n {
+	if isJoker(n) {
+		return n + 100
+	}
+	if getValue(n) == 0 || getValue(n) == 1 {
+		return n + 54
+	}
+	return n
+}
+
+func IsNormalCard(t int) (bool, int) {
+	return t != type_atom && t != type_boom
+}
+
+func IsSingle(cards []int) (bool, int) {
+	if len(cards) == 1 {
+		return true, GetWeight(cards[0])
+	}
+	return false, 0
+}
+
+func IsPairs(cards []int) (bool, int) {
+	if len(cards) != 2 {
+		return false, 0
+	}
+	if GetValue(cards[0]) != GetValue(cards[1]) {
+		return false, 0
+	}
+	//joker必须一样颜色
+	if IsJoker(cards[0]) {
+		if cards[0] != cards[1] {
+			return false, 0
+		}
+		return true, GetValue(cards[0])
+	}
+	//红5
+	if IsRedFive(cards[0]) && IsRedFive(cards[1]) {
+		return true, GetWeight(cards[0])
+	}
+	return true, GetWeightWithOutRedFive(cards[1])
+}
+
+func Isthree(cards []int) (bool, int) {
+	if len(cards) != 3 {
+		return false, 0
+	}
+	//点数必须一样
+	if GetValue(cards[0]) != GetValue(cards[1]) || GetValue(cards[0]) != GetValue(cards[2]) {
+		return false, 0
+	}
+	//花色必须不一样
+	if GetColor(cards[0]) == GetColor(cards[1]) && GetColor(cards[0]) == GetColor(cards[2]) {
+		return false, 0
+	}
+	return true, GetWeightWithOutRedFive(cards[2])
+}
