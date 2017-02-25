@@ -47,17 +47,18 @@ public:
 	static  bool	isJoker(int card) { return getValue(card) == 13; };
 	static	bool	isRedFive(int card) { return (getValue(card) == 4 && getColor(card) == 3); };
 	static  int		getWeight(int card);
+	static  int		getAtomWeight(int card);
 	static	int		getWeightNoRedFive(int card);
 	static	bool	isNormal(const cards_type ty);
 
 	static	pair<bool,int>	isSingle(const std::vector<int>& cards);
 	static  pair<bool, int>	isPairs(const std::vector<int>& cards);
 	static	pair<bool, int>	isthree(const std::vector<int>& cards);
-	static	bool	isAtom(const std::vector<int>& cards);
-	static	bool	isBoom(const std::vector<int>& cards);
-	static	bool	isSister(const std::vector<int>& cards);
-	static	bool	isPlane(const std::vector<int>& cards);
-	static	bool	isThreetwo(const std::vector<int>& cards);
+	static	pair<bool, int>	isAtom(const std::vector<int>& cards);
+	static	pair<bool, int>	isBoom(const std::vector<int>& cards);
+	static	pair<bool, int>	isSister(const std::vector<int>& cards);
+	static	pair<bool, int>	isPlane(const std::vector<int>& cards);
+	static	pair<bool, int>	isThreetwo(const std::vector<int>& cards);
 
 	static	std::pair<cards_type, int>	getType(const std::vector<int>& cards);
 	static	bool	isBigger(std::vector<int>& cards_per, std::vector<int>& cards_now);

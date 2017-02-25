@@ -3,8 +3,6 @@ package dbt
 import (
 	"log"
 	"net"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -15,12 +13,14 @@ type Player struct {
 	Chmsg    chan string
 	conn     net.Conn
 	RunNum   int
+	times    int
 }
 
 func (this *Player) InitPlayer(remote string, conn net.Conn) {
 	this.Chmsg = make(chan string, 100)
 	this.Remote = remote
 	this.conn = conn
+	this.times = 0
 	go this.SendQueue()
 }
 
@@ -29,10 +29,13 @@ func (this *Player) AddMessage(msg string) {
 }
 
 func (this *Player) SendQueue() {
+	ticker := time.NewTicker(time.Second * 5)
 	for {
 		select {
-		case <-time.After(time.Second * 5):
-			break
+		case <-ticker.C:
+			if !this.Ready {
+				this.times += 5
+			}
 		case m := <-this.Chmsg:
 			log.Println("发送数据:", this.Remote, m)
 			SendMessage(this.conn, []byte(m))
@@ -40,11 +43,9 @@ func (this *Player) SendQueue() {
 	}
 }
 
-func (this *Player) PutCards(cards string) (bool, int) {
-	arr := strings.Split(cards, ",")
+func (this *Player) PutCards(cards []int) (bool, int) {
 	score := 0
-	for _, c := range arr {
-		n, _ := strconv.Atoi(c)
+	for _, n := range cards {
 		score += GetCardScore(n)
 		for i, _ := range this.ArrCards {
 			if this.ArrCards[i] == n {
@@ -53,6 +54,7 @@ func (this *Player) PutCards(cards string) (bool, int) {
 			}
 		}
 	}
+
 	tmp := []int{}
 	for _, v := range this.ArrCards {
 		if v != -1 {

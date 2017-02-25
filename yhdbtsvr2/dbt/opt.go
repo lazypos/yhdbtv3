@@ -24,6 +24,7 @@ const (
 	fmt_game_put = `{"opt":"game","per":"%d","cards":"%s","surplus":"%d","score":"%d","now":"%d","must":"%d"}`
 	fmt_score    = `{"opt":"score","p0":"%d","p1":"%d"}`
 	fmt_error    = `{"opt":"error"}`
+	fmt_timeout  = `{"opt":"timeout"}`
 )
 
 type Message struct {

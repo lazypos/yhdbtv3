@@ -140,7 +140,6 @@ void CMessageQueue::threadWork()
 			ptr->name = doc["name"].GetString();
 		}
 
-
 		_muxMsg.lock();
 		_lstMessage.emplace_back(ptr);
 		_muxMsg.unlock();

@@ -7,6 +7,11 @@ import (
 	"time"
 )
 
+type DeskResult struct {
+	Name   string
+	Result string
+}
+
 type DeskMgr struct {
 	DeskNum   int
 	ArrPlayer [4]*Player //座位号
@@ -46,12 +51,22 @@ func (this *DeskMgr) GameSchedule() {
 		select {
 		case <-ticker.C:
 			//玩家超时
+			this.TimeTick += 2
 			if this.IsStart && this.TimeTick >= 65 {
 				//断线
 				log.Println("玩家断线", this.NowSite)
 				this.PlayerRun(this.NowSite, this.ArrPlayer[this.NowSite].Remote)
 			}
+			if !this.IsStart {
+				for i, p := range this.ArrPlayer {
+					if p != nil && p.times > 60 {
+						p.AddMessage(fmt_timeout)
+						this.PlayerLeave(i)
+					}
+				}
+			}
 		case m := <-this.Chmsg:
+			this.TimeTick = 0
 			if m.Opt == "change" {
 				switch m.Type {
 				case "leave":
@@ -106,14 +121,16 @@ func (this *DeskMgr) ProcessGame(m *Message) {
 			}
 		}
 	} else { //出牌
-		if !IsBigger(this.LastCards, m.Cards) {
+		nowCards := StringToIntArr(m.Cards)
+		if !IsBigger(this.LastCards, nowCards) {
 			this.ArrPlayer[m.Site].AddMessage(fmt_error)
 			return
 		}
 		this.LastSite = m.Site
-		ok, score := this.ArrPlayer[m.Site].PutCards(m.Cards)
+		ok, score := this.ArrPlayer[m.Site].PutCards(nowCards)
 		if ok {
 			//跑一个
+			this.LastCards = nowCards
 			if len(this.ArrPlayer[m.Site].ArrCards) == 0 {
 				this.ArrPlayer[m.Site].RunNum = this.RunCounts
 				this.RunCounts++
@@ -125,8 +142,12 @@ func (this *DeskMgr) ProcessGame(m *Message) {
 			this.NowSite = next
 		}
 	}
-	if IsOver() {
-		this.GameOver(false)
+	run := []int{-1, -1, -1, -1}
+	for i := 0; i < 4; i++ {
+		run[i] = this.ArrPlayer[i].RunNum
+	}
+	if over, arrRst := IsOver(m.Site, this.P0Score, this.P1Score, run); over {
+		this.GameOver(false, arrRst)
 	}
 }
 
@@ -148,6 +169,7 @@ func (this *DeskMgr) PlayerReady(site int) {
 		this.P0Score = 0
 		this.P1Score = 0
 		this.RunCounts = 0
+		this.LastCards = []int{}
 		for _, p := range this.ArrPlayer {
 			p.RunNum = -1
 		}
@@ -160,7 +182,7 @@ func (this *DeskMgr) PlayerReady(site int) {
 		this.NowSite = put
 		this.LastSite = put
 		for _, p := range this.ArrPlayer {
-			p.AddMessage(fmt.Sprintf(fmt_game_put, -1, "", 54, 0, put))
+			p.AddMessage(fmt.Sprintf(fmt_game_put, -1, "", 54, 0, put, 1))
 		}
 	} else {
 		this.BroadDeskInfo()
@@ -188,17 +210,15 @@ func (this *DeskMgr) PlayerRun(site int, name string) {
 	this.GameOver(true)
 }
 
-type DeskResult struct {
-	Name   string
-	Result string
-}
-
-func (this *DeskMgr) GetResult() [4]*DeskResult {
-	return [4]*DeskResult{}
-}
-
-func (this *DeskMgr) GameOver(run bool) {
+func (this *DeskMgr) GameOver(run bool, arrRst []*DeskResult) {
 	this.IsStart = false
+	for _, p := range this.ArrPlayer {
+		if p != nil {
+			p.Ready = false
+			p.RunNum = -1
+			p.times = 0
+		}
+	}
 	if !run {
 		arrRst := this.GetResult()
 		for _, p := range this.ArrPlayer {
@@ -217,6 +237,7 @@ func (this *DeskMgr) AddDesk(p *Player) int {
 	for i := 0; i < 4; i++ {
 		if this.ArrPlayer[i] == nil {
 			this.ArrPlayer[i] = p
+			p.times = 0
 			return i
 		}
 	}

@@ -291,6 +291,7 @@ void CDeskScene::onReturn(Ref *pSender, ui::Widget::TouchEventType type)
 void CDeskScene::onNoput(Ref *pSender, ui::Widget::TouchEventType type)
 {
 	if (type == ui::Widget::TouchEventType::ENDED) {
+		//一定要出
 		if (_vecPerCards.empty())
 			return;
 		_btPut->setVisible(false);
@@ -310,7 +311,7 @@ void CDeskScene::onPut(Ref *pSender, ui::Widget::TouchEventType type)
 		if (!nowCards.empty() && CDBTRule::isBigger(_vecPerCards, nowCards)){
 			_btPut->setVisible(false);
 			_btNoput->setVisible(false);
-
+			_vecPerCards = nowCards;
 			//整理手牌
 			for (const auto&it : nowCards){
 				auto itper = _lstCards.begin();
@@ -408,6 +409,10 @@ void CDeskScene::deskSchedule(float dt)
 			_labelWeScore->setString(ptr->p1score);
 			_labelTheyScore->setString(ptr->p0score);
 		}
+	}
+	if (ptr && ptr->opt == "timeout") {
+		Scene *hScene = CHallScene::createScene();
+		Director::getInstance()->replaceScene(hScene);
 	}
 }
 
@@ -531,19 +536,27 @@ void CDeskScene::gameSatrt()
 
 void CDeskScene::clearDesk(int siteid)
 {
+	_labelWeScore->setString("0");
+	_labelTheyScore->setString("0");
+	_labelDeskScore->setString("0");
 	if (siteid == -1){
+		for (int i = 0; i < _lstCards.size(); i++)
+			this->removeChild(_lstCards[i]);
+		_lstCards.clear();
+		_btNoput->setVisible(false);
+		_btPut->setVisible(false);
 		for (int i = 0; i < 4; i++) {
 			playerPtr ptr = _mapPlayers[i];
-			//ptr->_total->setString("");
 			ptr->_time->setVisible(false);
 			ptr->_ready->setVisible(false);
 			ptr->_gone->setVisible(false);
 			ptr->_buchu->setVisible(false);
+			for (int i = 0; i < ptr->perCards.size(); i++)
+				this->removeChild(ptr->perCards[i]);
 		}
 	}
 	else {
 		playerPtr ptr = _mapPlayers[siteid];
-		//ptr->_total->setString("");
 		ptr->_time->setVisible(false);
 		ptr->_ready->setVisible(false);
 		ptr->_gone->setVisible(false);
@@ -566,6 +579,7 @@ void CDeskScene::perPutCards(msgptr ptr)
 		vector<string> vec;
 		stringToVector(ptr->cards, vec, ",");
 		int i = 0;
+		_vecPerCards.clear();
 		for (const auto &it : vec) {
 			int seq = atoi(it.c_str());
 			auto cardSprite = CardSprite::createCardSprite(seq);
