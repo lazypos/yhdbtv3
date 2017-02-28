@@ -7,11 +7,6 @@ import (
 	"time"
 )
 
-type DeskResult struct {
-	Name   string
-	Result string
-}
-
 type DeskMgr struct {
 	DeskNum   int
 	ArrPlayer [4]*Player //座位号
@@ -146,7 +141,7 @@ func (this *DeskMgr) ProcessGame(m *Message) {
 	for i := 0; i < 4; i++ {
 		run[i] = this.ArrPlayer[i].RunNum
 	}
-	if over, arrRst := IsOver(m.Site, this.P0Score, this.P1Score, run); over {
+	if over, arrRst := IsOver(this.P0Score, this.P1Score, run); over {
 		this.GameOver(false, arrRst)
 	}
 }
@@ -207,10 +202,10 @@ func (this *DeskMgr) PlayerRun(site int, name string) {
 			p.AddMessage(fmt.Sprintf(fmt_run, site, name))
 		}
 	}
-	this.GameOver(true)
+	this.GameOver(true, []int{})
 }
 
-func (this *DeskMgr) GameOver(run bool, arrRst []*DeskResult) {
+func (this *DeskMgr) GameOver(run bool, arrRst []int) {
 	this.IsStart = false
 	for _, p := range this.ArrPlayer {
 		if p != nil {
@@ -220,12 +215,9 @@ func (this *DeskMgr) GameOver(run bool, arrRst []*DeskResult) {
 		}
 	}
 	if !run {
-		arrRst := this.GetResult()
 		for _, p := range this.ArrPlayer {
 			if p != nil {
-				p.AddMessage(fmt.Sprintf(fmt_over, arrRst[0].Name, arrRst[0].Result,
-					arrRst[1].Name, arrRst[1].Result, arrRst[2].Name, arrRst[2].Result,
-					arrRst[3].Name, arrRst[3].Result))
+				p.AddMessage(fmt.Sprintf(fmt_over, "", arrRst[0], "", arrRst[1], "", arrRst[2], "", arrRst[3]))
 			}
 		}
 	}

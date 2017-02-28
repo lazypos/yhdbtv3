@@ -118,9 +118,88 @@ func IsBigger(per, now []int) bool {
 	return false
 }
 
-func IsOver(site, s0, s1 int, info []int) (bool, []*DeskResult) {
-
-	return false, []*DeskResult{}
+func IsOver(s0, s1 int, info []int) (bool, []int) {
+	//抓2且一分不得   不到85分  超过85分
+	if info[0] > 0 && info[2] > 0 && info[1] == -1 && info[3] == -1 {
+		if s1 == 0 {
+			return true, []int{4, -4, 4, -4}
+		}
+		if s1 < 85 {
+			return true, []int{2, -2, 2, -2}
+		}
+	}
+	if info[1] > 0 && info[3] > 0 && info[0] == -1 && info[2] == -1 {
+		if s0 == 0 {
+			return true, []int{-4, 4, -4, 4}
+		}
+		if s0 < 85 {
+			return true, []int{-2, 2, -2, 2}
+		}
+	}
+	//一个第二不到45分
+	if info[0] > 0 && info[2] > 0 && s1 < 45 {
+		if (info[1] == 1 && info[3] == -1) || info[1] == -1 && info[3] == 1 {
+			return true, []int{2, -2, 2, -2}
+		}
+	}
+	if info[1] > 0 && info[3] > 0 && s0 < 45 {
+		if (info[0] == 2 && info[2] == -1) || info[0] == -1 && info[2] == 2 {
+			return true, []int{-2, 2, -2, 2}
+		}
+	}
+	//上游得200，对方到85
+	if info[0] == 0 || info[2] == 0 {
+		if s0 >= 200 && s1 >= 85 {
+			return true, []int{1, -1, 1, -1}
+		}
+	}
+	if info[1] == 0 || info[3] == 0 {
+		if s1 >= 200 && s0 >= 85 {
+			return true, []int{-1, 1, -1, 1}
+		}
+	}
+	//跑上游且得200，对方一个二游且得45
+	if info[0] == 0 || info[2] == 0 {
+		if s0 >= 200 && s1 >= 45 {
+			if info[1] == 1 || info[3] == 1 {
+				return true, []int{1, -1, 1, -1}
+			}
+		}
+	}
+	if info[1] == 0 || info[3] == 0 {
+		if s1 >= 200 && s0 >= 45 {
+			if info[0] == 1 || info[2] == 1 {
+				return true, []int{-1, 1, -1, 1}
+			}
+		}
+	}
+	//跑二游 且得245
+	if info[1] == 0 || info[3] == 0 {
+		if info[0] == 1 || info[2] == 1 {
+			if s0 >= 245 {
+				return true, []int{1, -1, 1, -1}
+			}
+		}
+	}
+	if info[0] == 0 || info[2] == 0 {
+		if info[1] == 1 || info[3] == 1 {
+			if s1 >= 245 {
+				return true, []int{-1, 1, -1, 1}
+			}
+		}
+	}
+	//一个没跑但得285
+	if info[0] == -1 && info[2] == -1 && info[1] > 0 && info[3] > 0 && s0 >= 285 {
+		return true, []int{1, -1, 1, -1}
+	}
+	if info[1] == -1 && info[3] == -1 && info[0] > 0 && info[2] > 0 && s1 >= 285 {
+		return true, []int{-1, 1, -1, 1}
+	}
+	//如果一方的2人都跑了，但没有符合上面的规则，平局
+	if (info[1] > 0 && info[3] > 0) || info[0] > 0 && info[2] > 0 {
+		return true, []int{0, 0, 0, 0}
+	}
+	return false, []int{}
 }
 
 func GetCardScore(seq int) int {
@@ -182,7 +261,7 @@ func GetAtomWeight(n int) int {
 	if IsJoker(n) {
 		return 500 + n
 	}
-	return GetColor(n)*20 + n
+	return GetColor(n)*52 + n
 }
 
 func IsNotBoomAndAtom(t int) bool {
