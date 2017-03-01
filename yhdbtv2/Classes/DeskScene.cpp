@@ -540,7 +540,7 @@ void CDeskScene::clearDesk(int siteid)
 	_labelTheyScore->setString("0");
 	_labelDeskScore->setString("0");
 	if (siteid == -1){
-		for (int i = 0; i < _lstCards.size(); i++)
+		for (size_t i = 0; i < _lstCards.size(); i++)
 			this->removeChild(_lstCards[i]);
 		_lstCards.clear();
 		_btNoput->setVisible(false);
@@ -551,7 +551,7 @@ void CDeskScene::clearDesk(int siteid)
 			ptr->_ready->setVisible(false);
 			ptr->_gone->setVisible(false);
 			ptr->_buchu->setVisible(false);
-			for (int i = 0; i < ptr->perCards.size(); i++)
+			for (size_t i = 0; i < ptr->perCards.size(); i++)
 				this->removeChild(ptr->perCards[i]);
 		}
 	}

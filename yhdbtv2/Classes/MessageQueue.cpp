@@ -3,7 +3,8 @@
 #include "cocos2d/external/json/stringbuffer.h"
 #include "cocos2d/external/json/writer.h"
 using rapidjson::Document;
-
+#include "cocos2d.h"
+USING_NS_CC;
 CMessageQueue::CMessageQueue()
 {
 	WSAData data;
@@ -22,7 +23,7 @@ bool CMessageQueue::start()
 	memset(&_servAddr, 0, sizeof(_servAddr));
 	_servAddr.sin_family = AF_INET;
 	_servAddr.sin_port = htons(9999);
-	_servAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	_servAddr.sin_addr.s_addr = inet_addr(Configuration::getInstance()->getValue("host").asString().c_str());
 	
 	_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (_sock == 0)

@@ -16,7 +16,7 @@ func initlog() {
 	}
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	log.Println(h)
-	//log.SetOutput(h)
+	log.SetOutput(h)
 }
 
 func start() {
