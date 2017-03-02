@@ -26,13 +26,14 @@ const (
 var GRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 //创建手牌
-func Create4Cards() ([4]string, [4][]int) {
-	arrCards := make([]int, 216)
-	for i := 0; i < 216; i++ {
+func Create4Cards() ([4]string, [4][]int32) {
+	arrCards := make([]int32, 216)
+	var i int32
+	for i = 0; i < 216; i++ {
 		arrCards[i] = i / 4
 	}
 
-	for i := 0; i < 2; i++ {
+	for i = 0; i < 2; i++ {
 		for j := 0; j < cap(arrCards); j++ {
 			n := GRand.Intn(215)
 			arrCards[j], arrCards[n] = arrCards[n], arrCards[j]
@@ -41,37 +42,53 @@ func Create4Cards() ([4]string, [4][]int) {
 
 	//拆分4组
 	arrCardsString := [4]string{}
-	arrCardsInt := [4][]int{}
-	for i := 0; i < 4; i++ {
+	arrCardsint32 := [4][]int32{}
+	for i = 0; i < 4; i++ {
 		buf := bytes.NewBufferString("")
-		arrCardsInt[i] = make([]int, 54)
-		for j := 0; j < 54; j++ {
+		arrCardsint32[i] = make([]int32, 54)
+		var j int32 = 0
+		for j = 0; j < 54; j++ {
 			buf.WriteString(fmt.Sprintf("%d,", arrCards[i*54+j]))
-			arrCardsInt[i][j] = arrCards[i*54+j]
+			arrCardsint32[i][j] = arrCards[i*54+j]
 		}
 		arrCardsString[i] = buf.String()[:buf.Len()-1]
 	}
-	return arrCardsString, arrCardsInt
+	return arrCardsString, arrCardsint32
 }
 
-func StringToIntArr(cards string) []int {
-	r := []int{}
+func StringToint32Arr(cards string) []int32 {
+	r := []int32{}
 	arr := strings.Split(cards, ",")
 	for _, c := range arr {
 		if len(c) > 0 {
 			n, _ := strconv.Atoi(c)
-			r = append(r, n)
+			r = append(r, int32(n))
 		}
 	}
 	return r
 }
 
-func IsBigger(per, now []int) bool {
+func IsBigger(per, now []int32) bool {
 	if !CheckCardsVailds(now) {
 		return false
 	}
-	sort.Ints(per)
-	sort.Ints(now)
+	per1 := []int{}
+	for _, v := range per {
+		per1 = append(per1, int(v))
+	}
+	now1 := []int{}
+	for _, v := range now {
+		now1 = append(now1, int(v))
+	}
+	sort.Ints(per1)
+	sort.Ints(now1)
+	for i, _ := range per1 {
+		per[i] = int32(per1[i])
+	}
+	for i, _ := range now1 {
+		now[i] = int32(now1[i])
+	}
+
 	log.Println(per, now)
 	//当前牌是否合法
 	tnow, wnow := GetType(now)
@@ -118,58 +135,58 @@ func IsBigger(per, now []int) bool {
 	return false
 }
 
-func IsOver(s0, s1 int, info []int) (bool, []int) {
+func IsOver(s0, s1 int32, info []int32) (bool, []int32) {
 	//抓2且一分不得   不到85分  超过85分
 	if info[0] > 0 && info[2] > 0 && info[1] == -1 && info[3] == -1 {
 		if s1 == 0 {
-			return true, []int{4, -4, 4, -4}
+			return true, []int32{4, -4, 4, -4}
 		}
 		if s1 < 85 {
-			return true, []int{2, -2, 2, -2}
+			return true, []int32{2, -2, 2, -2}
 		}
 	}
 	if info[1] > 0 && info[3] > 0 && info[0] == -1 && info[2] == -1 {
 		if s0 == 0 {
-			return true, []int{-4, 4, -4, 4}
+			return true, []int32{-4, 4, -4, 4}
 		}
 		if s0 < 85 {
-			return true, []int{-2, 2, -2, 2}
+			return true, []int32{-2, 2, -2, 2}
 		}
 	}
 	//一个第二不到45分
 	if info[0] > 0 && info[2] > 0 && s1 < 45 {
 		if (info[1] == 1 && info[3] == -1) || info[1] == -1 && info[3] == 1 {
-			return true, []int{2, -2, 2, -2}
+			return true, []int32{2, -2, 2, -2}
 		}
 	}
 	if info[1] > 0 && info[3] > 0 && s0 < 45 {
 		if (info[0] == 2 && info[2] == -1) || info[0] == -1 && info[2] == 2 {
-			return true, []int{-2, 2, -2, 2}
+			return true, []int32{-2, 2, -2, 2}
 		}
 	}
 	//上游得200，对方到85
 	if info[0] == 0 || info[2] == 0 {
 		if s0 >= 200 && s1 >= 85 {
-			return true, []int{1, -1, 1, -1}
+			return true, []int32{1, -1, 1, -1}
 		}
 	}
 	if info[1] == 0 || info[3] == 0 {
 		if s1 >= 200 && s0 >= 85 {
-			return true, []int{-1, 1, -1, 1}
+			return true, []int32{-1, 1, -1, 1}
 		}
 	}
 	//跑上游且得200，对方一个二游且得45
 	if info[0] == 0 || info[2] == 0 {
 		if s0 >= 200 && s1 >= 45 {
 			if info[1] == 1 || info[3] == 1 {
-				return true, []int{1, -1, 1, -1}
+				return true, []int32{1, -1, 1, -1}
 			}
 		}
 	}
 	if info[1] == 0 || info[3] == 0 {
 		if s1 >= 200 && s0 >= 45 {
 			if info[0] == 1 || info[2] == 1 {
-				return true, []int{-1, 1, -1, 1}
+				return true, []int32{-1, 1, -1, 1}
 			}
 		}
 	}
@@ -177,32 +194,32 @@ func IsOver(s0, s1 int, info []int) (bool, []int) {
 	if info[1] == 0 || info[3] == 0 {
 		if info[0] == 1 || info[2] == 1 {
 			if s0 >= 245 {
-				return true, []int{1, -1, 1, -1}
+				return true, []int32{1, -1, 1, -1}
 			}
 		}
 	}
 	if info[0] == 0 || info[2] == 0 {
 		if info[1] == 1 || info[3] == 1 {
 			if s1 >= 245 {
-				return true, []int{-1, 1, -1, 1}
+				return true, []int32{-1, 1, -1, 1}
 			}
 		}
 	}
 	//一个没跑但得285
 	if info[0] == -1 && info[2] == -1 && info[1] > 0 && info[3] > 0 && s0 >= 285 {
-		return true, []int{1, -1, 1, -1}
+		return true, []int32{1, -1, 1, -1}
 	}
 	if info[1] == -1 && info[3] == -1 && info[0] > 0 && info[2] > 0 && s1 >= 285 {
-		return true, []int{-1, 1, -1, 1}
+		return true, []int32{-1, 1, -1, 1}
 	}
 	//如果一方的2人都跑了，但没有符合上面的规则，平局
 	if (info[1] > 0 && info[3] > 0) || info[0] > 0 && info[2] > 0 {
-		return true, []int{0, 0, 0, 0}
+		return true, []int32{0, 0, 0, 0}
 	}
-	return false, []int{}
+	return false, []int32{}
 }
 
-func GetCardScore(seq int) int {
+func GetCardScore(seq int32) int32 {
 	if seq/4 == 4 {
 		return 5
 	}
@@ -212,7 +229,7 @@ func GetCardScore(seq int) int {
 	return 0
 }
 
-func CheckCardsVailds(cards []int) bool {
+func CheckCardsVailds(cards []int32) bool {
 	for _, c := range cards {
 		if c > 53 || c < 0 {
 			return false
@@ -221,30 +238,30 @@ func CheckCardsVailds(cards []int) bool {
 	return true
 }
 
-func GetValue(n int) int {
+func GetValue(n int32) int32 {
 	return n / 4
 }
 
-func GetColor(n int) int {
+func GetColor(n int32) int32 {
 	return n % 4
 }
 
-func IsJoker(n int) bool {
+func IsJoker(n int32) bool {
 	return GetValue(n) == 13
 }
 
-func IsRedFive(n int) bool {
+func IsRedFive(n int32) bool {
 	return GetValue(n) == 4 && GetColor(n) == 3
 }
 
-func GetWeight(n int) int {
+func GetWeight(n int32) int32 {
 	if IsRedFive(n) {
 		return 1000
 	}
 	return GetWeightWithOutRedFive(n)
 }
 
-func GetWeightWithOutRedFive(n int) int {
+func GetWeightWithOutRedFive(n int32) int32 {
 	if IsJoker(n) {
 		return n + 100
 	}
@@ -254,7 +271,7 @@ func GetWeightWithOutRedFive(n int) int {
 	return n
 }
 
-func GetAtomWeight(n int) int {
+func GetAtomWeight(n int32) int32 {
 	if IsRedFive(n) {
 		return 1000
 	}
@@ -264,18 +281,18 @@ func GetAtomWeight(n int) int {
 	return GetColor(n)*52 + n
 }
 
-func IsNotBoomAndAtom(t int) bool {
+func IsNotBoomAndAtom(t int32) bool {
 	return t != type_atom && t != type_boom
 }
 
-func IsSingle(cards []int) (bool, int) {
+func IsSingle(cards []int32) (bool, int32) {
 	if len(cards) == 1 {
 		return true, GetWeight(cards[0])
 	}
 	return false, 0
 }
 
-func IsPairs(cards []int) (bool, int) {
+func IsPairs(cards []int32) (bool, int32) {
 	if len(cards) != 2 {
 		return false, 0
 	}
@@ -287,7 +304,7 @@ func IsPairs(cards []int) (bool, int) {
 		if cards[0] != cards[1] {
 			return false, 0
 		}
-		return true, GetValue(cards[0])
+		return true, GetWeight(cards[0])
 	}
 	//红5
 	if IsRedFive(cards[0]) && IsRedFive(cards[1]) {
@@ -296,7 +313,7 @@ func IsPairs(cards []int) (bool, int) {
 	return true, GetWeightWithOutRedFive(cards[1])
 }
 
-func Isthree(cards []int) (bool, int) {
+func Isthree(cards []int32) (bool, int32) {
 	if len(cards) != 3 {
 		return false, 0
 	}
@@ -311,7 +328,7 @@ func Isthree(cards []int) (bool, int) {
 	return true, GetWeightWithOutRedFive(cards[2])
 }
 
-func IsAtom(cards []int) (bool, int) {
+func IsAtom(cards []int32) (bool, int32) {
 	//必须是相同的牌
 	if len(cards) == 3 {
 		if cards[0] == cards[1] && cards[0] == cards[2] {
@@ -326,7 +343,7 @@ func IsAtom(cards []int) (bool, int) {
 	return false, 0
 }
 
-func IsBoom(cards []int) (bool, int) {
+func IsBoom(cards []int32) (bool, int32) {
 	//不能带joker
 	if len(cards) < 4 || len(cards) > 16 || IsJoker(cards[0]) {
 		return false, 0
@@ -344,7 +361,7 @@ func IsBoom(cards []int) (bool, int) {
 	return true, GetWeightWithOutRedFive(cards[len(cards)-1])
 }
 
-func IsSister(cards []int) (bool, int) {
+func IsSister(cards []int32) (bool, int32) {
 	l := len(cards)
 	if len(cards) < 8 || len(cards)%2 != 0 || IsJoker(cards[l-1]) {
 		return false, 0
@@ -377,7 +394,7 @@ func IsSister(cards []int) (bool, int) {
 	return true, GetWeightWithOutRedFive(cards[l-1])
 }
 
-func IsPlane(cards []int) (bool, int) {
+func IsPlane(cards []int32) (bool, int32) {
 	num := len(cards)
 	if num < 9 || num%3 != 0 || IsJoker(cards[num-1]) {
 		return false, 0
@@ -410,7 +427,7 @@ func IsPlane(cards []int) (bool, int) {
 	return true, GetWeightWithOutRedFive(cards[num-1])
 }
 
-func IsThreetwo(cards []int) (bool, int) {
+func IsThreetwo(cards []int32) (bool, int32) {
 	num := len(cards)
 	if num != 5 {
 		return false, 0
@@ -447,7 +464,7 @@ func IsThreetwo(cards []int) (bool, int) {
 	return false, 0
 }
 
-func GetType(cards []int) (int, int) {
+func GetType(cards []int32) (int32, int32) {
 	if b, w := IsSingle(cards); b {
 		return type_singal, w
 	}

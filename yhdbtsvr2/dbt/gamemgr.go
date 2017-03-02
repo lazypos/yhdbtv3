@@ -9,14 +9,14 @@ import (
 var GGameMgr *GameMgr = &GameMgr{}
 
 type GameMgr struct {
-	mapDesks   map[int]*DeskMgr //共有多少桌子
+	mapDesks   map[int32]*DeskMgr //共有多少桌子
 	muxDesk    sync.Mutex
 	mapPlayers map[string]*Player
 	muxPlayer  sync.Mutex
 }
 
 func (this *GameMgr) Start() {
-	this.mapDesks = make(map[int]*DeskMgr)
+	this.mapDesks = make(map[int32]*DeskMgr)
 	this.mapPlayers = make(map[string]*Player)
 }
 
@@ -31,6 +31,7 @@ func (this *GameMgr) OnConnect(remote string, conn net.Conn) *Player {
 
 func (this *GameMgr) OnLeave(remote string, p *Player) {
 	this.muxDesk.Lock()
+	p.gone = true
 	for _, desk := range this.mapDesks {
 		if !desk.IsStart {
 			for j, p := range desk.ArrPlayer {
@@ -57,8 +58,8 @@ func (this *GameMgr) GetPlayCounts(p *Player) {
 func (this *GameMgr) AddDesk(p *Player) {
 	this.muxDesk.Lock()
 	defer this.muxDesk.Unlock()
-	deskNum := -1
-	siteNum := -1
+	var deskNum int32 = -1
+	var siteNum int32 = -1
 	var pDesk *DeskMgr
 	//找一个有空位的
 	for k, desk := range this.mapDesks {

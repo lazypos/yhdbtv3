@@ -7,13 +7,14 @@ import (
 )
 
 type Player struct {
-	ArrCards []int
+	ArrCards []int32
 	Remote   string
 	Ready    bool
 	Chmsg    chan string
 	conn     net.Conn
-	RunNum   int
-	times    int
+	RunNum   int32
+	times    int32
+	gone     bool
 }
 
 func (this *Player) InitPlayer(remote string, conn net.Conn) {
@@ -21,6 +22,7 @@ func (this *Player) InitPlayer(remote string, conn net.Conn) {
 	this.Remote = remote
 	this.conn = conn
 	this.times = 0
+	this.gone = false
 	go this.SendQueue()
 }
 
@@ -36,6 +38,9 @@ func (this *Player) SendQueue() {
 			if !this.Ready {
 				this.times += 5
 			}
+			if this.gone {
+				return
+			}
 		case m := <-this.Chmsg:
 			log.Println("发送数据:", this.Remote, m)
 			SendMessage(this.conn, []byte(m))
@@ -43,8 +48,8 @@ func (this *Player) SendQueue() {
 	}
 }
 
-func (this *Player) PutCards(cards []int) (bool, int) {
-	score := 0
+func (this *Player) PutCards(cards []int32) (bool, int32) {
+	var score int32 = 0
 	for _, n := range cards {
 		score += GetCardScore(n)
 		for i, _ := range this.ArrCards {
@@ -55,7 +60,7 @@ func (this *Player) PutCards(cards []int) (bool, int) {
 		}
 	}
 
-	tmp := []int{}
+	tmp := []int32{}
 	for _, v := range this.ArrCards {
 		if v != -1 {
 			tmp = append(tmp, v)

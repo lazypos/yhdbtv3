@@ -12,11 +12,11 @@ func RecvMessage(conn net.Conn) ([]byte, error) {
 	if n != 4 || e != nil {
 		return []byte{}, e
 	}
-	var msglen int = *(*int)(unsafe.Pointer(&buf[0]))
+	var msglen int32 = *(*int32)(unsafe.Pointer(&buf[0]))
 	buf = make([]byte, msglen)
 	recvLen := 0
 	for {
-		if recvLen >= msglen {
+		if int32(recvLen) >= msglen {
 			break
 		}
 		n, e = conn.Read(buf[recvLen:])

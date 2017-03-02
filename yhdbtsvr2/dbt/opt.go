@@ -29,8 +29,8 @@ const (
 
 type Message struct {
 	Opt     string `json:"opt"`   //操作
-	DeskNum int    `json:"desk"`  //桌号
-	Site    int    `json:"site"`  //位号
+	DeskNum int32  `json:"desk"`  //桌号
+	Site    int32  `json:"site"`  //位号
 	Type    string `json:"type"`  //类型
 	Cards   string `json:"cards"` //出牌
 }

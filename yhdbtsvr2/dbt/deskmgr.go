@@ -8,24 +8,24 @@ import (
 )
 
 type DeskMgr struct {
-	DeskNum   int
+	DeskNum   int32
 	ArrPlayer [4]*Player //座位号
 	muxPlay   sync.Mutex
 	Chmsg     chan *Message //消息通道
 	IsStart   bool          //游戏是否开始
-	ForceExit int           //强制退出
-	TimeTick  int           //计时器
-	NowSite   int           //当前谁出牌
-	LastSite  int           //上一轮谁出牌
+	ForceExit int32         //强制退出
+	TimeTick  int32         //计时器
+	NowSite   int32         //当前谁出牌
+	LastSite  int32         //上一轮谁出牌
 	PerCards  string        //上一次出的牌
-	Score     int           //当前桌面分数
-	P0Score   int           //0,2号玩家得分
-	P1Score   int           //1,3号玩家得分
-	RunCounts int           //逃跑数量
-	LastCards []int         //最后出的牌
+	Score     int32         //当前桌面分数
+	P0Score   int32         //0,2号玩家得分
+	P1Score   int32         //1,3号玩家得分
+	RunCounts int32         //逃跑数量
+	LastCards []int32       //最后出的牌
 }
 
-func CreateDesk(id int) *DeskMgr {
+func CreateDesk(id int32) *DeskMgr {
 	desk := &DeskMgr{}
 	desk.DeskNum = id
 	desk.InitDesk()
@@ -56,7 +56,7 @@ func (this *DeskMgr) GameSchedule() {
 				for i, p := range this.ArrPlayer {
 					if p != nil && p.times > 60 {
 						p.AddMessage(fmt_timeout)
-						this.PlayerLeave(i)
+						this.PlayerLeave(int32(i))
 					}
 				}
 			}
@@ -76,12 +76,10 @@ func (this *DeskMgr) GameSchedule() {
 	}
 }
 
-func (this *DeskMgr) GetNextPut(site int) int {
+func (this *DeskMgr) GetNextPut(site int32) int32 {
 	for i := 1; i < 4; i++ {
-		seq := (site + i) % 4
-		if len(this.ArrPlayer[seq].ArrCards) != 0 {
-			return seq
-		}
+		seq := (site + int32(i)) % 4
+		return seq
 	}
 	return -1
 }
@@ -95,7 +93,7 @@ func (this *DeskMgr) ProcessGame(m *Message) {
 		//又是同一个了，必须出
 		must := 0
 		if next == this.LastSite {
-			this.LastCards = []int{}
+			this.LastCards = []int32{}
 			must = 1
 			//某家得分
 			if this.LastSite%2 == 0 {
@@ -108,7 +106,16 @@ func (this *DeskMgr) ProcessGame(m *Message) {
 			if this.ArrPlayer[next].RunNum != -1 {
 				next = (next + 2) % 4
 			}
+		} else {
+			for i := 0; i < 4; i++ {
+				if this.ArrPlayer[next].RunNum != -1 {
+					next = this.GetNextPut(next)
+				} else {
+					break
+				}
+			}
 		}
+
 		for _, p := range this.ArrPlayer {
 			p.AddMessage(fmt.Sprintf(fmt_game_put, m.Site, "", len(p.ArrCards), this.Score, next, must))
 			if must == 1 {
@@ -116,7 +123,7 @@ func (this *DeskMgr) ProcessGame(m *Message) {
 			}
 		}
 	} else { //出牌
-		nowCards := StringToIntArr(m.Cards)
+		nowCards := StringToint32Arr(m.Cards)
 		if !IsBigger(this.LastCards, nowCards) {
 			this.ArrPlayer[m.Site].AddMessage(fmt_error)
 			return
@@ -131,13 +138,20 @@ func (this *DeskMgr) ProcessGame(m *Message) {
 				this.RunCounts++
 			}
 			this.Score += score
+			for i := 0; i < 4; i++ {
+				if this.ArrPlayer[next].RunNum != -1 {
+					next = this.GetNextPut(next)
+				} else {
+					break
+				}
+			}
 			for _, p := range this.ArrPlayer {
 				p.AddMessage(fmt.Sprintf(fmt_game_put, m.Site, m.Cards, len(p.ArrCards), this.Score, next, 0))
 			}
 			this.NowSite = next
 		}
 	}
-	run := []int{-1, -1, -1, -1}
+	run := []int32{-1, -1, -1, -1}
 	for i := 0; i < 4; i++ {
 		run[i] = this.ArrPlayer[i].RunNum
 	}
@@ -151,7 +165,7 @@ func (this *DeskMgr) PostMsg(m *Message) {
 }
 
 //游戏开始
-func (this *DeskMgr) PlayerReady(site int) {
+func (this *DeskMgr) PlayerReady(site int32) {
 	this.muxPlay.Lock()
 	this.muxPlay.Unlock()
 	this.ArrPlayer[site].Ready = true
@@ -164,18 +178,18 @@ func (this *DeskMgr) PlayerReady(site int) {
 		this.P0Score = 0
 		this.P1Score = 0
 		this.RunCounts = 0
-		this.LastCards = []int{}
+		this.LastCards = []int32{}
 		for _, p := range this.ArrPlayer {
 			p.RunNum = -1
 		}
-		arrCards, arrCardsInt := Create4Cards()
+		arrCards, arrCardsint32 := Create4Cards()
 		for i, p := range this.ArrPlayer {
-			this.ArrPlayer[i].ArrCards = arrCardsInt[i]
+			this.ArrPlayer[i].ArrCards = arrCardsint32[i]
 			p.AddMessage(fmt.Sprintf(fmt_start, arrCards[i]))
 		}
 		put := GRand.Intn(3)
-		this.NowSite = put
-		this.LastSite = put
+		this.NowSite = int32(put)
+		this.LastSite = int32(put)
 		for _, p := range this.ArrPlayer {
 			p.AddMessage(fmt.Sprintf(fmt_game_put, -1, "", 54, 0, put, 1))
 		}
@@ -196,16 +210,16 @@ func (this *DeskMgr) IsAllReady() bool {
 	return true
 }
 
-func (this *DeskMgr) PlayerRun(site int, name string) {
+func (this *DeskMgr) PlayerRun(site int32, name string) {
 	for _, p := range this.ArrPlayer {
 		if p != nil {
 			p.AddMessage(fmt.Sprintf(fmt_run, site, name))
 		}
 	}
-	this.GameOver(true, []int{})
+	this.GameOver(true, []int32{})
 }
 
-func (this *DeskMgr) GameOver(run bool, arrRst []int) {
+func (this *DeskMgr) GameOver(run bool, arrRst []int32) {
 	this.IsStart = false
 	for _, p := range this.ArrPlayer {
 		if p != nil {
@@ -223,23 +237,25 @@ func (this *DeskMgr) GameOver(run bool, arrRst []int) {
 	}
 }
 
-func (this *DeskMgr) AddDesk(p *Player) int {
+func (this *DeskMgr) AddDesk(p *Player) int32 {
 	this.muxPlay.Lock()
 	this.muxPlay.Unlock()
 	for i := 0; i < 4; i++ {
 		if this.ArrPlayer[i] == nil {
 			this.ArrPlayer[i] = p
 			p.times = 0
-			return i
+			return int32(i)
 		}
 	}
 	return -1
 }
 
-func (this *DeskMgr) PlayerLeave(site int) {
+func (this *DeskMgr) PlayerLeave(site int32) {
 	this.muxPlay.Lock()
 	this.muxPlay.Unlock()
-
+	if this.ArrPlayer[site] == nil {
+		return
+	}
 	name := this.ArrPlayer[site].Remote
 	this.ArrPlayer[site] = nil
 	//还没开始游戏
@@ -254,7 +270,7 @@ func (this *DeskMgr) PlayerLeave(site int) {
 func (this *DeskMgr) BroadDeskInfo() {
 	type DeskInfo struct {
 		name  string
-		ready int
+		ready int32
 	}
 	//集中消息
 	arrDeskInfo := [4]*DeskInfo{}

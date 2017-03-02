@@ -145,7 +145,7 @@ bool CDeskScene::init()
 	ptr1->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
 	ptr1->_surplus->setPosition(Vec2(visibleSize.width - 135,
 		userInfo1->getPosition().y));
-	ptr1->_surplus->setColor(Color3B::BLACK);
+	ptr1->_surplus->setColor(Color3B::WHITE);
 	this->addChild(ptr1->_surplus);
 	ptr1->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
 	ptr1->_time->setPosition(Vec2(visibleSize.width / 2 + 260, 600));
@@ -182,7 +182,7 @@ bool CDeskScene::init()
 	ptr2->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
 	ptr2->_surplus->setPosition(Vec2(visibleSize.width /2 - 35,
 		userInfo3->getPosition().y));
-	ptr2->_surplus->setColor(Color3B::BLACK);
+	ptr2->_surplus->setColor(Color3B::WHITE);
 	this->addChild(ptr2->_surplus);
 	ptr2->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
 	ptr2->_time->setPosition(Vec2(visibleSize.width / 2 + 140,
@@ -220,7 +220,7 @@ bool CDeskScene::init()
 	ptr3->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
 	ptr3->_surplus->setPosition(Vec2(70,
 		userInfo1->getPosition().y));
-	ptr3->_surplus->setColor(Color3B::BLACK);
+	ptr3->_surplus->setColor(Color3B::WHITE);
 	this->addChild(ptr3->_surplus);
 	ptr3->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
 	ptr3->_time->setPosition(Vec2(visibleSize.width / 2 - 280, 600));
@@ -353,11 +353,11 @@ void CDeskScene::deskSchedule(float dt)
 			if (ptr->arrPlayInfo[i].name.empty())
 				clearDesk(i);
 			if (ptr->arrPlayInfo[i].ready == 1)
-				if (!_mapPlayers[i]->_ready->isVisible())
-					_mapPlayers[i]->_ready->setVisible(true);
+				//if (!_mapPlayers[i]->_ready->isVisible())
+				_mapPlayers[i]->_ready->setVisible(true);
 			else
-				if (_mapPlayers[i]->_ready->isVisible())
-					_mapPlayers[i]->_ready->setVisible(false);
+				//if (_mapPlayers[i]->_ready->isVisible())
+				_mapPlayers[i]->_ready->setVisible(false);
 		}
 	}
 	//开始
@@ -553,6 +553,7 @@ void CDeskScene::clearDesk(int siteid)
 			ptr->_buchu->setVisible(false);
 			for (size_t i = 0; i < ptr->perCards.size(); i++)
 				this->removeChild(ptr->perCards[i]);
+			ptr->perCards.clear();
 		}
 	}
 	else {
@@ -605,8 +606,15 @@ void CDeskScene::nowPutCards(msgptr ptr)
 	nowptr->_time->setVisible(true);
 	//自己
 	if (_nowPut == _seatNum){
-		if (ptr->must) 
+		if (ptr->must) {
 			_vecPerCards.clear();
+			for (int i = 0; i < 4; i++) {
+				playerPtr ptr = _mapPlayers[i];
+				for (size_t i = 0; i < ptr->perCards.size(); i++)
+					this->removeChild(ptr->perCards[i]);
+				ptr->perCards.clear();
+			}
+		}
 		else
 			_btNoput->setVisible(true);
 		_btPut->setVisible(true);
