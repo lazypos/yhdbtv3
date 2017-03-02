@@ -144,7 +144,7 @@ bool CDeskScene::init()
 	this->addChild(ptr1->_nickName,3);
 	ptr1->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
 	ptr1->_surplus->setPosition(Vec2(visibleSize.width - 135,
-		userInfo1->getPosition().y));
+		userInfo1->getPosition().y-15));
 	ptr1->_surplus->setColor(Color3B::WHITE);
 	this->addChild(ptr1->_surplus);
 	ptr1->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
@@ -181,7 +181,7 @@ bool CDeskScene::init()
 	this->addChild(ptr2->_nickName,3);
 	ptr2->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
 	ptr2->_surplus->setPosition(Vec2(visibleSize.width /2 - 35,
-		userInfo3->getPosition().y));
+		userInfo3->getPosition().y - 15));
 	ptr2->_surplus->setColor(Color3B::WHITE);
 	this->addChild(ptr2->_surplus);
 	ptr2->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
@@ -219,7 +219,7 @@ bool CDeskScene::init()
 	this->addChild(ptr3->_nickName,3);
 	ptr3->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
 	ptr3->_surplus->setPosition(Vec2(70,
-		userInfo1->getPosition().y));
+		userInfo1->getPosition().y - 15));
 	ptr3->_surplus->setColor(Color3B::WHITE);
 	this->addChild(ptr3->_surplus);
 	ptr3->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
@@ -388,8 +388,13 @@ void CDeskScene::deskSchedule(float dt)
 	if (ptr && ptr->opt == "over") {
 		ostringstream os;
 		for (int i = 0; i < 4; i++)
-			os << ptr->arrPlayInfo[i].name << ":" << ptr->arrPlayInfo[i].result << "\r\n";
-		MessageBox(os.str().c_str(),"游戏结束");
+			os << i << ":" << ptr->arrPlayInfo[i].result << "\r\n";
+		if (ptr->arrPlayInfo[_seatNum].result > 0)
+			MessageBox(os.str().c_str(),"游戏结束，你赢了！");
+		if (ptr->arrPlayInfo[_seatNum].result < 0)
+			MessageBox(os.str().c_str(), "游戏结束，你输了！");
+		if (ptr->arrPlayInfo[_seatNum].result == 0)
+			MessageBox(os.str().c_str(), "游戏结束，平局！");
 		gameOver();
 	}
 	//主流程

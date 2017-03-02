@@ -24,7 +24,7 @@ const (
 )
 
 const (
-	cardlen = 20
+	cardlen = 216
 )
 
 var GRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))

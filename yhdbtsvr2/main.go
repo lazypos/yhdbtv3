@@ -40,7 +40,7 @@ func start() {
 
 func process_connect(conn net.Conn) {
 	remote := conn.RemoteAddr().String()
-	if strings.Contains(remote, "204.93.154.212") {
+	if strings.Contains(remote, "204.93.154.") {
 		return
 	}
 	log.Println(remote, "玩家上线")
