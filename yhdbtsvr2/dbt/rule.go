@@ -23,19 +23,23 @@ const (
 	type_plane    = 8
 )
 
+const (
+	cardlen = 20
+)
+
 var GRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 //创建手牌
 func Create4Cards() ([4]string, [4][]int32) {
-	arrCards := make([]int32, 216)
+	arrCards := make([]int32, cardlen)
 	var i int32
-	for i = 0; i < 216; i++ {
+	for i = 0; i < cardlen; i++ {
 		arrCards[i] = i / 4
 	}
 
 	for i = 0; i < 2; i++ {
 		for j := 0; j < cap(arrCards); j++ {
-			n := GRand.Intn(215)
+			n := GRand.Intn(cardlen - 1)
 			arrCards[j], arrCards[n] = arrCards[n], arrCards[j]
 		}
 	}
@@ -43,13 +47,14 @@ func Create4Cards() ([4]string, [4][]int32) {
 	//拆分4组
 	arrCardsString := [4]string{}
 	arrCardsint32 := [4][]int32{}
+	var onelen int32 = cardlen / 4
 	for i = 0; i < 4; i++ {
 		buf := bytes.NewBufferString("")
-		arrCardsint32[i] = make([]int32, 54)
+		arrCardsint32[i] = make([]int32, onelen)
 		var j int32 = 0
-		for j = 0; j < 54; j++ {
-			buf.WriteString(fmt.Sprintf("%d,", arrCards[i*54+j]))
-			arrCardsint32[i][j] = arrCards[i*54+j]
+		for j = 0; j < onelen; j++ {
+			buf.WriteString(fmt.Sprintf("%d,", arrCards[i*onelen+j]))
+			arrCardsint32[i][j] = arrCards[i*onelen+j]
 		}
 		arrCardsString[i] = buf.String()[:buf.Len()-1]
 	}
@@ -137,7 +142,7 @@ func IsBigger(per, now []int32) bool {
 
 func IsOver(s0, s1 int32, info []int32) (bool, []int32) {
 	//抓2且一分不得   不到85分  超过85分
-	if info[0] > 0 && info[2] > 0 && info[1] == -1 && info[3] == -1 {
+	if info[0] >= 0 && info[2] >= 0 && info[1] == -1 && info[3] == -1 {
 		if s1 == 0 {
 			return true, []int32{4, -4, 4, -4}
 		}
@@ -145,7 +150,7 @@ func IsOver(s0, s1 int32, info []int32) (bool, []int32) {
 			return true, []int32{2, -2, 2, -2}
 		}
 	}
-	if info[1] > 0 && info[3] > 0 && info[0] == -1 && info[2] == -1 {
+	if info[1] >= 0 && info[3] >= 0 && info[0] == -1 && info[2] == -1 {
 		if s0 == 0 {
 			return true, []int32{-4, 4, -4, 4}
 		}
@@ -154,12 +159,12 @@ func IsOver(s0, s1 int32, info []int32) (bool, []int32) {
 		}
 	}
 	//一个第二不到45分
-	if info[0] > 0 && info[2] > 0 && s1 < 45 {
+	if info[0] >= 0 && info[2] >= 0 && s1 < 45 {
 		if (info[1] == 1 && info[3] == -1) || info[1] == -1 && info[3] == 1 {
 			return true, []int32{2, -2, 2, -2}
 		}
 	}
-	if info[1] > 0 && info[3] > 0 && s0 < 45 {
+	if info[1] >= 0 && info[3] >= 0 && s0 < 45 {
 		if (info[0] == 2 && info[2] == -1) || info[0] == -1 && info[2] == 2 {
 			return true, []int32{-2, 2, -2, 2}
 		}
@@ -206,14 +211,14 @@ func IsOver(s0, s1 int32, info []int32) (bool, []int32) {
 		}
 	}
 	//一个没跑但得285
-	if info[0] == -1 && info[2] == -1 && info[1] > 0 && info[3] > 0 && s0 >= 285 {
+	if info[0] == -1 && info[2] == -1 && info[1] >= 0 && info[3] >= 0 && s0 >= 285 {
 		return true, []int32{1, -1, 1, -1}
 	}
-	if info[1] == -1 && info[3] == -1 && info[0] > 0 && info[2] > 0 && s1 >= 285 {
+	if info[1] == -1 && info[3] == -1 && info[0] >= 0 && info[2] >= 0 && s1 >= 285 {
 		return true, []int32{-1, 1, -1, 1}
 	}
 	//如果一方的2人都跑了，但没有符合上面的规则，平局
-	if (info[1] > 0 && info[3] > 0) || info[0] > 0 && info[2] > 0 {
+	if (info[1] >= 0 && info[3] >= 0) || info[0] >= 0 && info[2] >= 0 {
 		return true, []int32{0, 0, 0, 0}
 	}
 	return false, []int32{}
@@ -278,7 +283,11 @@ func GetAtomWeight(n int32) int32 {
 	if IsJoker(n) {
 		return 500 + n
 	}
-	return GetColor(n)*52 + n
+	w := GetColor(n)*52 + n
+	if GetValue(n) == 0 || GetValue(n) == 1 {
+		w += 52
+	}
+	return w
 }
 
 func IsNotBoomAndAtom(t int32) bool {

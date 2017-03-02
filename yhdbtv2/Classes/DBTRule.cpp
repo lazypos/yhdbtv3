@@ -50,7 +50,11 @@ int CDBTRule::getAtomWeight(int card)
 		return 1000;
 	if (isJoker(card))
 		return 500 + card;
-	return getColor(card) * 52 + card;
+
+	int w = getColor(card) * 52 + card;
+	if (getValue(card) == 0 || getValue(card) == 1)
+		w += 52;
+	return w;
 }
 
 int CDBTRule::getWeightNoRedFive(int card)

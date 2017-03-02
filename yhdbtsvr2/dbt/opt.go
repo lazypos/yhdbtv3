@@ -16,7 +16,7 @@ const (
 					{"site":"3","name":"%s","ready":"%d"}]}`
 	fmt_start = `{"opt":"start","cards":"%s"}`
 	fmt_run   = `{"opt":"run","site":"%d","name":"%s"}`
-	fmt_over  = `{"opt":"over","info"::[
+	fmt_over  = `{"opt":"over","info":[
                     {"site":"0","name":"%s","result":"%d"},
                     {"site":"1","name":"%s","result":"%d"},
                     {"site":"2","name":"%s","result":"%d"},

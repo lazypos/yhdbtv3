@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strings"
 )
 
 func initlog() {
@@ -16,7 +17,7 @@ func initlog() {
 	}
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	log.Println(h)
-	log.SetOutput(h)
+	//log.SetOutput(h)
 }
 
 func start() {
@@ -39,6 +40,9 @@ func start() {
 
 func process_connect(conn net.Conn) {
 	remote := conn.RemoteAddr().String()
+	if strings.Contains(remote, "204.93.154.212") {
+		return
+	}
 	log.Println(remote, "玩家上线")
 	play := dbt.GGameMgr.OnConnect(remote, conn)
 	defer func() {

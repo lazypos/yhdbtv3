@@ -13,6 +13,9 @@ func RecvMessage(conn net.Conn) ([]byte, error) {
 		return []byte{}, e
 	}
 	var msglen int32 = *(*int32)(unsafe.Pointer(&buf[0]))
+	if msglen > 200 {
+		return []byte{}, fmt.Errorf("recv error")
+	}
 	buf = make([]byte, msglen)
 	recvLen := 0
 	for {

@@ -604,16 +604,20 @@ void CDeskScene::nowPutCards(msgptr ptr)
 	_nowPut = ptr->now;
 	nowptr->_time->setString("30");
 	nowptr->_time->setVisible(true);
+
+	if (ptr->must) {
+		for (int i = 0; i < 4; i++) {
+			playerPtr ptr = _mapPlayers[i];
+			ptr->_buchu->setVisible(false);
+			for (size_t i = 0; i < ptr->perCards.size(); i++)
+				this->removeChild(ptr->perCards[i]);
+			ptr->perCards.clear();
+		}
+	}
 	//×Ô¼º
 	if (_nowPut == _seatNum){
 		if (ptr->must) {
 			_vecPerCards.clear();
-			for (int i = 0; i < 4; i++) {
-				playerPtr ptr = _mapPlayers[i];
-				for (size_t i = 0; i < ptr->perCards.size(); i++)
-					this->removeChild(ptr->perCards[i]);
-				ptr->perCards.clear();
-			}
 		}
 		else
 			_btNoput->setVisible(true);

@@ -110,6 +110,21 @@ func (this *DeskMgr) ProcessGame(m *Message) {
 			for i := 0; i < 4; i++ {
 				if this.ArrPlayer[next].RunNum != -1 {
 					next = this.GetNextPut(next)
+					if next == this.LastSite {
+						this.LastCards = []int32{}
+						must = 1
+						//某家得分
+						if this.LastSite%2 == 0 {
+							this.P0Score += this.Score
+						} else {
+							this.P1Score += this.Score
+						}
+						this.Score = 0
+						//如果出完了，对家出
+						if this.ArrPlayer[next].RunNum != -1 {
+							next = (next + 2) % 4
+						}
+					}
 				} else {
 					break
 				}
@@ -117,7 +132,7 @@ func (this *DeskMgr) ProcessGame(m *Message) {
 		}
 
 		for _, p := range this.ArrPlayer {
-			p.AddMessage(fmt.Sprintf(fmt_game_put, m.Site, "", len(p.ArrCards), this.Score, next, must))
+			p.AddMessage(fmt.Sprintf(fmt_game_put, m.Site, "", len(this.ArrPlayer[m.Site].ArrCards), this.Score, next, must))
 			if must == 1 {
 				p.AddMessage(fmt.Sprintf(fmt_score, this.P0Score, this.P1Score))
 			}
@@ -129,12 +144,14 @@ func (this *DeskMgr) ProcessGame(m *Message) {
 			return
 		}
 		this.LastSite = m.Site
+		log.Println("last put:", this.LastSite)
 		ok, score := this.ArrPlayer[m.Site].PutCards(nowCards)
 		if ok {
 			//跑一个
 			this.LastCards = nowCards
 			if len(this.ArrPlayer[m.Site].ArrCards) == 0 {
 				this.ArrPlayer[m.Site].RunNum = this.RunCounts
+				log.Println(m.Site, "over")
 				this.RunCounts++
 			}
 			this.Score += score
@@ -146,7 +163,7 @@ func (this *DeskMgr) ProcessGame(m *Message) {
 				}
 			}
 			for _, p := range this.ArrPlayer {
-				p.AddMessage(fmt.Sprintf(fmt_game_put, m.Site, m.Cards, len(p.ArrCards), this.Score, next, 0))
+				p.AddMessage(fmt.Sprintf(fmt_game_put, m.Site, m.Cards, len(this.ArrPlayer[m.Site].ArrCards), this.Score, next, 0))
 			}
 			this.NowSite = next
 		}
