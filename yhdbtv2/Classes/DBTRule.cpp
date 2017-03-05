@@ -215,20 +215,20 @@ pair<bool, int> CDBTRule::isThreetwo(const std::vector<int>& cards)
 		if (getValue(cards[3]) != getValue(cards[4]))
 			return pair<bool, int>(false, 0);
 		//joker必须相等
-		if (isJoker(cards[3]) && cards[3] != cards[4])
+		/*if (isJoker(cards[3]) && cards[3] != cards[4])
 			return pair<bool, int>(false, 0);
 		if (isJoker(cards[0]) && (cards[0] != cards[1] || cards[0] != cards[2]))
-			return pair<bool, int>(false, 0);
+			return pair<bool, int>(false, 0);*/
 		return pair<bool, int>(true, getWeightNoRedFive(cards[2]));
 	}
 	//BBAAA
 	if (getValue(cards[2]) == getValue(cards[3]) && getValue(cards[2]) == getValue(cards[4])){
 		if (getValue(cards[0]) != getValue(cards[1]))
 			return pair<bool, int>(false, 0);
-		if (isJoker(cards[0]) && cards[0] != cards[1])
+		/*if (isJoker(cards[0]) && cards[0] != cards[1])
 			return pair<bool, int>(false, 0);
 		if (isJoker(cards[2]) && (cards[2] != cards[3] || cards[2] != cards[4]))
-			return pair<bool, int>(false, 0);
+			return pair<bool, int>(false, 0);*/
 		return pair<bool, int>(true, getWeightNoRedFive(cards[4]));
 	}
 	return pair<bool, int>(false, 0);

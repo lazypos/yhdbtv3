@@ -32,6 +32,11 @@ bool CDeskScene::init()
         return false;
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Sprite* bj = Sprite::create();
+	bj->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("beijing"));
+	bj->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	this->addChild(bj, -1);
+
 	//·µ»Ø°´Å¥
 	_btReturn = ui::Button::create("return.png", "return_press.png", "return_press.png");
 	_btReturn->setPosition(Vec2(visibleSize.width - _btReturn->getContentSize().width / 2, 

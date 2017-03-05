@@ -110,5 +110,8 @@ void CResourceManager::loadDeskResource()
 	SpriteFrameCache::getInstance()->addSpriteFrame(button, "putbtn");
 	button = SpriteFrame::create("zhunbei.png", Rect(0, 0, 70, 35));
 	SpriteFrameCache::getInstance()->addSpriteFrame(button, "zhunbei");
+	//±³¾°
+	button = SpriteFrame::create("bj.png", Rect(0, 0, 1024, 768));
+	SpriteFrameCache::getInstance()->addSpriteFrame(button, "beijing");
 
 }

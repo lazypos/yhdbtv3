@@ -23,6 +23,11 @@ bool CHallScene::init()
         return false;
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Sprite* bj = Sprite::create();
+	bj->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("beijing"));
+	bj->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	this->addChild(bj,-1);
+
 
 	//¼ÓÈë°´Å¥ 
 	_btFastAdd = ui::Button::create("add_desk_fast.png", "add_desk_fast_press.png", "add_desk_fast_press.png");
