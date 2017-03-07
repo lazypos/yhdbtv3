@@ -110,6 +110,11 @@ void CMessageQueue::threadWork()
 		ptr->opt = opt;
 		if (opt == "query"){
 			ptr->online = doc["online"].GetString();
+			ptr->version = doc["version"].GetString();
+			if (ptr->version != "26") {
+				MessageBox("版本过低，请前往 http://www.yhdbt.pw 下载新版客户端!", "错误");
+				exit(0);
+			}
 		}else if (opt == "add"){
 			ptr->desk = atoi(doc["desk"].GetString());
 			ptr->site = atoi(doc["site"].GetString());

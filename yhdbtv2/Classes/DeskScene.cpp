@@ -49,12 +49,14 @@ bool CDeskScene::init()
 	_btPut->addTouchEventListener(CC_CALLBACK_2(CDeskScene::onPut, this));
 	_btPut->setScale(float(0.8));
 	_btPut->setVisible(false);
+	_btPut->setEnabled(true);
 	this->addChild(_btPut,2);
 	_btNoput = ui::Button::create("noput.png", "noput_press.png", "noput_press.png");
 	_btNoput->setPosition(Vec2(visibleSize.width / 2 + 100, 170));
 	_btNoput->addTouchEventListener(CC_CALLBACK_2(CDeskScene::onNoput, this));
 	_btNoput->setScale(float(0.8));
 	_btNoput->setVisible(false);
+	_btNoput->setEnabled(true);
 	this->addChild(_btNoput,2);
 	_btReady = ui::Button::create("ready.png", "ready_press.png", "ready_press.png");
 	_btReady->setPosition(Vec2(visibleSize.width / 2, 170));
@@ -268,6 +270,7 @@ void CDeskScene::onReady(Ref *pSender, ui::Widget::TouchEventType type)
 {
 	if (type == ui::Widget::TouchEventType::ENDED) {
 		_btReady->setVisible(false);
+		_btReady->setEnabled(false);
 		_mapPlayers[_seatNum]->_ready->setVisible(true);
 		ostringstream os;
 		os << "{\"opt\":\"change\",\"type\":\"ready\",\"desk\":" << _deskNum << ",\"site\":" << _seatNum << "}";
@@ -299,6 +302,8 @@ void CDeskScene::onNoput(Ref *pSender, ui::Widget::TouchEventType type)
 		//一定要出
 		if (_vecPerCards.empty())
 			return;
+		_btNoput->setEnabled(false);
+		_btPut->setEnabled(false);
 		_btPut->setVisible(false);
 		_btNoput->setVisible(false);
 		ostringstream os;
@@ -316,6 +321,8 @@ void CDeskScene::onPut(Ref *pSender, ui::Widget::TouchEventType type)
 		if (!nowCards.empty() && CDBTRule::isBigger(_vecPerCards, nowCards)){
 			_btPut->setVisible(false);
 			_btNoput->setVisible(false);
+			_btNoput->setEnabled(false);
+			_btPut->setEnabled(false);
 			_vecPerCards = nowCards;
 			//整理手牌
 			for (const auto&it : nowCards){
@@ -534,6 +541,7 @@ void CDeskScene::gameOver()
 	clearDesk(_seatNum);
 	_nowPut = -1;
 	_btReady->setVisible(true);
+	_btReady->setEnabled(true);
 }
 
 void CDeskScene::gameSatrt()
@@ -629,8 +637,11 @@ void CDeskScene::nowPutCards(msgptr ptr)
 		if (ptr->must) {
 			_vecPerCards.clear();
 		}
-		else
+		else {
 			_btNoput->setVisible(true);
+			_btNoput->setEnabled(true);
+		}
 		_btPut->setVisible(true);
+		_btPut->setEnabled(true);
 	}
 }

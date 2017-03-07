@@ -32,6 +32,7 @@ typedef struct stMsg {
 	int must = 0;
 	string p0score;
 	string p1score;
+	string version;
 	stplayinfo arrPlayInfo[4];
 }stmsg;
 typedef shared_ptr<stmsg> msgptr;

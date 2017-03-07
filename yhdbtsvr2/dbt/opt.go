@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	fmt_query  = `{"opt":"query","online":"%d"}`
+	fmt_query  = `{"opt":"query","online":"%d","version":"26"}`
 	fmt_add    = `{"opt":"add","desk":"%d","site":"%d","name":"%s"}`
 	fmt_change = `{"opt":"change","info":[
 					{"site":"0","name":"%s","ready":"%d"},

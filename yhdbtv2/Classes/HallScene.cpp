@@ -33,6 +33,7 @@ bool CHallScene::init()
 	_btFastAdd = ui::Button::create("add_desk_fast.png", "add_desk_fast_press.png", "add_desk_fast_press.png");
 	_btFastAdd->setPosition(Vec2(visibleSize.width/2, visibleSize.height / 2));
 	_btFastAdd->addTouchEventListener(CC_CALLBACK_2(CHallScene::OnFastAddDesk, this));
+	_btFastAdd->setEnabled(true);
 	this->addChild(_btFastAdd);
 
 	//当前在线人数
@@ -48,9 +49,11 @@ bool CHallScene::init()
 }
 
 void CHallScene::OnFastAddDesk(Ref *pSender, ui::Widget::TouchEventType type)
-{
-	if (type == ui::Widget::TouchEventType::ENDED)
+{	
+	if (type == ui::Widget::TouchEventType::ENDED) {
+		_btFastAdd->setEnabled(false);
 		messageQueue::instance()->sendMessage("{\"opt\":\"add\"}");
+	}
 }
 
 
