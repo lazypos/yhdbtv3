@@ -108,6 +108,9 @@ pair<bool, int> CDBTRule::isthree(const std::vector<int>& cards)
 	//花色必须不一样
 	if (getColor(cards[0]) == getColor(cards[1]) && getColor(cards[0]) == getColor(cards[2]))
 		return pair<bool, int>(false, 0);
+	//不能有Joker
+	if (isJoker(cards[0]))
+		return pair<bool, int>(false, 0);
 	return pair<bool, int>(true, getWeightNoRedFive(cards[2]));
 }
 

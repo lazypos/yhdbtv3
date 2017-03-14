@@ -79,6 +79,7 @@ func (this *GameMgr) AddDesk(p *Player) {
 		this.mapDesks[deskNum] = pDesk
 		siteNum = pDesk.AddDesk(p)
 	}
+	p.Ready = false
 	p.AddMessage(fmt.Sprintf(fmt_add, deskNum, siteNum, p.Remote))
 
 	//广播信息

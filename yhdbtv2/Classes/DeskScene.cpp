@@ -31,6 +31,7 @@ bool CDeskScene::init()
     if (!Layer::init())
         return false;
 
+	_vecPlayers.clear();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Sprite* bj = Sprite::create();
 	bj->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("beijing"));
@@ -473,7 +474,7 @@ void CDeskScene::getSelectCardList(vector<int>& vec, vector<int>& pos)
 	vec.clear();
 	int i = 0;
 	for (const auto &it : _lstCards) {
-		if (it->getSelect()) {
+		if (it->getPosition().y == 70) {
 			pos.emplace_back(i);
 			vec.emplace_back(it->getSeq());
 		}
@@ -520,7 +521,7 @@ void CDeskScene::onTouchMoved(Touch *touch, Event *event)
 			//·ÀÖ¹Í¬Ò»ÕÅÅÆ²ü¶¶
 			if (card != _card_select_per) {
 				_card_select_per = card;
-				if (card->getSelect()) {
+				if (card->getPosition().y == 70) {
 					card->setSelect(false);
 					card->setPosition(Vec2(card->getPositionX(), 45));
 				}

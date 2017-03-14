@@ -5,9 +5,9 @@
     <key>data</key>
     <dict>
         <key>title</key>
-        <string>余杭大板同 v2.1</string>
-	<key>hallinfo</key>
-        <string>当前游戏人数:</string>
+        <string>余杭大板同 v2.8</string>
+	<key>host</key>
+        <string>115.159.183.134</string>
     </dict>
     <key>metadata</key>
     <dict>

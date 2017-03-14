@@ -43,7 +43,11 @@ func (this *Player) SendQueue() {
 			}
 		case m := <-this.Chmsg:
 			log.Println("发送数据:", this.Remote, m)
-			SendMessage(this.conn, []byte(m))
+			err := SendMessage(this.conn, []byte(m))
+			if err != nil {
+				log.Println("发送数据错误:", this.Remote, m)
+				this.conn.Close()
+			}
 		}
 	}
 }

@@ -334,6 +334,10 @@ func Isthree(cards []int32) (bool, int32) {
 	if GetColor(cards[0]) == GetColor(cards[1]) && GetColor(cards[0]) == GetColor(cards[2]) {
 		return false, 0
 	}
+	//不能joker
+	if IsJoker(cards[0]) {
+		return false, 0
+	}
 	return true, GetWeightWithOutRedFive(cards[2])
 }
 
@@ -449,12 +453,6 @@ func IsThreetwo(cards []int32) (bool, int32) {
 		if GetValue(cards[3]) != GetValue(cards[4]) {
 			return false, 0
 		}
-		// if IsJoker(cards[3]) && cards[3] != cards[4] {
-		// 	return false, 0
-		// }
-		// if IsJoker(cards[0]) && (cards[0] != cards[1] || cards[0] != cards[2]) {
-		// 	return false, 0
-		// }
 		return true, GetWeightWithOutRedFive(cards[2])
 	}
 	//AABBB
@@ -462,12 +460,6 @@ func IsThreetwo(cards []int32) (bool, int32) {
 		if GetValue(cards[0]) != GetValue(cards[1]) {
 			return false, 0
 		}
-		// if IsJoker(cards[0]) && cards[0] != cards[1] {
-		// 	return false, 0
-		// }
-		// if IsJoker(cards[2]) && (cards[2] != cards[3] || cards[2] != cards[4]) {
-		// 	return false, 0
-		// }
 		return true, GetWeightWithOutRedFive(cards[4])
 	}
 	return false, 0
