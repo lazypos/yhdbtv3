@@ -6,6 +6,8 @@
 #include "DeskScene.h"
 #include "MessageQueue.h"
 #include "CommonFunction.h"
+#include <SimpleAudioEngine.h>
+using namespace CocosDenshion;
 
 USING_NS_CC;
 
@@ -21,6 +23,8 @@ bool CHallScene::init()
 {
     if (!Layer::init())
         return false;
+
+	SimpleAudioEngine::getInstance()->playBackgroundMusic("sound/bj.mp3", true);
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Sprite* bj = Sprite::create();

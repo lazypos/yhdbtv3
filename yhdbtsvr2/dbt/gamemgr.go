@@ -58,7 +58,7 @@ func (this *GameMgr) GetPlayCounts(p *Player) {
 func (this *GameMgr) AddDesk(p *Player) {
 	this.muxDesk.Lock()
 	defer this.muxDesk.Unlock()
-	var deskNum int32 = -1
+	var deskNum int32 = (int32)(len(this.mapDesks))
 	var siteNum int32 = -1
 	var pDesk *DeskMgr
 	//找一个有空位的

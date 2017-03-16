@@ -1,6 +1,8 @@
 #include "ResourceManager.h"
 #include <array>
 #include <sstream>
+#include <SimpleAudioEngine.h>
+using namespace CocosDenshion;
 
 CResourceManager::CResourceManager()
 {
@@ -16,6 +18,7 @@ void CResourceManager::loadResource()
 	loadCardResource();
 	loadLoginResource();
 	loadDeskResource();
+	loadSoundResource();
 }
 
 void CResourceManager::loadCardResource()
@@ -114,4 +117,12 @@ void CResourceManager::loadDeskResource()
 	button = SpriteFrame::create("bj.png", Rect(0, 0, 1024, 768));
 	SpriteFrameCache::getInstance()->addSpriteFrame(button, "beijing");
 
+}
+
+void CResourceManager::loadSoundResource()
+{
+	auto audioengine = SimpleAudioEngine::getInstance();
+	audioengine->preloadBackgroundMusic("sound/bj.mp3");
+	audioengine->preloadEffect("sound/3.mp3");
+	audioengine->preloadEffect("sound/cp.wav");
 }

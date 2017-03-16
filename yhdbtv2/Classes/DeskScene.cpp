@@ -6,6 +6,8 @@
 #include "HallScene.h"
 #include "DBTRule.h"
 #include "CommonFunction.h"
+#include <SimpleAudioEngine.h>
+using namespace CocosDenshion;
 
 USING_NS_CC;
 
@@ -93,7 +95,7 @@ bool CDeskScene::init()
 	score->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("score"));
 	score->setPosition(Vec2(score->getContentSize().width / 2, visibleSize.height - score->getContentSize().height / 2));
 	this->addChild(score);
-	_labelDeskNum = Label::createWithTTF("0", "fonts/arial.ttf", 20);
+	_labelDeskNum = Label::createWithTTF("desk:"+to_string(_deskNum), "fonts/arial.ttf", 20);
 	_labelDeskNum->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	this->addChild(_labelDeskNum);
 	_labelWeScore = Label::createWithTTF("0", "fonts/arial.ttf", 25);
@@ -319,7 +321,10 @@ void CDeskScene::onPut(Ref *pSender, ui::Widget::TouchEventType type)
 		vector<int> nowCards;
 		vector<int> posCards;
 		getSelectCardList(nowCards, posCards);
-		if (!nowCards.empty() && CDBTRule::isBigger(_vecPerCards, nowCards)){
+		if (nowCards.empty())
+			return;
+		auto r = CDBTRule::isBigger(_vecPerCards, nowCards);
+		if (r.first){
 			_btPut->setVisible(false);
 			_btNoput->setVisible(false);
 			_btNoput->setEnabled(false);
@@ -350,6 +355,9 @@ void CDeskScene::onPut(Ref *pSender, ui::Widget::TouchEventType type)
 				os << it << ",";
 			os << "\"}";
 			messageQueue::instance()->sendMessage(os.str());
+			SimpleAudioEngine::getInstance()->playEffect("sound/cp.wav");
+			if (r.second == CDBTRule::type_atom && nowCards.size() == 4)
+				SimpleAudioEngine::getInstance()->playEffect("sound/3.mp3");
 			return;
 		}
 		MessageBox("出牌不符合规则.","提示");
@@ -596,6 +604,7 @@ void CDeskScene::perPutCards(msgptr ptr)
 	if (ptr->cards.empty())
 		perptr->_buchu->setVisible(true);
 	else {
+		SimpleAudioEngine::getInstance()->playEffect("sound/cp.wav");
 		vector<string> vec;
 		stringToVector(ptr->cards, vec, ",");
 		int i = 0;

@@ -18,6 +18,7 @@ private:
 	void	loadCardResource();
 	void	loadLoginResource();
 	void	loadDeskResource();
+	void	loadSoundResource();
 
 };
 

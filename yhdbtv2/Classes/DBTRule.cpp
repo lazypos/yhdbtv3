@@ -217,21 +217,12 @@ pair<bool, int> CDBTRule::isThreetwo(const std::vector<int>& cards)
 		//必须一样
 		if (getValue(cards[3]) != getValue(cards[4]))
 			return pair<bool, int>(false, 0);
-		//joker必须相等
-		/*if (isJoker(cards[3]) && cards[3] != cards[4])
-			return pair<bool, int>(false, 0);
-		if (isJoker(cards[0]) && (cards[0] != cards[1] || cards[0] != cards[2]))
-			return pair<bool, int>(false, 0);*/
 		return pair<bool, int>(true, getWeightNoRedFive(cards[2]));
 	}
 	//BBAAA
 	if (getValue(cards[2]) == getValue(cards[3]) && getValue(cards[2]) == getValue(cards[4])){
 		if (getValue(cards[0]) != getValue(cards[1]))
 			return pair<bool, int>(false, 0);
-		/*if (isJoker(cards[0]) && cards[0] != cards[1])
-			return pair<bool, int>(false, 0);
-		if (isJoker(cards[2]) && (cards[2] != cards[3] || cards[2] != cards[4]))
-			return pair<bool, int>(false, 0);*/
 		return pair<bool, int>(true, getWeightNoRedFive(cards[4]));
 	}
 	return pair<bool, int>(false, 0);
@@ -267,48 +258,48 @@ std::pair<CDBTRule::cards_type, int> CDBTRule::getType(const std::vector<int>& c
 	return std::make_pair(type_unknow, 0);
 }
 
-bool CDBTRule::isBigger(std::vector<int>& cards_per, std::vector<int>& cards_now)
+pair<bool, CDBTRule::cards_type> CDBTRule::isBigger(std::vector<int>& cards_per, std::vector<int>& cards_now)
 {
 	sort(cards_now.begin(), cards_now.end());
 	sort(cards_per.begin(), cards_per.end());
 
 	if (!checkCards(cards_now) || cards_now.size() == 0)
-		return false;
+		return pair<bool, cards_type>(false, type_unknow);
 	auto per = getType(cards_per);
 	auto now = getType(cards_now);
 	//前一次最大或本次类型不对
 	if (now.first == type_unknow || per.second == 1000)
-		return false;
+		return pair<bool, cards_type>(false, type_unknow);
 	if (cards_per.size() == 0)
-		return true;
+		return pair<bool, cards_type>(true, now.first);
 	if (isNormal(per.first) && isNormal(now.first)){
 		//必须类型数量一样
 		if (per.first == now.first && cards_per.size() == cards_now.size())
-			return now.second > per.second;
-		return false;
+			return pair<bool, cards_type>(now.second > per.second, now.first);
+		return  pair<bool, cards_type>(false, type_unknow);
 	}
 	if (!isNormal(per.first) && !isNormal(now.first)) {
 		if (per.first == type_boom && now.first == type_boom){
 			//数量多的大
 			if (cards_per.size() == cards_now.size())
-				return now.second > per.second;
-			return cards_now.size() > cards_per.size();
+				return pair<bool, cards_type>(now.second > per.second, now.first);
+			return pair<bool, cards_type>(cards_now.size() > cards_per.size(), now.first);
 		}
 		if (per.first == type_atom && now.first == type_atom) {
 			//数量一样
 			if (cards_per.size() == cards_now.size()) {
-				return now.second > per.second;
+				return pair<bool, cards_type>(now.second > per.second, now.first);
 			}
 			//数量不一样，必须大于
-			return cards_now.size() > cards_per.size();
+			return pair<bool, cards_type>(cards_now.size() > cards_per.size(), now.first);
 		}
 		if (per.first == type_atom && now.first == type_boom)
-			return false;
-		return true;
+			return pair<bool, cards_type>(false, type_unknow);
+		return pair<bool, cards_type>(true, now.first);
 	}
 	if (!isNormal(per.first) && isNormal(now.first))
-		return false;
-	return true;
+		return pair<bool, cards_type>(false, type_unknow);
+	return pair<bool, cards_type>(true, now.first);
 }
 
 int CDBTRule::getScore(const std::vector<int>& cards)
