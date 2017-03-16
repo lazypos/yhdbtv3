@@ -33,6 +33,7 @@ bool CDeskScene::init()
     if (!Layer::init())
         return false;
 
+	SimpleAudioEngine::getInstance()->playBackgroundMusic("sound/bj.mp3", false);
 	_vecPlayers.clear();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Sprite* bj = Sprite::create();
