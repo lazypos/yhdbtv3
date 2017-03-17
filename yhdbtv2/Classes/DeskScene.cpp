@@ -33,7 +33,7 @@ bool CDeskScene::init()
     if (!Layer::init())
         return false;
 
-	SimpleAudioEngine::getInstance()->playBackgroundMusic("sound/bj.mp3", false);
+	SimpleAudioEngine::getInstance()->stopBackgroundMusic();
 	_vecPlayers.clear();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Sprite* bj = Sprite::create();
@@ -619,6 +619,12 @@ void CDeskScene::perPutCards(msgptr ptr)
 				Vec2(perptr->_x + cardSprite->getContentSize().width + i*DEF_cardsep, perptr->_y));
 			this->addChild(cardSprite);
 			i++;
+		}
+		auto ty = CDBTRule::getType(_vecPerCards);
+		switch (ty.first == CDBTRule::type_threetwo)
+		{
+		default:
+			break;
 		}
 	}
 }

@@ -116,9 +116,9 @@ Section -AdditionalIcons
 SectionEnd
 
 Section -Install
-  ExecWait "C:\Users\zcw\Desktop\余杭大板同\vc_redist_x86-2012.exe"
-  ExecWait "C:\Users\zcw\Desktop\余杭大板同\vc_redist_x86-2013.exe"
-  ExecWait "C:\Users\zcw\Desktop\余杭大板同\vc_redist_x86-2015.exe"
+  ExecWait "$INSTDIR\vc_redist_x86-2012.exe"
+  ExecWait "$INSTDIR\vc_redist_x86-2013.exe"
+  ExecWait "$INSTDIR\vc_redist_x86-2015.exe"
 SectionEnd
 
 Section -Post
