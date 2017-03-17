@@ -456,7 +456,7 @@ void CDeskScene::timeSchedule(float dt)
 		t--;
 		ptr->_time->setString(to_string(t));
 		if (_nowPut == _seatNum && t < 10 && t%2==0)
-			SimpleAudioEngine::getInstance()->playEffect("sound/jg.mp3");
+			SimpleAudioEngine::getInstance()->playEffect("sound/jg.wav");
 		
 		//自己超时，强制出牌
 		if (t < 0 && _nowPut == _seatNum) {

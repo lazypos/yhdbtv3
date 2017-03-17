@@ -2,7 +2,7 @@
 
 ; 安装程序初始定义常量
 !define PRODUCT_NAME "余杭大板同"
-!define PRODUCT_VERSION "V2.9"
+!define PRODUCT_VERSION "V2.92 内测版"
 !define PRODUCT_PUBLISHER "Lazypos"
 !define PRODUCT_WEB_SITE "http://www.yhdbt.pw"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\余杭大板同.exe"
@@ -67,7 +67,14 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR\yhdbt\sound"
   File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\sound\3.mp3"
   File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\sound\bj.mp3"
+  File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\sound\at.wav"
+  File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\sound\bg.wav"
+	File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\sound\boom.mp3"
+  File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\sound\by.mp3"
   File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\sound\cp.wav"
+	File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\sound\jg.wav"
+  File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\sound\lose.mp3"
+  File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\sound\win.mp3"
   SetOutPath "$INSTDIR\yhdbt"
   File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\game.res"
   File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\glew32.dll"

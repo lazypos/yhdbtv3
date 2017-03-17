@@ -129,7 +129,7 @@ void CResourceManager::loadSoundResource()
 	audioengine->preloadEffect("sound/boom.mp3"); //炸弹
 	audioengine->preloadEffect("sound/bg.wav"); //开始
 	audioengine->preloadEffect("sound/by.mp3"); //不要
-	audioengine->preloadEffect("sound/jg.mp3"); //警告
+	audioengine->preloadEffect("sound/jg.wav"); //警告
 	audioengine->preloadEffect("sound/win.mp3"); //赢
 	audioengine->preloadEffect("sound/lose.mp3");//输
 }
