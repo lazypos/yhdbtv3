@@ -385,6 +385,7 @@ void CDeskScene::deskSchedule(float dt)
 	//开始
 	if (ptr && ptr->opt == "start") {
 		gameSatrt();
+		SimpleAudioEngine::getInstance()->playEffect("sound/bg.wav");
 		vector<string> ctmp;
 		stringToVector(ptr->cards, ctmp, ",");
 		vector<int> _vecStartCards;
@@ -411,12 +412,16 @@ void CDeskScene::deskSchedule(float dt)
 		ostringstream os;
 		for (int i = 0; i < 4; i++)
 			os << i << ":" << ptr->arrPlayInfo[i].result << "\r\n";
-		if (ptr->arrPlayInfo[_seatNum].result > 0)
-			MessageBox(os.str().c_str(),"游戏结束，你赢了！");
-		if (ptr->arrPlayInfo[_seatNum].result < 0)
-			MessageBox(os.str().c_str(), "游戏结束，你输了！");
+		if (ptr->arrPlayInfo[_seatNum].result > 0) {
+			SimpleAudioEngine::getInstance()->playEffect("sound/win.mp3");
+			MessageBox(string("恭喜，赢" + to_string(ptr->arrPlayInfo[_seatNum].result) + "局！").c_str(), "游戏结束，你赢了！");
+		}
+		if (ptr->arrPlayInfo[_seatNum].result < 0) {
+			SimpleAudioEngine::getInstance()->playEffect("sound/lose.mp3");
+			MessageBox(string("很遗憾，输" + to_string(ptr->arrPlayInfo[_seatNum].result) + "局！").c_str(), "游戏结束，你输了！");
+		}
 		if (ptr->arrPlayInfo[_seatNum].result == 0)
-			MessageBox(os.str().c_str(), "游戏结束，平局！");
+			MessageBox(string("平局，再接再厉！").c_str(), "游戏结束，平局！");
 		gameOver();
 	}
 	//主流程
@@ -450,6 +455,9 @@ void CDeskScene::timeSchedule(float dt)
 		int t = atoi(ptr->_time->getString().c_str());
 		t--;
 		ptr->_time->setString(to_string(t));
+		if (_nowPut == _seatNum && t < 10 && t%2==0)
+			SimpleAudioEngine::getInstance()->playEffect("sound/jg.mp3");
+		
 		//自己超时，强制出牌
 		if (t < 0 && _nowPut == _seatNum) {
 			ptr->_time->setVisible(false);
@@ -602,8 +610,10 @@ void CDeskScene::perPutCards(msgptr ptr)
 		perptr->_gone->setVisible(true);
 	}
 	perptr->_time->setVisible(false);
-	if (ptr->cards.empty())
+	if (ptr->cards.empty()) {
+		SimpleAudioEngine::getInstance()->playEffect("sound/by.mp3");
 		perptr->_buchu->setVisible(true);
+	}
 	else {
 		SimpleAudioEngine::getInstance()->playEffect("sound/cp.wav");
 		vector<string> vec;
@@ -621,9 +631,13 @@ void CDeskScene::perPutCards(msgptr ptr)
 			i++;
 		}
 		auto ty = CDBTRule::getType(_vecPerCards);
-		switch (ty.first == CDBTRule::type_threetwo)
+		switch (ty.first)
 		{
-		default:
+		case  CDBTRule::type_boom:
+			SimpleAudioEngine::getInstance()->playEffect("sound/boom.mp3");
+			break;
+		case  CDBTRule::type_atom:
+			SimpleAudioEngine::getInstance()->playEffect("sound/at.wav");
 			break;
 		}
 	}

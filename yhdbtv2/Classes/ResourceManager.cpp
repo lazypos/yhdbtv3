@@ -122,7 +122,14 @@ void CResourceManager::loadDeskResource()
 void CResourceManager::loadSoundResource()
 {
 	auto audioengine = SimpleAudioEngine::getInstance();
-	audioengine->preloadBackgroundMusic("sound/bj.mp3");
-	audioengine->preloadEffect("sound/3.mp3");
-	audioengine->preloadEffect("sound/cp.wav");
+	audioengine->preloadBackgroundMusic("sound/bj.mp3"); //背景
+	audioengine->preloadEffect("sound/3.mp3"); //大板同
+	audioengine->preloadEffect("sound/cp.wav"); //出牌
+	audioengine->preloadEffect("sound/at.wav"); //同点
+	audioengine->preloadEffect("sound/boom.mp3"); //炸弹
+	audioengine->preloadEffect("sound/bg.wav"); //开始
+	audioengine->preloadEffect("sound/by.mp3"); //不要
+	audioengine->preloadEffect("sound/jg.mp3"); //警告
+	audioengine->preloadEffect("sound/win.mp3"); //赢
+	audioengine->preloadEffect("sound/lose.mp3");//输
 }
