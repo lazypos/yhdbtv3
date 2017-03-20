@@ -272,6 +272,7 @@ bool CDeskScene::init()
 
 void CDeskScene::onReady(Ref *pSender, ui::Widget::TouchEventType type)
 {
+	_btReady->setEnabled(false);
 	if (type == ui::Widget::TouchEventType::ENDED) {
 		_btReady->setVisible(false);
 		_btReady->setEnabled(false);
@@ -282,6 +283,7 @@ void CDeskScene::onReady(Ref *pSender, ui::Widget::TouchEventType type)
 		//清桌面
 		clearDesk(-1);
 	}
+	_btReady->setEnabled(true);
 }
 
 void CDeskScene::onReturn(Ref *pSender, ui::Widget::TouchEventType type)
@@ -302,6 +304,7 @@ void CDeskScene::onReturn(Ref *pSender, ui::Widget::TouchEventType type)
 
 void CDeskScene::onNoput(Ref *pSender, ui::Widget::TouchEventType type)
 {
+	_btPut->setEnabled(false);
 	if (type == ui::Widget::TouchEventType::ENDED) {
 		//一定要出
 		if (_vecPerCards.empty())
@@ -314,16 +317,20 @@ void CDeskScene::onNoput(Ref *pSender, ui::Widget::TouchEventType type)
 		os << "{\"opt\":\"game\",\"desk\":" << _deskNum << ",\"site\":"<<_seatNum<<",\"cards\":\"\"}";
 		messageQueue::instance()->sendMessage(os.str());
 	}
+	_btPut->setEnabled(true);
 }
 
 void CDeskScene::onPut(Ref *pSender, ui::Widget::TouchEventType type)
 {
+	_btNoput->setEnabled(false);
 	if (type == ui::Widget::TouchEventType::ENDED) {
 		vector<int> nowCards;
 		vector<int> posCards;
 		getSelectCardList(nowCards, posCards);
-		if (nowCards.empty())
+		if (nowCards.empty()) {
+			_btNoput->setEnabled(true);
 			return;
+		}
 		auto r = CDBTRule::isBigger(_vecPerCards, nowCards);
 		if (r.first){
 			_btPut->setVisible(false);
@@ -359,10 +366,11 @@ void CDeskScene::onPut(Ref *pSender, ui::Widget::TouchEventType type)
 			SimpleAudioEngine::getInstance()->playEffect("sound/cp.wav");
 			if (r.second == CDBTRule::type_atom && nowCards.size() == 4)
 				SimpleAudioEngine::getInstance()->playEffect("sound/3.mp3");
-			return;
 		}
-		MessageBox("出牌不符合规则.","提示");
+		else
+			MessageBox("出牌不符合规则.","提示");
 	}
+	_btNoput->setEnabled(true);
 }
 
 void CDeskScene::deskSchedule(float dt)
@@ -454,7 +462,10 @@ void CDeskScene::timeSchedule(float dt)
 		auto ptr = _mapPlayers[_nowPut];
 		int t = atoi(ptr->_time->getString().c_str());
 		t--;
-		ptr->_time->setString(to_string(t));
+		if (t > 0)
+			ptr->_time->setString(to_string(t));
+		else
+			ptr->_time->setString("0");
 		if (_nowPut == _seatNum && t < 10 && t%2==0)
 			SimpleAudioEngine::getInstance()->playEffect("sound/jg.wav");
 		
@@ -467,7 +478,6 @@ void CDeskScene::timeSchedule(float dt)
 			//强制出牌
 			if (_vecPerCards.empty()) {
 				os << "{\"opt\":\"game\",\"desk\":" << _deskNum << ",\"site\":" << _seatNum << ",\"cards\":\"" << _lstCards[0]->getSeq() << "\"}";
-				//_vecPerCards.emplace_back(_lstCards[0]->getSeq());
 				this->removeChild(_lstCards[0]);
 				_lstCards.erase(_lstCards.begin());
 				auto visibleSize = Director::getInstance()->getVisibleSize();

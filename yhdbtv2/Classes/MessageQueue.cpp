@@ -111,7 +111,7 @@ void CMessageQueue::threadWork()
 		if (opt == "query"){
 			ptr->online = doc["online"].GetString();
 			ptr->version = doc["version"].GetString();
-			if (ptr->version != "28") {
+			if (ptr->version != "30") {
 				MessageBox("版本过低，请前往 http://www.yhdbt.pw 下载新版客户端!", "错误");
 				exit(0);
 			}
@@ -151,4 +151,12 @@ void CMessageQueue::threadWork()
 		_muxMsg.unlock();
 	}
 	MessageBox("与服务器断开连接!", "error");
+}
+
+void CMessageQueue::threadWork2()
+{
+	while (true) {
+		this_thread::sleep_for(chrono::seconds(20));
+		sendMessage("{\"opt\":\"heart\"}");
+	}
 }

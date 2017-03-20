@@ -54,10 +54,12 @@ bool CHallScene::init()
 
 void CHallScene::OnFastAddDesk(Ref *pSender, ui::Widget::TouchEventType type)
 {	
+	_btFastAdd->setEnabled(false);
 	if (type == ui::Widget::TouchEventType::ENDED) {
 		_btFastAdd->setEnabled(false);
 		messageQueue::instance()->sendMessage("{\"opt\":\"add\"}");
 	}
+	_btFastAdd->setEnabled(true);
 }
 
 

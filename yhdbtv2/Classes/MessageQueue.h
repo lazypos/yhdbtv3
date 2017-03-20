@@ -51,6 +51,7 @@ public:
 
 private:
 	void	threadWork();
+	void	threadWork2();
 	
 	list<msgptr>	_lstMessage;
 	mutex			_muxMsg;

@@ -47,10 +47,10 @@ func (this *DeskMgr) GameSchedule() {
 		case <-ticker.C:
 			//玩家超时
 			this.TimeTick += 2
-			if this.IsStart && this.TimeTick >= 65 {
+			if this.IsStart && this.TimeTick >= 35 {
 				//断线
 				log.Println("玩家断线", this.NowSite)
-				this.PlayerRun(this.NowSite, this.ArrPlayer[this.NowSite].Remote)
+				this.PlayerLeave(this.NowSite)
 			}
 			if !this.IsStart {
 				for i, p := range this.ArrPlayer {
@@ -130,7 +130,7 @@ func (this *DeskMgr) ProcessGame(m *Message) {
 				}
 			}
 		}
-
+		this.NowSite = next
 		for _, p := range this.ArrPlayer {
 			p.AddMessage(fmt.Sprintf(fmt_game_put, m.Site, "", len(this.ArrPlayer[m.Site].ArrCards), this.Score, next, must))
 			if must == 1 {

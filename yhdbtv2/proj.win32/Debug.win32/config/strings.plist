@@ -7,7 +7,7 @@
         <key>title</key>
         <string>余杭大板同 v2.8</string>
 	<key>host</key>
-        <string>115.159.183.134</string>
+        <string>127.0.0.1</string>
     </dict>
     <key>metadata</key>
     <dict>
