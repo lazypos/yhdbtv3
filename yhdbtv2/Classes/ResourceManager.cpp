@@ -132,4 +132,5 @@ void CResourceManager::loadSoundResource()
 	audioengine->preloadEffect("sound/jg.wav"); //¾¯¸æ
 	audioengine->preloadEffect("sound/win.mp3"); //Ó®
 	audioengine->preloadEffect("sound/lose.mp3");//Êä
+	audioengine->preloadEffect("sound/zb.mp3");//×¼±¸
 }

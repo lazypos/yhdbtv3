@@ -32,6 +32,7 @@ bool CMessageQueue::start()
 		return false;
 
 	thread(&CMessageQueue::threadWork, this).detach();
+	thread(&CMessageQueue::threadWork2, this).detach();
 	return true;
 }
 

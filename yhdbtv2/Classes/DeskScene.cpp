@@ -46,6 +46,7 @@ bool CDeskScene::init()
 	_btReturn->setPosition(Vec2(visibleSize.width - _btReturn->getContentSize().width / 2, 
 		visibleSize.height - _btReturn->getContentSize().height / 2));
 	_btReturn->addTouchEventListener(CC_CALLBACK_2(CDeskScene::onReturn, this));
+	_btReturn->setEnabled(true);
 	this->addChild(_btReturn);
 	//出牌按钮
 	_btPut = ui::Button::create("put.png", "put_press.png", "put_press.png");
@@ -274,6 +275,7 @@ void CDeskScene::onReady(Ref *pSender, ui::Widget::TouchEventType type)
 {
 	_btReady->setEnabled(false);
 	if (type == ui::Widget::TouchEventType::ENDED) {
+		SimpleAudioEngine::getInstance()->playEffect("sound/zb.mp3");
 		_btReady->setVisible(false);
 		_btReady->setEnabled(false);
 		_mapPlayers[_seatNum]->_ready->setVisible(true);
@@ -288,6 +290,7 @@ void CDeskScene::onReady(Ref *pSender, ui::Widget::TouchEventType type)
 
 void CDeskScene::onReturn(Ref *pSender, ui::Widget::TouchEventType type)
 {
+	_btReturn->setEnabled(false);
 	if (type == ui::Widget::TouchEventType::ENDED) {
 		if (_isSatrting && !_isExit){
 			MessageBox("游戏还未结束，真的要退出吗？再次点击返回按钮将强制退出回到大厅！","提醒");
@@ -300,6 +303,7 @@ void CDeskScene::onReturn(Ref *pSender, ui::Widget::TouchEventType type)
 		Scene *hScene = CHallScene::createScene();
 		Director::getInstance()->replaceScene(hScene);
 	}
+	_btReturn->setEnabled(true);
 }
 
 void CDeskScene::onNoput(Ref *pSender, ui::Widget::TouchEventType type)
@@ -411,8 +415,8 @@ void CDeskScene::deskSchedule(float dt)
 	//逃跑
 	if (ptr && ptr->opt == "run") {
 		ostringstream os;
-		os << ptr->site << "->" << ptr->name << ":-10\r\n";
-		MessageBox(os.str().c_str(), "玩家逃跑，游戏结束");
+		os << "您太厉害了，吓得玩家" << ptr->site << "逃跑了！";
+		MessageBox(os.str().c_str(), "游戏结束");
 		gameOver();
 	}
 	//结束
@@ -597,6 +601,8 @@ void CDeskScene::clearDesk(int siteid)
 			ptr->_ready->setVisible(false);
 			ptr->_gone->setVisible(false);
 			ptr->_buchu->setVisible(false);
+			ptr->_surplus->setString("0");
+			ptr->_surplus->setVisible(false);
 			for (size_t i = 0; i < ptr->perCards.size(); i++)
 				this->removeChild(ptr->perCards[i]);
 			ptr->perCards.clear();

@@ -2,7 +2,7 @@
 
 ; 安装程序初始定义常量
 !define PRODUCT_NAME "余杭大板同"
-!define PRODUCT_VERSION "V2.92 内测版"
+!define PRODUCT_VERSION "V3.02 封测版"
 !define PRODUCT_PUBLISHER "Lazypos"
 !define PRODUCT_WEB_SITE "http://www.yhdbt.pw"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\余杭大板同.exe"
@@ -75,6 +75,7 @@ Section "MainSection" SEC01
 	File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\sound\jg.wav"
   File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\sound\lose.mp3"
   File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\sound\win.mp3"
+  File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\sound\zb.mp3"
   SetOutPath "$INSTDIR\yhdbt"
   File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\game.res"
   File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\glew32.dll"
@@ -111,7 +112,7 @@ SectionEnd
 
 Function .onInit
 	killer::IsProcessRunning "余杭大板同.exe"
-	MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "安装前将强制关闭 $(^Name) 及其所有的组件，是否继续？" IDYES +2
+	MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "安装前将强制关闭 余杭大板同 及其所有的组件，是否继续？" IDYES +2
   Abort
   KillProcDLL::KillProc "余杭大板同.exe"
 FunctionEnd
