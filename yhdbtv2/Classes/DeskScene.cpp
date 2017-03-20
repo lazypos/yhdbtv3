@@ -602,7 +602,6 @@ void CDeskScene::clearDesk(int siteid)
 			ptr->_gone->setVisible(false);
 			ptr->_buchu->setVisible(false);
 			ptr->_surplus->setString("0");
-			ptr->_surplus->setVisible(false);
 			for (size_t i = 0; i < ptr->perCards.size(); i++)
 				this->removeChild(ptr->perCards[i]);
 			ptr->perCards.clear();

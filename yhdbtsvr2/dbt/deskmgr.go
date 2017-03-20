@@ -51,10 +51,11 @@ func (this *DeskMgr) GameSchedule() {
 				//断线
 				log.Println("玩家断线", this.NowSite)
 				this.PlayerLeave(this.NowSite)
+				this.IsStart = false
 			}
 			if !this.IsStart {
 				for i, p := range this.ArrPlayer {
-					if p != nil && p.times > 60 {
+					if (p != nil && p.times > 60) || (p != nil && p.gone){
 						p.AddMessage(fmt_timeout)
 						this.PlayerLeave(int32(i))
 					}
@@ -198,6 +199,7 @@ func (this *DeskMgr) PlayerReady(site int32) {
 		this.LastCards = []int32{}
 		for _, p := range this.ArrPlayer {
 			p.RunNum = -1
+			p.Ready = false
 		}
 		arrCards, arrCardsint32 := Create4Cards()
 		for i, p := range this.ArrPlayer {

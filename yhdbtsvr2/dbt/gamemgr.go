@@ -80,6 +80,7 @@ func (this *GameMgr) AddDesk(p *Player) {
 		siteNum = pDesk.AddDesk(p)
 	}
 	p.Ready = false
+	p.gone = false
 	p.AddMessage(fmt.Sprintf(fmt_add, deskNum, siteNum, p.Remote))
 
 	//广播信息
