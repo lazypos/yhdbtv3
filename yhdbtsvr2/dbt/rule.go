@@ -381,7 +381,7 @@ func IsSister(cards []int32) (bool, int32) {
 	}
 	//必须两两相等
 	for i := 0; i < len(cards); i += 2 {
-		if GetValue(cards[0]) != GetValue(cards[1]) {
+		if GetValue(cards[i]) != GetValue(cards[i+1]) {
 			return false, 0
 		}
 	}
