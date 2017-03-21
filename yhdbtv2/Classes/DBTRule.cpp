@@ -156,7 +156,7 @@ pair<bool, int> CDBTRule::isSister(const std::vector<int>& cards)
 
 	//带A必须带K
 	if (getValue(cards[0]) == 0){
-		if (getValue(cards.back() != 12))
+		if (getValue(cards.back()) != 12)
 			return pair<bool, int>(false, 0);
 		//递增
 		for (size_t i = 2; i < cards.size()-2; i += 2) {

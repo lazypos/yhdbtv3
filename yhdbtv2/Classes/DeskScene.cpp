@@ -367,12 +367,12 @@ void CDeskScene::onPut(Ref *pSender, ui::Widget::TouchEventType type)
 				os << it << ",";
 			os << "\"}";
 			messageQueue::instance()->sendMessage(os.str());
-			SimpleAudioEngine::getInstance()->playEffect("sound/cp.wav");
-			if (r.second == CDBTRule::type_atom && nowCards.size() == 4)
-				SimpleAudioEngine::getInstance()->playEffect("sound/3.mp3");
+// 			SimpleAudioEngine::getInstance()->playEffect("sound/cp.wav");
+// 			if (r.second == CDBTRule::type_atom && nowCards.size() == 4)
+// 				SimpleAudioEngine::getInstance()->playEffect("sound/3.mp3");
 		}
 		else
-			MessageBox("出牌不符合规则.","提示");
+			SimpleAudioEngine::getInstance()->playEffect("sound/cw.wav");
 	}
 	_btNoput->setEnabled(true);
 }
@@ -630,7 +630,6 @@ void CDeskScene::perPutCards(msgptr ptr)
 		perptr->_buchu->setVisible(true);
 	}
 	else {
-		SimpleAudioEngine::getInstance()->playEffect("sound/cp.wav");
 		vector<string> vec;
 		stringToVector(ptr->cards, vec, ",");
 		int i = 0;
@@ -653,6 +652,11 @@ void CDeskScene::perPutCards(msgptr ptr)
 			break;
 		case  CDBTRule::type_atom:
 			SimpleAudioEngine::getInstance()->playEffect("sound/at.wav");
+			if (_vecPerCards.size() == 4)
+				SimpleAudioEngine::getInstance()->playEffect("sound/3.mp3");
+			break;
+		default:
+			SimpleAudioEngine::getInstance()->playEffect("sound/cp.wav");
 			break;
 		}
 	}

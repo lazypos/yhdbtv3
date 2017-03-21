@@ -41,7 +41,7 @@ bool CHallScene::init()
 	this->addChild(_btFastAdd);
 
 	//当前在线人数
-	_infoLabel = Label::createWithTTF("online: 0", "fonts/arial.ttf", 25);
+	_infoLabel = Label::createWithTTF("Online: 0", "fonts/arial.ttf", 25);
 	_infoLabel->setColor(Color3B::WHITE);
 	_infoLabel->setPosition(Vec2(visibleSize.width / 2,
 		visibleSize.height/2 - 50));
@@ -72,7 +72,7 @@ void CHallScene::onlineSchedule(float delta)
 	
 	auto ptr = messageQueue::instance()->getMessage();
 	if (ptr && ptr->opt == "query") 
-		_infoLabel->setString("online:" + ptr->online);
+		_infoLabel->setString("Online:" + ptr->online);
 	//加入桌子
 	if (ptr && ptr->opt == "add") {
 		Scene *pScene = CDeskScene::createScene(ptr->desk, ptr->site, ptr->name);

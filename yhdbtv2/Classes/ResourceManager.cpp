@@ -133,4 +133,5 @@ void CResourceManager::loadSoundResource()
 	audioengine->preloadEffect("sound/win.mp3"); //赢
 	audioengine->preloadEffect("sound/lose.mp3");//输
 	audioengine->preloadEffect("sound/zb.mp3");//准备
+	audioengine->preloadEffect("sound/cw.wav");//不准出牌
 }
