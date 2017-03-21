@@ -2,7 +2,7 @@
 
 ; 安装程序初始定义常量
 !define PRODUCT_NAME "余杭大板同"
-!define PRODUCT_VERSION "V3.1 封测版"
+!define PRODUCT_VERSION "V3.12 封测版"
 !define PRODUCT_PUBLISHER "Lazypos"
 !define PRODUCT_WEB_SITE "http://www.yhdbt.pw"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\余杭大板同.exe"

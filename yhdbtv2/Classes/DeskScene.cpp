@@ -114,12 +114,12 @@ bool CDeskScene::init()
 
 	//四个人->自己
 	playerPtr ptr = make_shared<st_player_info>();
-	ptr->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 20);
 	ptr->_nickName->setPosition(Vec2(visibleSize.width / 2 -35,
 		userInfo0->getContentSize().height / 2));
 	ptr->_nickName->setColor(Color3B::RED);
 	this->addChild(ptr->_nickName,30);
-	ptr->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 20);
 	ptr->_surplus->setVisible(false);
 	this->addChild(ptr->_surplus);
 	ptr->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
@@ -132,13 +132,13 @@ bool CDeskScene::init()
 		(visibleSize.height / 2) - 200));
 	ptr->_ready->setVisible(false);
 	this->addChild(ptr->_ready);
-	ptr->_gone = Label::createWithTTF("over", "fonts/arial.ttf", 15);
+	ptr->_gone = Label::createWithTTF("over", "fonts/arial.ttf", 20);
 	ptr->_gone->setColor(Color3B::RED);
 	ptr->_gone->setPosition(Vec2(visibleSize.width / 2,
 		(visibleSize.height / 2) - 200));
 	ptr->_gone->setVisible(false);
 	this->addChild(ptr->_gone);
-	ptr->_buchu = Label::createWithTTF("pass", "fonts/arial.ttf", 15);
+	ptr->_buchu = Label::createWithTTF("pass", "fonts/arial.ttf", 20);
 	ptr->_buchu->setColor(Color3B::RED);
 	ptr->_buchu->setPosition(Vec2(visibleSize.width / 2,
 		(visibleSize.height / 2) - 200));
@@ -149,14 +149,14 @@ bool CDeskScene::init()
 	_vecPlayers.emplace_back(ptr);
 	//->下家
 	playerPtr ptr1 = make_shared<st_player_info>();
-	ptr1->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr1->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 20);
 	ptr1->_nickName->setPosition(Vec2(visibleSize.width - 135,
 		userInfo1->getPosition().y));
 	ptr1->_nickName->setColor(Color3B::RED);
 	this->addChild(ptr1->_nickName,3);
-	ptr1->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr1->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 20);
 	ptr1->_surplus->setPosition(Vec2(visibleSize.width - 135,
-		userInfo1->getPosition().y-15));
+		userInfo1->getPosition().y-25));
 	ptr1->_surplus->setColor(Color3B::WHITE);
 	this->addChild(ptr1->_surplus);
 	ptr1->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
@@ -169,13 +169,13 @@ bool CDeskScene::init()
 		(visibleSize.height / 2)));
 	ptr1->_ready->setVisible(false);
 	this->addChild(ptr1->_ready);
-	ptr1->_gone = Label::createWithTTF("over", "fonts/arial.ttf", 15);
+	ptr1->_gone = Label::createWithTTF("over", "fonts/arial.ttf", 20);
 	ptr1->_gone->setColor(Color3B::RED);
 	ptr1->_gone->setPosition(Vec2(visibleSize.width / 2 + 350,
 		(visibleSize.height / 2)));
 	ptr1->_gone->setVisible(false);
 	this->addChild(ptr1->_gone);
-	ptr1->_buchu = Label::createWithTTF("pass", "fonts/arial.ttf", 15);
+	ptr1->_buchu = Label::createWithTTF("pass", "fonts/arial.ttf", 20);
 	ptr1->_buchu->setColor(Color3B::RED);
 	ptr1->_buchu->setPosition(Vec2(visibleSize.width / 2 + 350,
 		(visibleSize.height / 2)));
@@ -186,14 +186,14 @@ bool CDeskScene::init()
 	_vecPlayers.emplace_back(ptr1);
 	//对家
 	playerPtr ptr2 = make_shared<st_player_info>();
-	ptr2->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr2->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 20);
 	ptr2->_nickName->setPosition(Vec2(visibleSize.width / 2 - 35,
 		userInfo3->getPosition().y));
 	ptr2->_nickName->setColor(Color3B::RED);
 	this->addChild(ptr2->_nickName,3);
-	ptr2->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr2->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 20);
 	ptr2->_surplus->setPosition(Vec2(visibleSize.width /2 - 35,
-		userInfo3->getPosition().y - 15));
+		userInfo3->getPosition().y - 25));
 	ptr2->_surplus->setColor(Color3B::WHITE);
 	this->addChild(ptr2->_surplus);
 	ptr2->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
@@ -207,13 +207,13 @@ bool CDeskScene::init()
 		(visibleSize.height / 2) + 200));
 	ptr2->_ready->setVisible(false);
 	this->addChild(ptr2->_ready);
-	ptr2->_gone = Label::createWithTTF("over", "fonts/arial.ttf", 15);
+	ptr2->_gone = Label::createWithTTF("over", "fonts/arial.ttf", 20);
 	ptr2->_gone->setColor(Color3B::RED);
 	ptr2->_gone->setPosition((Vec2(visibleSize.width / 2,
 		(visibleSize.height / 2) + 200)));
 	ptr2->_gone->setVisible(false);
 	this->addChild(ptr2->_gone);
-	ptr2->_buchu = Label::createWithTTF("pass", "fonts/arial.ttf", 15);
+	ptr2->_buchu = Label::createWithTTF("pass", "fonts/arial.ttf", 20);
 	ptr2->_buchu->setColor(Color3B::RED);
 	ptr2->_buchu->setPosition((Vec2(visibleSize.width / 2,
 		(visibleSize.height / 2) + 200)));
@@ -224,14 +224,14 @@ bool CDeskScene::init()
 	_vecPlayers.emplace_back(ptr2);
 	//上家
 	playerPtr ptr3 = make_shared<st_player_info>();
-	ptr3->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr3->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 20);
 	ptr3->_nickName->setPosition(Vec2(70,
 		userInfo1->getPosition().y));
 	ptr3->_nickName->setColor(Color3B::RED);
 	this->addChild(ptr3->_nickName,3);
-	ptr3->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 15);
+	ptr3->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 20);
 	ptr3->_surplus->setPosition(Vec2(70,
-		userInfo1->getPosition().y - 15));
+		userInfo1->getPosition().y - 25));
 	ptr3->_surplus->setColor(Color3B::WHITE);
 	this->addChild(ptr3->_surplus);
 	ptr3->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
@@ -244,12 +244,12 @@ bool CDeskScene::init()
 		visibleSize.height / 2));
 	ptr3->_ready->setVisible(false);
 	this->addChild(ptr3->_ready);
-	ptr3->_gone = Label::createWithTTF("over", "fonts/arial.ttf", 15);
+	ptr3->_gone = Label::createWithTTF("over", "fonts/arial.ttf", 20);
 	ptr3->_gone->setColor(Color3B::RED);
 	ptr3->_gone->setPosition(Vec2(visibleSize.width / 2 - 280, 600));
 	ptr3->_gone->setVisible(false);
 	this->addChild(ptr3->_gone);
-	ptr3->_buchu = Label::createWithTTF("pass", "fonts/arial.ttf", 15);
+	ptr3->_buchu = Label::createWithTTF("pass", "fonts/arial.ttf", 20);
 	ptr3->_buchu->setColor(Color3B::RED);
 	ptr3->_buchu->setPosition(Vec2(visibleSize.width / 2 - 350,
 		visibleSize.height / 2));
@@ -367,9 +367,6 @@ void CDeskScene::onPut(Ref *pSender, ui::Widget::TouchEventType type)
 				os << it << ",";
 			os << "\"}";
 			messageQueue::instance()->sendMessage(os.str());
-// 			SimpleAudioEngine::getInstance()->playEffect("sound/cp.wav");
-// 			if (r.second == CDBTRule::type_atom && nowCards.size() == 4)
-// 				SimpleAudioEngine::getInstance()->playEffect("sound/3.mp3");
 		}
 		else
 			SimpleAudioEngine::getInstance()->playEffect("sound/cw.wav");

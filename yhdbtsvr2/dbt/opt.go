@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	fmt_query  = `{"opt":"query","online":"%d","version":"30"}`
+	fmt_query  = `{"opt":"query","online":"%d","version":"31"}`
 	fmt_add    = `{"opt":"add","desk":"%d","site":"%d","name":"%s"}`
 	fmt_change = `{"opt":"change","info":[
 					{"site":"0","name":"%s","ready":"%d"},
@@ -56,7 +56,7 @@ func Dispatch_opt(content []byte, p *Player) error {
 	case "game":
 		opt_game(msg)
 	case "heart":
-		return nil
+		GGameMgr.DoHeart(p)
 	default:
 		log.Println("unknow opt.")
 		return fmt.Errorf("unknow opt")
