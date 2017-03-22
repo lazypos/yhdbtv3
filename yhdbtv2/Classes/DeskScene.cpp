@@ -43,8 +43,8 @@ bool CDeskScene::init()
 
 	//返回按钮
 	_btReturn = ui::Button::create("return.png", "return_press.png", "return_press.png");
-	_btReturn->setPosition(Vec2(visibleSize.width - _btReturn->getContentSize().width / 2, 
-		visibleSize.height - _btReturn->getContentSize().height / 2));
+	_btReturn->setPosition(Vec2(visibleSize.width - _btReturn->getContentSize().width / 2+2, 
+		visibleSize.height - _btReturn->getContentSize().height / 2 + 2));
 	_btReturn->addTouchEventListener(CC_CALLBACK_2(CDeskScene::onReturn, this));
 	_btReturn->setEnabled(true);
 	this->addChild(_btReturn);
@@ -95,13 +95,13 @@ bool CDeskScene::init()
 	//得分
 	Sprite* score = Sprite::create();
 	score->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("score"));
-	score->setPosition(Vec2(score->getContentSize().width / 2, visibleSize.height - score->getContentSize().height / 2));
+	score->setPosition(Vec2(score->getContentSize().width / 2-4, visibleSize.height - score->getContentSize().height / 2+2));
 	this->addChild(score);
 	_labelDeskNum = Label::createWithTTF("desk:"+to_string(_deskNum), "fonts/arial.ttf", 20);
 	_labelDeskNum->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	this->addChild(_labelDeskNum);
 	_labelWeScore = Label::createWithTTF("0", "fonts/arial.ttf", 25);
-	_labelWeScore->setPosition(Vec2(80, visibleSize.height - score->getContentSize().height / 2));
+	_labelWeScore->setPosition(Vec2(75, visibleSize.height - score->getContentSize().height / 2));
 	_labelWeScore->setColor(Color3B::BLACK);
 	this->addChild(_labelWeScore);
 	_labelTheyScore = Label::createWithTTF("0", "fonts/arial.ttf", 25);
@@ -183,6 +183,7 @@ bool CDeskScene::init()
 	this->addChild(ptr1->_buchu);
 	ptr1->_x = visibleSize.width / 2;
 	ptr1->_y = visibleSize.height / 2;
+	ptr1->id = 1;
 	_vecPlayers.emplace_back(ptr1);
 	//对家
 	playerPtr ptr2 = make_shared<st_player_info>();
@@ -225,7 +226,7 @@ bool CDeskScene::init()
 	//上家
 	playerPtr ptr3 = make_shared<st_player_info>();
 	ptr3->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 20);
-	ptr3->_nickName->setPosition(Vec2(70,
+	ptr3->_nickName->setPosition(Vec2(120,
 		userInfo1->getPosition().y));
 	ptr3->_nickName->setColor(Color3B::RED);
 	this->addChild(ptr3->_nickName,3);
@@ -636,6 +637,11 @@ void CDeskScene::perPutCards(msgptr ptr)
 			auto cardSprite = CardSprite::createCardSprite(seq);
 			_vecPerCards.emplace_back(seq);
 			perptr->perCards.emplace_back(cardSprite);
+			if (perptr->id == 1){
+				int tlen = DEF_cardsep*vec.size();
+				auto visibleSize = Director::getInstance()->getVisibleSize();
+				perptr->_x = visibleSize.width - tlen - 170;
+			}
 			cardSprite->setPosition(
 				Vec2(perptr->_x + cardSprite->getContentSize().width + i*DEF_cardsep, perptr->_y));
 			this->addChild(cardSprite);

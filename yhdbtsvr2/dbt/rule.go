@@ -169,45 +169,26 @@ func IsOver(s0, s1 int32, info []int32) (bool, []int32) {
 			return true, []int32{-2, 2, -2, 2}
 		}
 	}
-	//上游得200，对方到85
-	if info[0] == 0 || info[2] == 0 {
-		if s0 >= 200 && s1 >= 85 {
+	//上游得200
+	if (info[0] == 0 || info[2] == 0) && info[1] > 0 && info[3] > 0 {
+		if s0 >= 200 {
 			return true, []int32{1, -1, 1, -1}
 		}
 	}
-	if info[1] == 0 || info[3] == 0 {
-		if s1 >= 200 && s0 >= 85 {
+	if (info[1] == 0 || info[3] == 0) && info[0] > 0 && info[2] > 0 {
+		if s1 >= 200 {
 			return true, []int32{-1, 1, -1, 1}
 		}
 	}
-	//跑上游且得200，对方一个二游且得45
-	if info[0] == 0 || info[2] == 0 {
-		if s0 >= 200 && s1 >= 45 {
-			if info[1] == 1 || info[3] == 1 {
-				return true, []int32{1, -1, 1, -1}
-			}
+	//跑二游抓245分
+	if (info[0] != 0 && info[2] == 1) || (info[0] == 1 && info[2] != 0){
+		if s0 >= 245 && (info[1] == 0 || info[3] == 0) {
+			return true, []int32{1, -1, 1, -1}
 		}
 	}
-	if info[1] == 0 || info[3] == 0 {
-		if s1 >= 200 && s0 >= 45 {
-			if info[0] == 1 || info[2] == 1 {
-				return true, []int32{-1, 1, -1, 1}
-			}
-		}
-	}
-	//跑二游 且得245
-	if info[1] == 0 || info[3] == 0 {
-		if info[0] == 1 || info[2] == 1 {
-			if s0 >= 245 {
-				return true, []int32{1, -1, 1, -1}
-			}
-		}
-	}
-	if info[0] == 0 || info[2] == 0 {
-		if info[1] == 1 || info[3] == 1 {
-			if s1 >= 245 {
-				return true, []int32{-1, 1, -1, 1}
-			}
+	if (info[1] != 0 && info[3] == 1) || (info[1] == 1 && info[3] != 0){
+		if s1 >= 245 && (info[0] == 0 || info[2] == 0) {
+			return true, []int32{-1, 1, -1, 1}
 		}
 	}
 	//一个没跑但得285

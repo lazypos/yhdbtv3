@@ -43,7 +43,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto glview = director->getOpenGLView();
     if(!glview) {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
-        glview = GLViewImpl::createWithRect(Configuration::getInstance()->getValue("title").asString(), cocos2d::Rect(0, 0, mediumResolutionSize.width, mediumResolutionSize.height));
+		glview = GLViewImpl::createWithRect(Configuration::getInstance()->getValue("title").asString(), cocos2d::Rect(0, 0, mediumResolutionSize.width, mediumResolutionSize.height));
+		//glview = GLViewImpl::createWithFullScreen(Configuration::getInstance()->getValue("title").asString());
 #else
         glview = GLViewImpl::create("yhdbtv2");
 #endif
