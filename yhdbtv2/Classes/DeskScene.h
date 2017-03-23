@@ -81,6 +81,7 @@ private:
 	Label*	_labelWeScore;
 	Label*	_labelTheyScore;
 	Label*  _labelDeskScore;
+	Label*	_labelResult;
 
 	int							_seatNum;	//自己的座位号
 	int							_deskNum;	//桌号

@@ -47,8 +47,8 @@ bool CMessageQueue::sendMessage(const string& str)
 	while (len < strReply.length()) {
 		int n = send(_sock, strReply.c_str() + len, strReply.length() - len, 0);
 		if (n <= 0){
-			MessageBox("断开连接，请重新登录!","error");
-			return false;
+			MessageBox("与服务器断开连接，请重新登录!","error");
+			ExitProcess(-1);
 		}
 		len += n;
 	}
@@ -60,16 +60,16 @@ bool CMessageQueue::recvMessage(string& text)
 	size_t len = 0;
 	int n = recv(_sock, (char*)&len, 4, 0);
 	if (n != 4 || len <= 0) {
-		MessageBox("从服务器接收数据错误.", "error");
-		return false;
+		MessageBox("从服务器接收数据错误, 请重新登陆!", "error");
+		ExitProcess(-1);
 	}
 	size_t recvlen = 0;
 	text.resize(int(len), 0);
 	while (recvlen < len){
 		n = recv(_sock, (char*)(text.c_str() + recvlen), len - recvlen, 0);
 		if (n <= 0){
-			MessageBox("与服务器断开连接!", "error");
-			return false;
+			MessageBox("与服务器断开连接, 请重新登陆!", "error");
+			ExitProcess(-1);
 		}
 		recvlen += n;
 	}
@@ -114,7 +114,7 @@ void CMessageQueue::threadWork()
 			ptr->version = doc["version"].GetString();
 			if (ptr->version != "31") {
 				MessageBox("版本过低，请前往 http://www.yhdbt.pw 下载新版客户端!", "错误");
-				exit(0);
+				ExitProcess(-1);
 			}
 		}else if (opt == "add"){
 			ptr->desk = atoi(doc["desk"].GetString());
@@ -151,7 +151,8 @@ void CMessageQueue::threadWork()
 		_lstMessage.emplace_back(ptr);
 		_muxMsg.unlock();
 	}
-	MessageBox("与服务器断开连接!", "error");
+	MessageBox("与服务器断开连接, 请重新登陆!", "error");
+	ExitProcess(-1);
 }
 
 void CMessageQueue::threadWork2()

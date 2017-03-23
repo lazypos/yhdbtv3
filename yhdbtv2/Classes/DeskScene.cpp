@@ -101,21 +101,26 @@ bool CDeskScene::init()
 	_labelDeskNum->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	this->addChild(_labelDeskNum);
 	_labelWeScore = Label::createWithTTF("0", "fonts/arial.ttf", 25);
-	_labelWeScore->setPosition(Vec2(75, visibleSize.height - score->getContentSize().height / 2));
+	_labelWeScore->setPosition(Vec2(69, visibleSize.height - score->getContentSize().height / 2));
 	_labelWeScore->setColor(Color3B::BLACK);
 	this->addChild(_labelWeScore);
 	_labelTheyScore = Label::createWithTTF("0", "fonts/arial.ttf", 25);
-	_labelTheyScore->setPosition(Vec2(170, visibleSize.height - score->getContentSize().height / 2));
+	_labelTheyScore->setPosition(Vec2(169, visibleSize.height - score->getContentSize().height / 2));
 	_labelTheyScore->setColor(Color3B::BLACK);
 	this->addChild(_labelTheyScore);
-	_labelDeskScore = Label::createWithTTF("0", "fonts/arial.ttf", 40);
+	_labelDeskScore = Label::createWithTTF("0", "fonts/arial.ttf", 50);
 	_labelDeskScore->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2+30));
+	_labelDeskScore->setColor(Color3B::GREEN);
 	this->addChild(_labelDeskScore);
+	_labelResult = Label::createWithTTF("", "fonts/arial.ttf", 100);
+	_labelResult->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 + 50));
+	_labelResult->setColor(Color3B::BLACK);
+	this->addChild(_labelResult);
 
 	//四个人->自己
 	playerPtr ptr = make_shared<st_player_info>();
 	ptr->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 20);
-	ptr->_nickName->setPosition(Vec2(visibleSize.width / 2 -35,
+	ptr->_nickName->setPosition(Vec2(visibleSize.width / 2,
 		userInfo0->getContentSize().height / 2));
 	ptr->_nickName->setColor(Color3B::RED);
 	this->addChild(ptr->_nickName,30);
@@ -132,20 +137,21 @@ bool CDeskScene::init()
 		(visibleSize.height / 2) - 200));
 	ptr->_ready->setVisible(false);
 	this->addChild(ptr->_ready);
-	ptr->_gone = Label::createWithTTF("over", "fonts/arial.ttf", 20);
-	ptr->_gone->setColor(Color3B::RED);
+	ptr->_gone = Label::createWithTTF("Over", "fonts/arial.ttf", 40);
+	ptr->_gone->setColor(Color3B::GREEN);
 	ptr->_gone->setPosition(Vec2(visibleSize.width / 2,
 		(visibleSize.height / 2) - 200));
 	ptr->_gone->setVisible(false);
 	this->addChild(ptr->_gone);
-	ptr->_buchu = Label::createWithTTF("pass", "fonts/arial.ttf", 20);
-	ptr->_buchu->setColor(Color3B::RED);
+	ptr->_buchu = Label::createWithTTF("Pass", "fonts/arial.ttf", 40);
+	ptr->_buchu->setColor(Color3B::GREEN);
 	ptr->_buchu->setPosition(Vec2(visibleSize.width / 2,
 		(visibleSize.height / 2) - 200));
 	ptr->_buchu->setVisible(false);
 	this->addChild(ptr->_buchu);
-	ptr->_x = visibleSize.width / 2 - 200;
+	ptr->_x = visibleSize.width / 2 - 100;
 	ptr->_y = 250;
+	ptr->id = 0;
 	_vecPlayers.emplace_back(ptr);
 	//->下家
 	playerPtr ptr1 = make_shared<st_player_info>();
@@ -165,18 +171,18 @@ bool CDeskScene::init()
 	this->addChild(ptr1->_time);
 	ptr1->_ready = Sprite::create();
 	ptr1->_ready->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("zhunbei"));
-	ptr1->_ready->setPosition(Vec2(visibleSize.width / 2+350,
+	ptr1->_ready->setPosition(Vec2(visibleSize.width / 2 + 350,
 		(visibleSize.height / 2)));
 	ptr1->_ready->setVisible(false);
 	this->addChild(ptr1->_ready);
-	ptr1->_gone = Label::createWithTTF("over", "fonts/arial.ttf", 20);
-	ptr1->_gone->setColor(Color3B::RED);
+	ptr1->_gone = Label::createWithTTF("Over", "fonts/arial.ttf", 40);
+	ptr1->_gone->setColor(Color3B::GREEN);
 	ptr1->_gone->setPosition(Vec2(visibleSize.width / 2 + 350,
 		(visibleSize.height / 2)));
 	ptr1->_gone->setVisible(false);
 	this->addChild(ptr1->_gone);
-	ptr1->_buchu = Label::createWithTTF("pass", "fonts/arial.ttf", 20);
-	ptr1->_buchu->setColor(Color3B::RED);
+	ptr1->_buchu = Label::createWithTTF("Pass", "fonts/arial.ttf", 40);
+	ptr1->_buchu->setColor(Color3B::GREEN);
 	ptr1->_buchu->setPosition(Vec2(visibleSize.width / 2 + 350,
 		(visibleSize.height / 2)));
 	ptr1->_buchu->setVisible(false);
@@ -188,12 +194,12 @@ bool CDeskScene::init()
 	//对家
 	playerPtr ptr2 = make_shared<st_player_info>();
 	ptr2->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 20);
-	ptr2->_nickName->setPosition(Vec2(visibleSize.width / 2 - 35,
+	ptr2->_nickName->setPosition(Vec2(visibleSize.width / 2,
 		userInfo3->getPosition().y));
 	ptr2->_nickName->setColor(Color3B::RED);
 	this->addChild(ptr2->_nickName,3);
 	ptr2->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 20);
-	ptr2->_surplus->setPosition(Vec2(visibleSize.width /2 - 35,
+	ptr2->_surplus->setPosition(Vec2(visibleSize.width /2,
 		userInfo3->getPosition().y - 25));
 	ptr2->_surplus->setColor(Color3B::WHITE);
 	this->addChild(ptr2->_surplus);
@@ -208,20 +214,21 @@ bool CDeskScene::init()
 		(visibleSize.height / 2) + 200));
 	ptr2->_ready->setVisible(false);
 	this->addChild(ptr2->_ready);
-	ptr2->_gone = Label::createWithTTF("over", "fonts/arial.ttf", 20);
-	ptr2->_gone->setColor(Color3B::RED);
+	ptr2->_gone = Label::createWithTTF("Over", "fonts/arial.ttf", 40);
+	ptr2->_gone->setColor(Color3B::GREEN);
 	ptr2->_gone->setPosition((Vec2(visibleSize.width / 2,
 		(visibleSize.height / 2) + 200)));
 	ptr2->_gone->setVisible(false);
 	this->addChild(ptr2->_gone);
-	ptr2->_buchu = Label::createWithTTF("pass", "fonts/arial.ttf", 20);
-	ptr2->_buchu->setColor(Color3B::RED);
+	ptr2->_buchu = Label::createWithTTF("Pass", "fonts/arial.ttf", 40);
+	ptr2->_buchu->setColor(Color3B::GREEN);
 	ptr2->_buchu->setPosition((Vec2(visibleSize.width / 2,
 		(visibleSize.height / 2) + 200)));
 	ptr2->_buchu->setVisible(false);
 	this->addChild(ptr2->_buchu);
-	ptr2->_x = visibleSize.width / 2 - 200;
+	ptr2->_x = visibleSize.width / 2 - 100;
 	ptr2->_y = visibleSize.height / 2 + 200;
+	ptr->id = 2;
 	_vecPlayers.emplace_back(ptr2);
 	//上家
 	playerPtr ptr3 = make_shared<st_player_info>();
@@ -231,7 +238,7 @@ bool CDeskScene::init()
 	ptr3->_nickName->setColor(Color3B::RED);
 	this->addChild(ptr3->_nickName,3);
 	ptr3->_surplus = Label::createWithTTF("", "fonts/arial.ttf", 20);
-	ptr3->_surplus->setPosition(Vec2(70,
+	ptr3->_surplus->setPosition(Vec2(90,
 		userInfo1->getPosition().y - 25));
 	ptr3->_surplus->setColor(Color3B::WHITE);
 	this->addChild(ptr3->_surplus);
@@ -245,19 +252,20 @@ bool CDeskScene::init()
 		visibleSize.height / 2));
 	ptr3->_ready->setVisible(false);
 	this->addChild(ptr3->_ready);
-	ptr3->_gone = Label::createWithTTF("over", "fonts/arial.ttf", 20);
-	ptr3->_gone->setColor(Color3B::RED);
-	ptr3->_gone->setPosition(Vec2(visibleSize.width / 2 - 280, 600));
+	ptr3->_gone = Label::createWithTTF("Over", "fonts/arial.ttf", 40);
+	ptr3->_gone->setColor(Color3B::GREEN);
+	ptr3->_gone->setPosition(Vec2(visibleSize.width / 2 - 350, visibleSize.height/2));
 	ptr3->_gone->setVisible(false);
 	this->addChild(ptr3->_gone);
-	ptr3->_buchu = Label::createWithTTF("pass", "fonts/arial.ttf", 20);
-	ptr3->_buchu->setColor(Color3B::RED);
+	ptr3->_buchu = Label::createWithTTF("Pass", "fonts/arial.ttf", 40);
+	ptr3->_buchu->setColor(Color3B::GREEN);
 	ptr3->_buchu->setPosition(Vec2(visibleSize.width / 2 - 350,
 		visibleSize.height / 2));
 	ptr3->_buchu->setVisible(false);
 	this->addChild(ptr3->_buchu);
 	ptr3->_x = 0;
 	ptr3->_y = visibleSize.height / 2;
+	ptr->id = 3;
 	_vecPlayers.emplace_back(ptr3);
 
 	this->schedule(CC_SCHEDULE_SELECTOR(CDeskScene::deskSchedule), float(0.1));
@@ -279,6 +287,7 @@ void CDeskScene::onReady(Ref *pSender, ui::Widget::TouchEventType type)
 		SimpleAudioEngine::getInstance()->playEffect("sound/zb.mp3");
 		_btReady->setVisible(false);
 		_btReady->setEnabled(false);
+		_labelResult->setString("");
 		_mapPlayers[_seatNum]->_ready->setVisible(true);
 		ostringstream os;
 		os << "{\"opt\":\"change\",\"type\":\"ready\",\"desk\":" << _deskNum << ",\"site\":" << _seatNum << "}";
@@ -296,6 +305,7 @@ void CDeskScene::onReturn(Ref *pSender, ui::Widget::TouchEventType type)
 		if (_isSatrting && !_isExit){
 			MessageBox("游戏还未结束，真的要退出吗？再次点击返回按钮将强制退出回到大厅！","提醒");
 			_isExit = true;
+			_btReturn->setEnabled(true);
 			return;
 		}
 		ostringstream os;
@@ -413,8 +423,9 @@ void CDeskScene::deskSchedule(float dt)
 	//逃跑
 	if (ptr && ptr->opt == "run") {
 		ostringstream os;
-		os << "您太厉害了，吓得玩家" << ptr->site << "逃跑了！";
-		MessageBox(os.str().c_str(), "游戏结束");
+		os << "OVER " << ptr->site << " RUN!";
+		_labelResult->setString(os.str());
+		_mapPlayers[ptr->site]->_nickName->setString("");
 		gameOver();
 	}
 	//结束
@@ -424,14 +435,19 @@ void CDeskScene::deskSchedule(float dt)
 			os << i << ":" << ptr->arrPlayInfo[i].result << "\r\n";
 		if (ptr->arrPlayInfo[_seatNum].result > 0) {
 			SimpleAudioEngine::getInstance()->playEffect("sound/win.mp3");
-			MessageBox(string("恭喜，赢" + to_string(ptr->arrPlayInfo[_seatNum].result) + "局！").c_str(), "游戏结束，你赢了！");
+			os << "WIN " << ptr->arrPlayInfo[_seatNum].result << " !";
+			_labelResult->setString(os.str());
 		}
 		if (ptr->arrPlayInfo[_seatNum].result < 0) {
 			SimpleAudioEngine::getInstance()->playEffect("sound/lose.mp3");
-			MessageBox(string("很遗憾，输" + to_string(ptr->arrPlayInfo[_seatNum].result) + "局！").c_str(), "游戏结束，你输了！");
+			os << "LOSE " << -ptr->arrPlayInfo[_seatNum].result << " !";
+			_labelResult->setString(os.str());
 		}
-		if (ptr->arrPlayInfo[_seatNum].result == 0)
-			MessageBox(string("平局，再接再厉！").c_str(), "游戏结束，平局！");
+		if (ptr->arrPlayInfo[_seatNum].result == 0) {
+			SimpleAudioEngine::getInstance()->playEffect("sound/win.mp3");
+			os << "HE " << -ptr->arrPlayInfo[_seatNum].result << " !";
+			_labelResult->setString(os.str());
+		}
 		gameOver();
 	}
 	//主流程
@@ -579,6 +595,7 @@ void CDeskScene::gameSatrt()
 	_isSatrting = true;
 	for (const auto& it : _mapPlayers) {
 		it.second->_ready->setVisible(false);
+		it.second->_surplus->setString("54");
 	}
 }
 
@@ -640,8 +657,13 @@ void CDeskScene::perPutCards(msgptr ptr)
 			if (perptr->id == 1){
 				int tlen = DEF_cardsep*vec.size();
 				auto visibleSize = Director::getInstance()->getVisibleSize();
-				perptr->_x = visibleSize.width - tlen - 170;
+				perptr->_x = visibleSize.width - tlen - 180;
 			}
+// 			else if (perptr->id == 0 || perptr->id == 2) {
+// 				int tlen = DEF_cardsep*vec.size();
+// 				auto visibleSize = Director::getInstance()->getVisibleSize();
+// 				perptr->_x = (visibleSize.width - tlen-90) / 2;
+// 			}
 			cardSprite->setPosition(
 				Vec2(perptr->_x + cardSprite->getContentSize().width + i*DEF_cardsep, perptr->_y));
 			this->addChild(cardSprite);
