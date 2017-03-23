@@ -80,8 +80,8 @@ GLFW_ICON               ICON                    "res\\game.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,1,5,21
- PRODUCTVERSION 3,1,5,21
+ FILEVERSION 3,4,0,23
+ PRODUCTVERSION 3,4,0,23
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -98,12 +98,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "www.dagouge.com"
             VALUE "FileDescription", "?????"
-            VALUE "FileVersion", "3.1.5.21"
+            VALUE "FileVersion", "3.4.0.23"
             VALUE "InternalName", "lazypos"
             VALUE "LegalCopyright", "Copyright "
             VALUE "OriginalFilename", "?????.exe"
             VALUE "ProductName", "?????"
-            VALUE "ProductVersion", "3.1.5.21"
+            VALUE "ProductVersion", "3.4.0.23"
         END
     END
     BLOCK "VarFileInfo"

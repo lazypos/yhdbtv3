@@ -115,7 +115,7 @@ bool CDeskScene::init()
 	_labelResult = Label::createWithTTF("", "fonts/arial.ttf", 100);
 	_labelResult->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 + 50));
 	_labelResult->setColor(Color3B::BLACK);
-	this->addChild(_labelResult);
+	this->addChild(_labelResult,100);
 
 	//四个人->自己
 	playerPtr ptr = make_shared<st_player_info>();
@@ -149,7 +149,7 @@ bool CDeskScene::init()
 		(visibleSize.height / 2) - 200));
 	ptr->_buchu->setVisible(false);
 	this->addChild(ptr->_buchu);
-	ptr->_x = visibleSize.width / 2 - 100;
+	ptr->_x = visibleSize.width / 2 - 150;
 	ptr->_y = 250;
 	ptr->id = 0;
 	_vecPlayers.emplace_back(ptr);
@@ -226,7 +226,7 @@ bool CDeskScene::init()
 		(visibleSize.height / 2) + 200)));
 	ptr2->_buchu->setVisible(false);
 	this->addChild(ptr2->_buchu);
-	ptr2->_x = visibleSize.width / 2 - 100;
+	ptr2->_x = visibleSize.width / 2 - 150;
 	ptr2->_y = visibleSize.height / 2 + 200;
 	ptr->id = 2;
 	_vecPlayers.emplace_back(ptr2);
@@ -432,7 +432,7 @@ void CDeskScene::deskSchedule(float dt)
 	if (ptr && ptr->opt == "over") {
 		ostringstream os;
 		for (int i = 0; i < 4; i++)
-			os << i << ":" << ptr->arrPlayInfo[i].result << "\r\n";
+			//os << i << ":" << ptr->arrPlayInfo[i].result << "\r\n";
 		if (ptr->arrPlayInfo[_seatNum].result > 0) {
 			SimpleAudioEngine::getInstance()->playEffect("sound/win.mp3");
 			os << "WIN " << ptr->arrPlayInfo[_seatNum].result << " !";
@@ -457,6 +457,18 @@ void CDeskScene::deskSchedule(float dt)
 			perPutCards(ptr);
 		if (ptr->now != -1)
 			nowPutCards(ptr);
+		if (ptr->per != -1 && ptr->now != -1){
+			int i = 1;
+			while ((ptr->per + i) % 4 != ptr->now){
+				playerPtr nowptr = _mapPlayers[ptr->per + i];
+				if (nowptr->_gone->isVisible()){
+					for (const auto &it : nowptr->perCards)
+						this->removeChild(it);
+					nowptr->perCards.clear();
+				}
+				i++;
+			}
+		}
 	}
 	//得分
 	if (ptr && ptr->opt == "score") {
