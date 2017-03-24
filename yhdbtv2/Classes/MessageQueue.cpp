@@ -112,7 +112,7 @@ void CMessageQueue::threadWork()
 		if (opt == "query"){
 			ptr->online = doc["online"].GetString();
 			ptr->version = doc["version"].GetString();
-			if (ptr->version != "31") {
+			if (ptr->version != "35") {
 				MessageBox("版本过低，请前往 http://www.yhdbt.pw 下载新版客户端!", "错误");
 				ExitProcess(-1);
 			}

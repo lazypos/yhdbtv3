@@ -70,7 +70,7 @@ func (this *Player) PutCards(cards []int32) (bool, int32) {
 			tmp = append(tmp, v)
 		}
 	}
-	log.Println(this.Remote, "出牌前", this.ArrCards)
+	//log.Println(this.Remote, "出牌前", this.ArrCards)
 	this.ArrCards = tmp
 	log.Println(this.Remote, "出牌后", this.ArrCards)
 	return true, score

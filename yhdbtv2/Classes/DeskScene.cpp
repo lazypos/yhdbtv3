@@ -11,7 +11,7 @@ using namespace CocosDenshion;
 
 USING_NS_CC;
 
-#define  DEF_cardsep 18
+#define  DEF_cardsep 18.2
 string 						_recvType;
 map<string, string>			_mapRecv;
 mutex						_muxRecv;
@@ -431,7 +431,7 @@ void CDeskScene::deskSchedule(float dt)
 	//结束
 	if (ptr && ptr->opt == "over") {
 		ostringstream os;
-		for (int i = 0; i < 4; i++)
+		//for (int i = 0; i < 4; i++)
 			//os << i << ":" << ptr->arrPlayInfo[i].result << "\r\n";
 		if (ptr->arrPlayInfo[_seatNum].result > 0) {
 			SimpleAudioEngine::getInstance()->playEffect("sound/win.mp3");
@@ -457,10 +457,10 @@ void CDeskScene::deskSchedule(float dt)
 			perPutCards(ptr);
 		if (ptr->now != -1)
 			nowPutCards(ptr);
-		if (ptr->per != -1 && ptr->now != -1){
+		if (ptr->per != -1 && ptr->now != -1 && ptr->must != 1){
 			int i = 1;
 			while ((ptr->per + i) % 4 != ptr->now){
-				playerPtr nowptr = _mapPlayers[ptr->per + i];
+				playerPtr nowptr = _mapPlayers[(ptr->per + i) % 4];
 				if (nowptr->_gone->isVisible()){
 					for (const auto &it : nowptr->perCards)
 						this->removeChild(it);
@@ -496,7 +496,7 @@ void CDeskScene::timeSchedule(float dt)
 			ptr->_time->setString(to_string(t));
 		else
 			ptr->_time->setString("0");
-		if (_nowPut == _seatNum && t < 10 && t%2==0)
+		if (t < 10 && t%2==1)
 			SimpleAudioEngine::getInstance()->playEffect("sound/jg.wav");
 		
 		//自己超时，强制出牌

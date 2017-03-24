@@ -37,7 +37,7 @@ func Create4Cards() ([4]string, [4][]int32) {
 		arrCards[i] = i / 4
 	}
 
-	for i = 0; i < 2; i++ {
+	for i = 0; i < 3; i++ {
 		for j := 0; j < cap(arrCards); j++ {
 			n := GRand.Intn(cardlen - 1)
 			arrCards[j], arrCards[n] = arrCards[n], arrCards[j]
@@ -165,32 +165,11 @@ func IsOver(s0, s1 int32, info []int32) (bool, []int32) {
 		}
 	}
 	if info[1] >= 0 && info[3] >= 0 && s0 < 45 {
-		if (info[0] == 2 && info[2] == -1) || info[0] == -1 && info[2] == 2 {
+		if (info[0] == 1 && info[2] == -1) || info[0] == -1 && info[2] == 1 {
 			return true, []int32{-2, 2, -2, 2}
 		}
 	}
-	//上游得200
-	if (info[0] == 0 || info[2] == 0) && info[1] > 0 && info[3] > 0 {
-		if s0 >= 200 {
-			return true, []int32{1, -1, 1, -1}
-		}
-	}
-	if (info[1] == 0 || info[3] == 0) && info[0] > 0 && info[2] > 0 {
-		if s1 >= 200 {
-			return true, []int32{-1, 1, -1, 1}
-		}
-	}
-	//跑二游抓245分
-	if (info[0] != 0 && info[2] == 1) || (info[0] == 1 && info[2] != 0){
-		if s0 >= 245 && (info[1] == 0 || info[3] == 0) {
-			return true, []int32{1, -1, 1, -1}
-		}
-	}
-	if (info[1] != 0 && info[3] == 1) || (info[1] == 1 && info[3] != 0){
-		if s1 >= 245 && (info[0] == 0 || info[2] == 0) {
-			return true, []int32{-1, 1, -1, 1}
-		}
-	}
+
 	//一个没跑但得285
 	if info[0] == -1 && info[2] == -1 && info[1] >= 0 && info[3] >= 0 && s0 >= 285 {
 		return true, []int32{1, -1, 1, -1}
@@ -198,8 +177,26 @@ func IsOver(s0, s1 int32, info []int32) (bool, []int32) {
 	if info[1] == -1 && info[3] == -1 && info[0] >= 0 && info[2] >= 0 && s1 >= 285 {
 		return true, []int32{-1, 1, -1, 1}
 	}
-	//如果一方的2人都跑了，但没有符合上面的规则，平局
-	if (info[1] >= 0 && info[3] >= 0) || info[0] >= 0 && info[2] >= 0 {
+	//如果一方的2人都跑了,游戏结束
+	if (info[1] >= 0 && info[3] >= 0) || (info[0] >= 0 && info[2] >= 0) {
+		//上游得200
+		if (info[0] == 0 || info[2] == 0)  && s0 >= 200{
+			return true, []int32{1, -1, 1, -1}
+		}
+		if (info[1] == 0 || info[3] == 0) && s1 >= 200 {
+			return true, []int32{-1, 1, -1, 1}
+		}
+		//跑二游抓245分
+		if (info[0] != 0 && info[2] == 1) || (info[0] == 1 && info[2] != 0){
+			if s0 >= 245 {
+				return true, []int32{1, -1, 1, -1}
+			}
+		}
+		if (info[1] != 0 && info[3] == 1) || (info[1] == 1 && info[3] != 0){
+			if s1 >= 245 {
+				return true, []int32{-1, 1, -1, 1}
+			}
+		}
 		return true, []int32{0, 0, 0, 0}
 	}
 	return false, []int32{}
