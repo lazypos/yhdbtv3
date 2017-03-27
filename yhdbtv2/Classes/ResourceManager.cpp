@@ -116,7 +116,8 @@ void CResourceManager::loadDeskResource()
 	//±³¾°
 	button = SpriteFrame::create("bj.png", Rect(0, 0, 1024, 768));
 	SpriteFrameCache::getInstance()->addSpriteFrame(button, "beijing");
-
+	button = SpriteFrame::create("hbj.jpg", Rect(0, 0, 1024, 768));
+	SpriteFrameCache::getInstance()->addSpriteFrame(button, "hbeijing");
 }
 
 void CResourceManager::loadSoundResource()

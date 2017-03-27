@@ -28,13 +28,13 @@ bool CHallScene::init()
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Sprite* bj = Sprite::create();
-	bj->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("beijing"));
+	bj->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("hbeijing"));
 	bj->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	this->addChild(bj,-1);
 
 
 	//¼ÓÈë°´Å¥ 
-	_btFastAdd = ui::Button::create("add_desk_fast.png", "add_desk_fast_press.png", "add_desk_fast_press.png");
+	_btFastAdd = ui::Button::create("start.png", "start.png", "start.png");
 	_btFastAdd->setPosition(Vec2(visibleSize.width/2, visibleSize.height / 2));
 	_btFastAdd->addTouchEventListener(CC_CALLBACK_2(CHallScene::OnFastAddDesk, this));
 	_btFastAdd->setEnabled(true);

@@ -294,6 +294,9 @@ void CDeskScene::onReady(Ref *pSender, ui::Widget::TouchEventType type)
 		messageQueue::instance()->sendMessage(os.str());
 		//Çå×ÀÃæ
 		clearDesk(-1);
+		_labelWeScore->setString("0");
+		_labelTheyScore->setString("0");
+		_labelDeskScore->setString("0");
 	}
 	_btReady->setEnabled(true);
 }
@@ -423,7 +426,7 @@ void CDeskScene::deskSchedule(float dt)
 	//ÌÓÅÜ
 	if (ptr && ptr->opt == "run") {
 		ostringstream os;
-		os << "OVER " << ptr->site << " RUN!";
+		os << "Over " << ptr->site << " Run!";
 		_labelResult->setString(os.str());
 		_mapPlayers[ptr->site]->_nickName->setString("");
 		gameOver();
@@ -431,21 +434,19 @@ void CDeskScene::deskSchedule(float dt)
 	//½áÊø
 	if (ptr && ptr->opt == "over") {
 		ostringstream os;
-		//for (int i = 0; i < 4; i++)
-			//os << i << ":" << ptr->arrPlayInfo[i].result << "\r\n";
 		if (ptr->arrPlayInfo[_seatNum].result > 0) {
 			SimpleAudioEngine::getInstance()->playEffect("sound/win.mp3");
-			os << "WIN " << ptr->arrPlayInfo[_seatNum].result << " !";
+			os << "Win " << ptr->arrPlayInfo[_seatNum].result << " !";
 			_labelResult->setString(os.str());
 		}
 		if (ptr->arrPlayInfo[_seatNum].result < 0) {
 			SimpleAudioEngine::getInstance()->playEffect("sound/lose.mp3");
-			os << "LOSE " << -ptr->arrPlayInfo[_seatNum].result << " !";
+			os << "Lose " << -ptr->arrPlayInfo[_seatNum].result << " !";
 			_labelResult->setString(os.str());
 		}
 		if (ptr->arrPlayInfo[_seatNum].result == 0) {
 			SimpleAudioEngine::getInstance()->playEffect("sound/win.mp3");
-			os << "HE " << -ptr->arrPlayInfo[_seatNum].result << " !";
+			os << "He " << -ptr->arrPlayInfo[_seatNum].result << " !";
 			_labelResult->setString(os.str());
 		}
 		gameOver();
@@ -613,9 +614,9 @@ void CDeskScene::gameSatrt()
 
 void CDeskScene::clearDesk(int siteid)
 {
-	_labelWeScore->setString("0");
-	_labelTheyScore->setString("0");
-	_labelDeskScore->setString("0");
+// 	_labelWeScore->setString("0");
+// 	_labelTheyScore->setString("0");
+//	_labelDeskScore->setString("0");
 	if (siteid == -1){
 		for (size_t i = 0; i < _lstCards.size(); i++)
 			this->removeChild(_lstCards[i]);
