@@ -97,7 +97,9 @@ bool CDeskScene::init()
 	score->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("score"));
 	score->setPosition(Vec2(score->getContentSize().width / 2-4, visibleSize.height - score->getContentSize().height / 2+2));
 	this->addChild(score);
-	_labelDeskNum = Label::createWithTTF("desk:"+to_string(_deskNum), "fonts/arial.ttf", 20);
+	ostringstream os;
+	os << "desk:" + _deskNum;
+	_labelDeskNum = Label::createWithTTF(os.str(), "fonts/arial.ttf", 20);
 	_labelDeskNum->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	this->addChild(_labelDeskNum);
 	_labelWeScore = Label::createWithTTF("0", "fonts/arial.ttf", 25);
@@ -453,7 +455,9 @@ void CDeskScene::deskSchedule(float dt)
 	}
 	//Ö÷Á÷³Ì
 	if (ptr && ptr->opt == "game") {
-		_labelDeskScore->setString(to_string(ptr->score));
+		ostringstream osp;
+		osp << ptr->score;
+		_labelDeskScore->setString(osp.str());
 		if (ptr->per != -1)
 			perPutCards(ptr);
 		if (ptr->now != -1)
@@ -493,8 +497,11 @@ void CDeskScene::timeSchedule(float dt)
 		auto ptr = _mapPlayers[_nowPut];
 		int t = atoi(ptr->_time->getString().c_str());
 		t--;
-		if (t > 0)
-			ptr->_time->setString(to_string(t));
+		if (t > 0) {
+			ostringstream ost;
+			ost << t;
+			ptr->_time->setString(ost.str());
+		}
 		else
 			ptr->_time->setString("0");
 		if (t < 10 && t%2==1)

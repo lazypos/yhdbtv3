@@ -1,20 +1,24 @@
 #include "MessageQueue.h"
-#include "cocos2d/external/json/document.h"
-#include "cocos2d/external/json/stringbuffer.h"
-#include "cocos2d/external/json/writer.h"
+#include "json/document.h"
+#include "json/stringbuffer.h"
+#include "json/writer.h"
 using rapidjson::Document;
 #include "cocos2d.h"
 USING_NS_CC;
 CMessageQueue::CMessageQueue()
 {
+#ifdef _WIN32
 	WSAData data;
 	WSAStartup(MAKEWORD(2, 2), &data);
+#endif
 }
 
 
 CMessageQueue::~CMessageQueue()
 {
+#ifdef _WIN32
 	WSACleanup();
+#endif
 }
 
 bool CMessageQueue::start()
@@ -48,7 +52,7 @@ bool CMessageQueue::sendMessage(const string& str)
 		int n = send(_sock, strReply.c_str() + len, strReply.length() - len, 0);
 		if (n <= 0){
 			MessageBox("与服务器断开连接，请重新登录!","error");
-			ExitProcess(-1);
+			exit(-1);
 		}
 		len += n;
 	}
@@ -61,7 +65,7 @@ bool CMessageQueue::recvMessage(string& text)
 	int n = recv(_sock, (char*)&len, 4, 0);
 	if (n != 4 || len <= 0) {
 		MessageBox("从服务器接收数据错误, 请重新登陆!", "error");
-		ExitProcess(-1);
+		exit(-1);
 	}
 	size_t recvlen = 0;
 	text.resize(int(len), 0);
@@ -69,7 +73,7 @@ bool CMessageQueue::recvMessage(string& text)
 		n = recv(_sock, (char*)(text.c_str() + recvlen), len - recvlen, 0);
 		if (n <= 0){
 			MessageBox("与服务器断开连接, 请重新登陆!", "error");
-			ExitProcess(-1);
+			exit(-1);
 		}
 		recvlen += n;
 	}
@@ -114,7 +118,7 @@ void CMessageQueue::threadWork()
 			ptr->version = doc["version"].GetString();
 			if (ptr->version != "35") {
 				MessageBox("版本过低，请前往 http://www.yhdbt.pw 下载新版客户端!", "错误");
-				ExitProcess(-1);
+				exit(-1);
 			}
 		}else if (opt == "add"){
 			ptr->desk = atoi(doc["desk"].GetString());
@@ -152,7 +156,7 @@ void CMessageQueue::threadWork()
 		_muxMsg.unlock();
 	}
 	MessageBox("与服务器断开连接, 请重新登陆!", "error");
-	ExitProcess(-1);
+	exit(-1);
 }
 
 void CMessageQueue::threadWork2()

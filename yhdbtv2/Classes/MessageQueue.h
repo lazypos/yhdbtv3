@@ -9,6 +9,16 @@
 using namespace std;
 USING_NS_CC;
 
+#ifdef _WIN32
+typedef SOCKET socket_t;
+#else
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+typedef int socket_t;
+#endif
+
 typedef struct playinfo
 {
 	string name;
@@ -55,7 +65,7 @@ private:
 	
 	list<msgptr>	_lstMessage;
 	mutex			_muxMsg;
-	SOCKET			_sock;
+	socket_t		_sock;
 };
 
 typedef CSingleton<CMessageQueue>	messageQueue;

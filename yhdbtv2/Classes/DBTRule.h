@@ -3,6 +3,7 @@
 #include <random>
 #include <vector>
 #include <map>
+#include <algorithm>
 using namespace std;
 
 class CDBTRule

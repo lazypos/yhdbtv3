@@ -46,7 +46,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
 		glview = GLViewImpl::createWithRect(Configuration::getInstance()->getValue("title").asString(), cocos2d::Rect(0, 0, mediumResolutionSize.width, mediumResolutionSize.height));
 		//glview = GLViewImpl::createWithFullScreen(Configuration::getInstance()->getValue("title").asString());
 #else
-        glview = GLViewImpl::create("yhdbtv2");
+        glview = GLViewImpl::create(Configuration::getInstance()->getValue("title").asString());
+		glview->setDesignResolutionSize(1024, 768, ResolutionPolicy::EXACT_FIT);
 #endif
         director->setOpenGLView(glview);
     }
