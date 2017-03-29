@@ -70,6 +70,8 @@ protected:
 
 	void	getSelectCardList(vector<int>& vec, vector<int>& pos);
 
+	void	zhenglishoupai(vector<int>& vec);
+
 private:
 	ui::Button* _btReturn;
 	ui::Button* _btReady;
@@ -89,12 +91,13 @@ private:
 	int							_deskNum;	//桌号
 	string						_playerName;//玩家名
 	int							_nowPut = -1; //当前出牌
-
+	Label*		_infoLabel;//当前在线玩家数量
 	vector<int>					_vecPerCards; //上一次出的牌
 	vector<CardSprite*>			_lstCards; //自己的手牌
 	vector<playerPtr>			_vecPlayers; //初始化的时候放在这里，然后根据A的id插入到map里
 	map<int, playerPtr>			_mapPlayers;
 	CardSprite*					_card_select_per = nullptr;
+	Size						visibleSize;
 
 };
 

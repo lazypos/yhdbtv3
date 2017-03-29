@@ -35,11 +35,14 @@ bool CDeskScene::init()
 
 	SimpleAudioEngine::getInstance()->stopBackgroundMusic();
 	_vecPlayers.clear();
-	auto visibleSize = Director::getInstance()->getVisibleSize();
+	visibleSize = Director::getInstance()->getVisibleSize();
+
+
 	Sprite* bj = Sprite::create();
 	bj->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("beijing"));
 	bj->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
-	this->addChild(bj, -1);
+	this->addChild(bj);
+
 
 	//返回按钮
 	_btReturn = ui::Button::create("return.png", "return_press.png", "return_press.png");
@@ -48,6 +51,12 @@ bool CDeskScene::init()
 	_btReturn->addTouchEventListener(CC_CALLBACK_2(CDeskScene::onReturn, this));
 	_btReturn->setEnabled(true);
 	this->addChild(_btReturn);
+	//当前在线人数
+	_infoLabel = Label::createWithTTF("Online: 0", "fonts/arial.ttf", 25);
+	_infoLabel->setColor(Color3B::WHITE);
+	_infoLabel->setPosition(Vec2(visibleSize.width - _btReturn->getContentSize().width / 2 - 100,
+		visibleSize.height - _btReturn->getContentSize().height / 2 + 2));
+	this->addChild(_infoLabel, 2);
 	//出牌按钮
 	_btPut = ui::Button::create("put.png", "put_press.png", "put_press.png");
 	_btPut->setPosition(Vec2(visibleSize.width / 2 - 100, 170));
@@ -278,7 +287,7 @@ bool CDeskScene::init()
 	listener->onTouchBegan = CC_CALLBACK_2(CDeskScene::onTouchBegan, this);
 	listener->onTouchMoved = CC_CALLBACK_2(CDeskScene::onTouchMoved, this);
 	dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
-
+	messageQueue::instance()->sendMessage("{\"opt\":\"query\"}");
     return true;
 }
 
@@ -370,7 +379,6 @@ void CDeskScene::onPut(Ref *pSender, ui::Widget::TouchEventType type)
 					++itper;
 				}
 			}
-			auto visibleSize = Director::getInstance()->getVisibleSize();
 			int i = 0;
 			for (auto &it : _lstCards) {
 				it->setPosition(Vec2(visibleSize.width / 2 - (_lstCards.size() - 1) * DEF_cardsep / 2 + i * DEF_cardsep + it->getContentSize().width / 4, 45));
@@ -417,7 +425,7 @@ void CDeskScene::deskSchedule(float dt)
 		for (auto it : ctmp)
 			_vecStartCards.emplace_back(atoi(it.c_str()));
 		sort(_vecStartCards.begin(), _vecStartCards.end());
-		auto visibleSize = Director::getInstance()->getVisibleSize();
+		zhenglishoupai(_vecStartCards);
 		for (size_t i = 0; i < _vecStartCards.size(); i++) {
 			auto cardSprite = CardSprite::createCardSprite(_vecStartCards[i]);
 			cardSprite->setPosition(Vec2(visibleSize.width / 2 - (_vecStartCards.size() - 1) * DEF_cardsep / 2 + i * DEF_cardsep + cardSprite->getContentSize().width / 4, 45));
@@ -489,6 +497,8 @@ void CDeskScene::deskSchedule(float dt)
 		Scene *hScene = CHallScene::createScene();
 		Director::getInstance()->replaceScene(hScene);
 	}
+	if (ptr && ptr->opt == "query")
+		_infoLabel->setString("Online:" + ptr->online);
 }
 
 void CDeskScene::timeSchedule(float dt)
@@ -518,7 +528,6 @@ void CDeskScene::timeSchedule(float dt)
 				os << "{\"opt\":\"game\",\"desk\":" << _deskNum << ",\"site\":" << _seatNum << ",\"cards\":\"" << _lstCards[0]->getSeq() << "\"}";
 				this->removeChild(_lstCards[0]);
 				_lstCards.erase(_lstCards.begin());
-				auto visibleSize = Director::getInstance()->getVisibleSize();
 				int i = 0;
 				for (auto &it : _lstCards) {
 					it->setPosition(Vec2(visibleSize.width / 2 - (_lstCards.size() - 1) * DEF_cardsep / 2 + i * DEF_cardsep + it->getContentSize().width / 4, 45));
@@ -545,6 +554,48 @@ void CDeskScene::getSelectCardList(vector<int>& vec, vector<int>& pos)
 		}
 		i++;
 	}
+}
+
+void CDeskScene::zhenglishoupai(vector<int>& vec)
+{
+	vector<int> tmp;
+	vector<int> dbttmp;
+	//大板同
+	for (size_t i=0;i<vec.size()-3;i++){
+		if (vec[i] != -1 && vec[i] == vec[i + 1] && vec[i] == vec[i + 2] && vec[i] == vec[i + 3]) {
+			dbttmp.push_back(vec[i]);
+			vec[i] = -1;
+			vec[i+1] = -1;
+			vec[i+2] = -1;
+			vec[i+3] = -1;
+		}
+	}
+	//三板同
+	for (size_t i = 0; i < vec.size() - 2; i++) {
+		if (vec[i] != -1 && vec[i] == vec[i + 1] && vec[i] == vec[i + 2]) {
+			tmp.push_back(vec[i]);
+			vec[i] = -1;
+			vec[i + 1] = -1;
+			vec[i + 2] = -1;
+		}
+	}
+	vector<int> rst;
+	for (size_t i = 0; i < vec.size(); i++) {
+		if (vec[i] != -1)
+			rst.emplace_back(vec[i]);
+	}
+	for (size_t i = 0; i < tmp.size(); i++){
+		rst.emplace_back(tmp[i]);
+		rst.emplace_back(tmp[i]);
+		rst.emplace_back(tmp[i]);
+	}
+	for (size_t i = 0; i < dbttmp.size(); i++) {
+		rst.emplace_back(dbttmp[i]);
+		rst.emplace_back(dbttmp[i]);
+		rst.emplace_back(dbttmp[i]);
+		rst.emplace_back(dbttmp[i]);
+	}
+	swap(rst, vec);
 }
 
 bool CDeskScene::onTouchBegan(Touch *touch, Event *event)
@@ -676,14 +727,9 @@ void CDeskScene::perPutCards(msgptr ptr)
 			perptr->perCards.emplace_back(cardSprite);
 			if (perptr->id == 1){
 				int tlen = DEF_cardsep*vec.size();
-				auto visibleSize = Director::getInstance()->getVisibleSize();
 				perptr->_x = visibleSize.width - tlen - 180;
 			}
-// 			else if (perptr->id == 0 || perptr->id == 2) {
-// 				int tlen = DEF_cardsep*vec.size();
-// 				auto visibleSize = Director::getInstance()->getVisibleSize();
-// 				perptr->_x = (visibleSize.width - tlen-90) / 2;
-// 			}
+
 			cardSprite->setPosition(
 				Vec2(perptr->_x + cardSprite->getContentSize().width + i*DEF_cardsep, perptr->_y));
 			this->addChild(cardSprite);
@@ -715,7 +761,20 @@ void CDeskScene::nowPutCards(msgptr ptr)
 		this->removeChild(it);
 	nowptr->perCards.clear();
 	_nowPut = ptr->now;
-	nowptr->_time->setString("30");
+	bool b30 = true;
+	if (_vecPerCards.size()>0&& _vecPerCards[0] == 19 && !ptr->must){
+		b30 = false;
+		for (size_t i=0; i<_vecPerCards.size()-1; i++){
+			if (_vecPerCards[i] != _vecPerCards[i + 1]) {
+				b30 = true;
+				break;
+			}
+		}
+	}
+	if (b30)
+		nowptr->_time->setString("30");
+	else
+		nowptr->_time->setString("1");
 	nowptr->_time->setVisible(true);
 
 	if (ptr->must) {

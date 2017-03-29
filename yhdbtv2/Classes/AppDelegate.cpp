@@ -42,12 +42,13 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
     if(!glview) {
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
-		glview = GLViewImpl::createWithRect(Configuration::getInstance()->getValue("title").asString(), cocos2d::Rect(0, 0, mediumResolutionSize.width, mediumResolutionSize.height));
-		//glview = GLViewImpl::createWithFullScreen(Configuration::getInstance()->getValue("title").asString());
+#ifdef _WIN32
+		//glview = GLViewImpl::createWithRect(Configuration::getInstance()->getValue("title").asString(), cocos2d::Rect(0, 0, mediumResolutionSize.width, mediumResolutionSize.height));
+		glview = GLViewImpl::createWithFullScreen(Configuration::getInstance()->getValue("title").asString());
 #else
-        glview = GLViewImpl::create(Configuration::getInstance()->getValue("title").asString());
-		glview->setDesignResolutionSize(1024, 768, ResolutionPolicy::EXACT_FIT);
+        //glview = GLViewImpl::create(Configuration::getInstance()->getValue("title").asString());
+		//glview->setDesignResolutionSize(1600, 900, ResolutionPolicy::EXACT_FIT);
+		glview = GLViewImpl::createWithFullScreen(Configuration::getInstance()->getValue("title").asString());
 #endif
         director->setOpenGLView(glview);
     }
@@ -59,7 +60,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     director->setAnimationInterval(1.0f / 60);
 
     // Set the design resolution
-    glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::NO_BORDER);
+    glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::EXACT_FIT);
     auto frameSize = glview->getFrameSize();
     // if the frame's height is larger than the height of medium size.
     if (frameSize.height > mediumResolutionSize.height)

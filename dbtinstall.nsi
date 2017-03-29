@@ -2,7 +2,7 @@
 
 ; 安装程序初始定义常量
 !define PRODUCT_NAME "余杭大板同"
-!define PRODUCT_VERSION "V4.0 正式版"
+!define PRODUCT_VERSION "V4.21 正式版"
 !define PRODUCT_PUBLISHER "Lazypos"
 !define PRODUCT_WEB_SITE "http://www.yhdbt.pw"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\余杭大板同.exe"
@@ -98,6 +98,7 @@ Section "MainSection" SEC01
   File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\start.png"
   File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\hbj.jpg"
   File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\bj.png"
+ 	File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\close.png"
   SetOutPath "$INSTDIR\yhdbt\res"
   File "C:\Users\zcw\Desktop\余杭大板同\yhdbt\res\.gitkeep"
   SetOutPath "$INSTDIR\yhdbt"

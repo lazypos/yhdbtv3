@@ -27,11 +27,19 @@ bool CHallScene::init()
 	SimpleAudioEngine::getInstance()->playBackgroundMusic("sound/bj.mp3", true);
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
+
 	Sprite* bj = Sprite::create();
 	bj->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("hbeijing"));
 	bj->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	this->addChild(bj,-1);
 
+	//关闭按钮
+	_btClose = ui::Button::create("close.png", "close.png", "close.png");
+	_btClose->setPosition(Vec2(visibleSize.width - _btClose->getContentSize().width / 2,
+		visibleSize.height - _btClose->getContentSize().height / 2));
+	_btClose->addTouchEventListener(CC_CALLBACK_2(CHallScene::OnClose, this));
+	_btClose->setEnabled(true);
+	this->addChild(_btClose);
 
 	//加入按钮 
 	_btFastAdd = ui::Button::create("start.png", "start.png", "start.png");
@@ -62,6 +70,13 @@ void CHallScene::OnFastAddDesk(Ref *pSender, ui::Widget::TouchEventType type)
 	_btFastAdd->setEnabled(true);
 }
 
+
+void CHallScene::OnClose(Ref *pSender, ui::Widget::TouchEventType type)
+{
+	if (type == ui::Widget::TouchEventType::ENDED) {
+		exit(-1);
+	}
+}
 
 void CHallScene::onlineSchedule(float delta)
 {

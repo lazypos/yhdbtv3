@@ -164,5 +164,6 @@ void CMessageQueue::threadWork2()
 	while (true) {
 		this_thread::sleep_for(chrono::seconds(20));
 		sendMessage("{\"opt\":\"heart\"}");
+		sendMessage("{\"opt\":\"query\"}");
 	}
 }

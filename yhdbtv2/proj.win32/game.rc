@@ -80,8 +80,8 @@ GLFW_ICON               ICON                    "res\\game.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,0,25
- PRODUCTVERSION 4,0,0,25
+ FILEVERSION 4,2,1,26
+ PRODUCTVERSION 4,2,1,26
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -96,14 +96,14 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "CompanyName", "www.dagouge.com"
+            VALUE "CompanyName", "www.yhdbt.pw"
             VALUE "FileDescription", "dabantong"
-            VALUE "FileVersion", "4.0.0.25"
+            VALUE "FileVersion", "4.2.1.26"
             VALUE "InternalName", "lazypos"
             VALUE "LegalCopyright", "Copyright "
             VALUE "OriginalFilename", "yhdbt.exe"
-            VALUE "ProductName", "dabantong"
-            VALUE "ProductVersion", "4.0.0.25"
+            VALUE "ProductName", "www.yhdbt.pw"
+            VALUE "ProductVersion", "4.2.1.26"
         END
     END
     BLOCK "VarFileInfo"

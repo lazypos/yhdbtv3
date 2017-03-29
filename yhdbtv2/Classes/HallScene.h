@@ -15,6 +15,7 @@ public:
     CREATE_FUNC(CHallScene);
 
 	void OnFastAddDesk(Ref *pSender, ui::Widget::TouchEventType type);
+	void OnClose(Ref *pSender, ui::Widget::TouchEventType type);
 
 	void onlineSchedule(float dt);
 
@@ -22,6 +23,7 @@ private:
 	
 	ui::Button* _btFastAdd;
 	Label*		_infoLabel;
+	ui::Button*	_btClose;
 	bool		_changeScene = false;
 };
 
