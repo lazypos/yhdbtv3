@@ -43,8 +43,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto glview = director->getOpenGLView();
     if(!glview) {
 #ifdef _WIN32
-		//glview = GLViewImpl::createWithRect(Configuration::getInstance()->getValue("title").asString(), cocos2d::Rect(0, 0, mediumResolutionSize.width, mediumResolutionSize.height));
-		glview = GLViewImpl::createWithFullScreen(Configuration::getInstance()->getValue("title").asString());
+		glview = GLViewImpl::createWithRect(Configuration::getInstance()->getValue("title").asString(), cocos2d::Rect(0, 0, mediumResolutionSize.width, mediumResolutionSize.height));
+		//glview = GLViewImpl::createWithFullScreen(Configuration::getInstance()->getValue("title").asString());
 #else
         //glview = GLViewImpl::create(Configuration::getInstance()->getValue("title").asString());
 		//glview->setDesignResolutionSize(1600, 900, ResolutionPolicy::EXACT_FIT);
