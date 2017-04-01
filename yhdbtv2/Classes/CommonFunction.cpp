@@ -1,5 +1,8 @@
 #include "CommonFunction.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 bool checkUserIegal(const string& name)
 {
@@ -104,4 +107,27 @@ void stringToVector(const string& src, vector<string>& lst, const string& sep /*
 	}
 	if (psrc != NULL && psrc != pend)
 		lst.emplace_back(string(psrc));
+}
+
+std::string ShowChinese(const char * strGBK) {
+#ifdef _WIN32
+	int len = MultiByteToWideChar(CP_ACP, 0, strGBK, -1, NULL, 0);
+	wchar_t* wstr = new wchar_t[len + 1];
+	memset(wstr, 0, len + 1);
+	MultiByteToWideChar(CP_ACP, 0, strGBK, -1, wstr, len);
+	len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
+	char* str = new char[len + 1];
+	memset(str, 0, len + 1);
+	WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, len, NULL, NULL);
+	wstring w(wstr);
+	std::string returnStr(w.begin(),w.end());
+	delete[] wstr;
+	wstr = NULL;
+	delete[] str;
+	str = NULL;
+	return returnStr;
+#else
+	return std::string(strGBK);
+#endif // _WIN32
+
 }

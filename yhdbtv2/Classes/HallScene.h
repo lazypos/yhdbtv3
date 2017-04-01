@@ -1,6 +1,5 @@
 #ifndef __CHallScene_H__
 #define __CHallScene_H__
-
 #include "cocos2d.h"
 #include "UI/UIButton.h"
 USING_NS_CC;

@@ -64,7 +64,5 @@ public:
 	static	std::pair<cards_type, int>	getType(const std::vector<int>& cards);
 	static	pair<bool, cards_type>	isBigger(std::vector<int>& cards_per, std::vector<int>& cards_now);
 	static	int		getScore(const std::vector<int>& cards);
-	//<第几个跑，分数>
-	static	over_blance	isOver(int seatId, const std::vector< std::pair<int, int> >& vecInfo);
 };
 

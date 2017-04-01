@@ -46,3 +46,5 @@ void stringToList(const string& src, list<string>& lst, const string& sep /*= "\
 void stringToVector(const string& src, vector<string>& lst, const string& sep /*= "\r\n"*/);
 #endif
 
+#define CN(_text_) ShowChinese(_text_)
+extern std::string ShowChinese(const char * strGBK);

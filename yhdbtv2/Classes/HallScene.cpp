@@ -7,6 +7,7 @@
 #include "MessageQueue.h"
 #include "CommonFunction.h"
 #include <SimpleAudioEngine.h>
+
 using namespace CocosDenshion;
 
 USING_NS_CC;
@@ -46,13 +47,16 @@ bool CHallScene::init()
 	_btFastAdd->setPosition(Vec2(visibleSize.width/2, visibleSize.height / 2));
 	_btFastAdd->addTouchEventListener(CC_CALLBACK_2(CHallScene::OnFastAddDesk, this));
 	_btFastAdd->setEnabled(true);
+#ifndef _WIN32
+	_btFastAdd->setScale(2.0);
+#endif
 	this->addChild(_btFastAdd);
 
 	//当前在线人数
-	_infoLabel = Label::createWithTTF("Online: 0", "fonts/arial.ttf", 25);
+	_infoLabel = Label::createWithTTF("Online:0", "fonts/arial.ttf", 25);
 	_infoLabel->setColor(Color3B::WHITE);
 	_infoLabel->setPosition(Vec2(visibleSize.width / 2,
-		visibleSize.height/2 - 50));
+		visibleSize.height/2 - 80));
 	this->addChild(_infoLabel, 2);
 
 	this->schedule(CC_SCHEDULE_SELECTOR(CHallScene::onlineSchedule), float(0.1));

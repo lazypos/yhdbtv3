@@ -11,13 +11,10 @@ using namespace CocosDenshion;
 
 USING_NS_CC;
 
-#define  DEF_cardsep 18.2
-string 						_recvType;
-map<string, string>			_mapRecv;
-mutex						_muxRecv;
-int							_recvtype = 0;
-bool						_clear = false;
-bool						_over = false;
+#define	DEF_cardsep  20
+#define MAX_DEF_cardsep 32
+
+double		gSelfDEF_cardsep = 18.2;
 
 Scene* CDeskScene::createScene(int desk, int site, const string& name)
 {
@@ -50,9 +47,12 @@ bool CDeskScene::init()
 		visibleSize.height - _btReturn->getContentSize().height / 2 + 2));
 	_btReturn->addTouchEventListener(CC_CALLBACK_2(CDeskScene::onReturn, this));
 	_btReturn->setEnabled(true);
+#ifndef _WIN32
+	_btReturn->setScale(2.0);
+#endif
 	this->addChild(_btReturn);
 	//当前在线人数
-	_infoLabel = Label::createWithTTF("Online: 0", "fonts/arial.ttf", 25);
+	_infoLabel = Label::createWithTTF("Online:0", "fonts/arial.ttf", 25);
 	_infoLabel->setColor(Color3B::WHITE);
 	_infoLabel->setPosition(Vec2(visibleSize.width - _btReturn->getContentSize().width / 2 - 100,
 		visibleSize.height - _btReturn->getContentSize().height / 2 + 2));
@@ -140,6 +140,7 @@ bool CDeskScene::init()
 	this->addChild(ptr->_surplus);
 	ptr->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
 	ptr->_time->setPosition(Vec2(visibleSize.width / 2 + 300, 200));
+	ptr->_time->setScale(2.0);
 	ptr->_time->setVisible(false);
 	this->addChild(ptr->_time);
 	ptr->_ready = Sprite::create();
@@ -153,7 +154,7 @@ bool CDeskScene::init()
 	ptr->_gone->setPosition(Vec2(visibleSize.width / 2,
 		(visibleSize.height / 2) - 200));
 	ptr->_gone->setVisible(false);
-	this->addChild(ptr->_gone);
+	this->addChild(ptr->_gone, 20);
 	ptr->_buchu = Label::createWithTTF("Pass", "fonts/arial.ttf", 40);
 	ptr->_buchu->setColor(Color3B::GREEN);
 	ptr->_buchu->setPosition(Vec2(visibleSize.width / 2,
@@ -179,6 +180,7 @@ bool CDeskScene::init()
 	ptr1->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
 	ptr1->_time->setPosition(Vec2(visibleSize.width / 2 + 260, 600));
 	ptr1->_time->setVisible(false);
+	ptr1->_time->setScale(2.0);
 	this->addChild(ptr1->_time);
 	ptr1->_ready = Sprite::create();
 	ptr1->_ready->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("zhunbei"));
@@ -191,7 +193,7 @@ bool CDeskScene::init()
 	ptr1->_gone->setPosition(Vec2(visibleSize.width / 2 + 350,
 		(visibleSize.height / 2)));
 	ptr1->_gone->setVisible(false);
-	this->addChild(ptr1->_gone);
+	this->addChild(ptr1->_gone, 20);
 	ptr1->_buchu = Label::createWithTTF("Pass", "fonts/arial.ttf", 40);
 	ptr1->_buchu->setColor(Color3B::GREEN);
 	ptr1->_buchu->setPosition(Vec2(visibleSize.width / 2 + 350,
@@ -218,6 +220,7 @@ bool CDeskScene::init()
 	ptr2->_time->setPosition(Vec2(visibleSize.width / 2 + 140,
 		userInfo3->getPosition().y - 20));
 	ptr2->_time->setVisible(false);
+	ptr2->_time->setScale(2.0);
 	this->addChild(ptr2->_time);
 	ptr2->_ready = Sprite::create();
 	ptr2->_ready->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("zhunbei"));
@@ -230,7 +233,7 @@ bool CDeskScene::init()
 	ptr2->_gone->setPosition((Vec2(visibleSize.width / 2,
 		(visibleSize.height / 2) + 200)));
 	ptr2->_gone->setVisible(false);
-	this->addChild(ptr2->_gone);
+	this->addChild(ptr2->_gone, 20);
 	ptr2->_buchu = Label::createWithTTF("Pass", "fonts/arial.ttf", 40);
 	ptr2->_buchu->setColor(Color3B::GREEN);
 	ptr2->_buchu->setPosition((Vec2(visibleSize.width / 2,
@@ -256,6 +259,7 @@ bool CDeskScene::init()
 	ptr3->_time = LabelAtlas::create("30", "num.png", 14, 21, '0');
 	ptr3->_time->setPosition(Vec2(visibleSize.width / 2 - 280, 600));
 	ptr3->_time->setVisible(false);
+	ptr3->_time->setScale(2.0);
 	this->addChild(ptr3->_time);
 	ptr3->_ready = Sprite::create();
 	ptr3->_ready->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("zhunbei"));
@@ -267,7 +271,7 @@ bool CDeskScene::init()
 	ptr3->_gone->setColor(Color3B::GREEN);
 	ptr3->_gone->setPosition(Vec2(visibleSize.width / 2 - 350, visibleSize.height/2));
 	ptr3->_gone->setVisible(false);
-	this->addChild(ptr3->_gone);
+	this->addChild(ptr3->_gone, 20);
 	ptr3->_buchu = Label::createWithTTF("Pass", "fonts/arial.ttf", 40);
 	ptr3->_buchu->setColor(Color3B::GREEN);
 	ptr3->_buchu->setPosition(Vec2(visibleSize.width / 2 - 350,
@@ -379,9 +383,11 @@ void CDeskScene::onPut(Ref *pSender, ui::Widget::TouchEventType type)
 					++itper;
 				}
 			}
+			if (_lstCards.size() > 0 && 980.0 / _lstCards.size() < MAX_DEF_cardsep)
+				gSelfDEF_cardsep = 980.0 / _lstCards.size();
 			int i = 0;
 			for (auto &it : _lstCards) {
-				it->setPosition(Vec2(visibleSize.width / 2 - (_lstCards.size() - 1) * DEF_cardsep / 2 + i * DEF_cardsep + it->getContentSize().width / 4, 45));
+				it->setPosition(Vec2(visibleSize.width / 2 - (_lstCards.size() - 1) * gSelfDEF_cardsep / 2 + i * gSelfDEF_cardsep + it->getContentSize().width / 4, 45));
 				i++;
 			}
 			//发送信息
@@ -428,7 +434,7 @@ void CDeskScene::deskSchedule(float dt)
 		zhenglishoupai(_vecStartCards);
 		for (size_t i = 0; i < _vecStartCards.size(); i++) {
 			auto cardSprite = CardSprite::createCardSprite(_vecStartCards[i]);
-			cardSprite->setPosition(Vec2(visibleSize.width / 2 - (_vecStartCards.size() - 1) * DEF_cardsep / 2 + i * DEF_cardsep + cardSprite->getContentSize().width / 4, 45));
+			cardSprite->setPosition(Vec2(visibleSize.width / 2 - (_vecStartCards.size() - 1) * gSelfDEF_cardsep / 2 + i * gSelfDEF_cardsep + cardSprite->getContentSize().width / 4, 45));
 			this->addChild(cardSprite, 1);
 			_lstCards.emplace_back(cardSprite);
 		}
@@ -530,7 +536,7 @@ void CDeskScene::timeSchedule(float dt)
 				_lstCards.erase(_lstCards.begin());
 				int i = 0;
 				for (auto &it : _lstCards) {
-					it->setPosition(Vec2(visibleSize.width / 2 - (_lstCards.size() - 1) * DEF_cardsep / 2 + i * DEF_cardsep + it->getContentSize().width / 4, 45));
+					it->setPosition(Vec2(visibleSize.width / 2 - (_lstCards.size() - 1) * gSelfDEF_cardsep / 2 + i * gSelfDEF_cardsep + it->getContentSize().width / 4, 45));
 					i++;
 				}
 			}
@@ -560,10 +566,11 @@ void CDeskScene::zhenglishoupai(vector<int>& vec)
 {
 	vector<int> tmp;
 	vector<int> dbttmp;
+	vector<int> zhatmp;
 	//大板同
 	for (size_t i=0;i<vec.size()-3;i++){
 		if (vec[i] != -1 && vec[i] == vec[i + 1] && vec[i] == vec[i + 2] && vec[i] == vec[i + 3]) {
-			dbttmp.push_back(vec[i]);
+			dbttmp.emplace_back(vec[i]);
 			vec[i] = -1;
 			vec[i+1] = -1;
 			vec[i+2] = -1;
@@ -573,17 +580,41 @@ void CDeskScene::zhenglishoupai(vector<int>& vec)
 	//三板同
 	for (size_t i = 0; i < vec.size() - 2; i++) {
 		if (vec[i] != -1 && vec[i] == vec[i + 1] && vec[i] == vec[i + 2]) {
-			tmp.push_back(vec[i]);
+			tmp.emplace_back(vec[i]);
 			vec[i] = -1;
 			vec[i + 1] = -1;
 			vec[i + 2] = -1;
 		}
 	}
+	//炸弹
+	size_t j = 0;
+	while (j < vec.size()) {
+		if (j < vec.size()-3 && vec[j] != -1 && vec[j+1] != -1 && vec[j+2] != -1 && vec[j+3] != -1
+			&& CDBTRule::getValue(vec[j]) == CDBTRule::getValue(vec[j + 1])
+			&& CDBTRule::getValue(vec[j]) == CDBTRule::getValue(vec[j + 2])
+			&& CDBTRule::getValue(vec[j]) == CDBTRule::getValue(vec[j + 3])) {
+			int ztmp = CDBTRule::getValue(vec[j]);
+			while (j < vec.size()){
+				if (CDBTRule::getValue(vec[j]) == ztmp){
+					zhatmp.emplace_back(vec[j]);
+					vec[j] = -1;
+					j++;
+				}
+				else 
+					break;
+			}
+		}
+		else
+			j++;
+	}
+	
 	vector<int> rst;
 	for (size_t i = 0; i < vec.size(); i++) {
 		if (vec[i] != -1)
 			rst.emplace_back(vec[i]);
 	}
+	for (size_t i = 0; i < zhatmp.size(); i++)
+		rst.emplace_back(zhatmp[i]);
 	for (size_t i = 0; i < tmp.size(); i++){
 		rst.emplace_back(tmp[i]);
 		rst.emplace_back(tmp[i]);

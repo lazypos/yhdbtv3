@@ -41,11 +41,13 @@ func (this *DeskMgr) InitDesk() {
 }
 
 func (this *DeskMgr) GameSchedule() {
+	tickCount := 0
 	ticker := time.NewTicker(time.Second * 2)
 	for {
 		select {
 		case <-ticker.C:
 			//玩家超时
+			tickCount += 2
 			this.TimeTick += 2
 			if this.IsStart && this.TimeTick >= 35 {
 				//断线
@@ -60,6 +62,12 @@ func (this *DeskMgr) GameSchedule() {
 						this.PlayerLeave(int32(i))
 					}
 				}
+			}
+			if tickCount >= 10 && !this.IsStart {
+				tickCount = 0
+				this.muxPlay.Lock()
+				this.BroadDeskInfo()
+				this.muxPlay.Unlock()
 			}
 		case m := <-this.Chmsg:
 			this.TimeTick = 0
@@ -87,7 +95,7 @@ func (this *DeskMgr) GetNextPut(site int32) int32 {
 
 func (this *DeskMgr) ProcessGame(m *Message) {
 	this.muxPlay.Lock()
-	this.muxPlay.Unlock()
+	defer this.muxPlay.Unlock()
 	next := this.GetNextPut(m.Site)
 	//没出牌
 	if len(m.Cards) == 0 {
@@ -185,7 +193,7 @@ func (this *DeskMgr) PostMsg(m *Message) {
 //游戏开始
 func (this *DeskMgr) PlayerReady(site int32) {
 	this.muxPlay.Lock()
-	this.muxPlay.Unlock()
+	defer this.muxPlay.Unlock()
 	this.ArrPlayer[site].Ready = true
 	if this.IsAllReady() {
 		this.IsStart = true
@@ -258,7 +266,7 @@ func (this *DeskMgr) GameOver(run bool, arrRst []int32) {
 
 func (this *DeskMgr) AddDesk(p *Player) int32 {
 	this.muxPlay.Lock()
-	this.muxPlay.Unlock()
+	defer this.muxPlay.Unlock()
 	for i := 0; i < 4; i++ {
 		if this.ArrPlayer[i] == nil {
 			this.ArrPlayer[i] = p
@@ -271,7 +279,7 @@ func (this *DeskMgr) AddDesk(p *Player) int32 {
 
 func (this *DeskMgr) PlayerLeave(site int32) {
 	this.muxPlay.Lock()
-	this.muxPlay.Unlock()
+	defer this.muxPlay.Unlock()
 	if this.ArrPlayer[site] == nil {
 		return
 	}
