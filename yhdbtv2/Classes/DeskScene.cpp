@@ -7,11 +7,12 @@
 #include "DBTRule.h"
 #include "CommonFunction.h"
 #include <SimpleAudioEngine.h>
+#include <chrono>
 using namespace CocosDenshion;
 
 USING_NS_CC;
 
-#define	DEF_cardsep  20
+#define	DEF_cardsep  22
 #define MAX_DEF_cardsep 32
 
 double		gSelfDEF_cardsep = 18.2;
@@ -33,7 +34,6 @@ bool CDeskScene::init()
 	SimpleAudioEngine::getInstance()->stopBackgroundMusic();
 	_vecPlayers.clear();
 	visibleSize = Director::getInstance()->getVisibleSize();
-
 
 	Sprite* bj = Sprite::create();
 	bj->initWithSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("beijing"));
@@ -408,7 +408,7 @@ void CDeskScene::deskSchedule(float dt)
 {
 	auto ptr = messageQueue::instance()->getMessage();
 	//变更
-	if (ptr && ptr->opt == "change") {
+	if (ptr && ptr->opt == "change" && !_isSatrting) {
 		for (int i = 0; i < 4; i++){
 			_mapPlayers[i]->_nickName->setString(ptr->arrPlayInfo[i].name);
 			if (ptr->arrPlayInfo[i].name.empty())
@@ -422,7 +422,8 @@ void CDeskScene::deskSchedule(float dt)
 		}
 	}
 	//开始
-	if (ptr && ptr->opt == "start") {
+	if (ptr && ptr->opt == "start" && !_isSatrting) {
+		gSelfDEF_cardsep = 18.2;
 		gameSatrt();
 		SimpleAudioEngine::getInstance()->playEffect("sound/bg.wav");
 		vector<string> ctmp;
@@ -440,7 +441,7 @@ void CDeskScene::deskSchedule(float dt)
 		}
 	}
 	//逃跑
-	if (ptr && ptr->opt == "run") {
+	if (ptr && ptr->opt == "run" && _isSatrting) {
 		ostringstream os;
 		os << "Over " << ptr->site << " Run!";
 		_labelResult->setString(os.str());
@@ -448,7 +449,7 @@ void CDeskScene::deskSchedule(float dt)
 		gameOver();
 	}
 	//结束
-	if (ptr && ptr->opt == "over") {
+	if (ptr && ptr->opt == "over" && _isSatrting) {
 		ostringstream os;
 		if (ptr->arrPlayInfo[_seatNum].result > 0) {
 			SimpleAudioEngine::getInstance()->playEffect("sound/win.mp3");
@@ -468,7 +469,7 @@ void CDeskScene::deskSchedule(float dt)
 		gameOver();
 	}
 	//主流程
-	if (ptr && ptr->opt == "game") {
+	if (ptr && ptr->opt == "game" && _isSatrting) {
 		ostringstream osp;
 		osp << ptr->score;
 		_labelDeskScore->setString(osp.str());
@@ -499,7 +500,7 @@ void CDeskScene::deskSchedule(float dt)
 			_labelTheyScore->setString(ptr->p0score);
 		}
 	}
-	if (ptr && ptr->opt == "timeout") {
+	if (ptr && ptr->opt == "timeout" && _isSatrting) {
 		Scene *hScene = CHallScene::createScene();
 		Director::getInstance()->replaceScene(hScene);
 	}
@@ -586,10 +587,17 @@ void CDeskScene::zhenglishoupai(vector<int>& vec)
 			vec[i + 2] = -1;
 		}
 	}
+	vector<int> tttp;
+	for (size_t i = 0; i < vec.size(); i++) {
+		if (vec[i] != -1)
+			tttp.emplace_back(vec[i]);
+	}
+	vec = tttp;
 	//炸弹
 	size_t j = 0;
 	while (j < vec.size()) {
 		if (j < vec.size()-3 && vec[j] != -1 && vec[j+1] != -1 && vec[j+2] != -1 && vec[j+3] != -1
+			&& !CDBTRule::isJoker(vec[j])
 			&& CDBTRule::getValue(vec[j]) == CDBTRule::getValue(vec[j + 1])
 			&& CDBTRule::getValue(vec[j]) == CDBTRule::getValue(vec[j + 2])
 			&& CDBTRule::getValue(vec[j]) == CDBTRule::getValue(vec[j + 3])) {
@@ -690,6 +698,8 @@ void CDeskScene::gameOver()
 	_nowPut = -1;
 	_btReady->setVisible(true);
 	_btReady->setEnabled(true);
+	_btPut->setVisible(false);
+	_btNoput->setVisible(false);
 }
 
 void CDeskScene::gameSatrt()

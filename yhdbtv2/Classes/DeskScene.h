@@ -98,7 +98,6 @@ private:
 	map<int, playerPtr>			_mapPlayers;
 	CardSprite*					_card_select_per = nullptr;
 	Size						visibleSize;
-
 };
 
 #endif // __HELLOWORLD_SCENE_H__

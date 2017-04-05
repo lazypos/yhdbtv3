@@ -26,6 +26,7 @@ typedef struct playinfo
 	int ready = 0;
 	int score = 0;
 	int result = 0;
+	string	info;
 }stplayinfo;
 
 typedef struct stMsg {
@@ -58,6 +59,7 @@ public:
 	bool	recvMessage(string& text);
 	bool	sendAndRecv(const string& strSend, string& strRecv);
 	msgptr	getMessage();
+	string  getKey();
 
 private:
 	void	threadWork();
@@ -66,6 +68,7 @@ private:
 	list<msgptr>	_lstMessage;
 	mutex			_muxMsg;
 	socket_t		_sock;
+	string			_playkey;
 };
 
 typedef CSingleton<CMessageQueue>	messageQueue;

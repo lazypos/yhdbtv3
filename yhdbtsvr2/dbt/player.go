@@ -15,6 +15,10 @@ type Player struct {
 	RunNum   int32
 	times    int32
 	gone     bool
+	WinCounts	int
+	LoseCounts	int
+	RunCounts	int
+	OnlyId		string
 }
 
 func (this *Player) InitPlayer(remote string, conn net.Conn) {

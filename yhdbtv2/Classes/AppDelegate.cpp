@@ -1,6 +1,5 @@
 #include "AppDelegate.h"
 #include "HallScene.h"
-#include "DeskScene.h"
 #include "MessageQueue.h"
 #include "ResourceManager.h"
 

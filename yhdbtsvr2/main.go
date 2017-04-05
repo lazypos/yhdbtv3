@@ -70,5 +70,8 @@ func main() {
 	fmt.Println("start server !")
 	initlog()
 	dbt.GGameMgr.Start()
+	if dbt.InitDB() != nil {
+		return
+	}
 	start()
 }

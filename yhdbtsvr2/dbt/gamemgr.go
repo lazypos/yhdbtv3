@@ -60,7 +60,7 @@ func (this *GameMgr) GetPlayCounts(p *Player) {
 	p.AddMessage(fmt.Sprintf(fmt_query, counts))
 }
 
-func (this *GameMgr) AddDesk(p *Player) {
+func (this *GameMgr) AddDesk(p *Player, m *Message) {
 	this.muxDesk.Lock()
 	defer this.muxDesk.Unlock()
 	var deskNum int32 = (int32)(len(this.mapDesks))
@@ -86,6 +86,11 @@ func (this *GameMgr) AddDesk(p *Player) {
 	}
 	p.Ready = false
 	p.gone = false
+	if len(m.Key ) != 0{
+		p.WinCounts = GetDBValueAsInt(fmt.Sprint(m.Key,"win"))
+		p.LoseCounts = GetDBValueAsInt(fmt.Sprint(m.Key,"lose"))
+		p.RunCounts = GetDBValueAsInt(fmt.Sprint(m.Key,"run"))
+	}
 	p.AddMessage(fmt.Sprintf(fmt_add, deskNum, siteNum, p.Remote))
 
 	//广播信息

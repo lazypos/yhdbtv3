@@ -2,7 +2,7 @@
 *{"opt":"query"}
 {"opt":"query","online":"20"}
 快速加入
-*{"opt":"add"}
+*{"opt":"add","key":"123123123123"}
 {"opt":"add","desk":"12","site":"2","name":"palyer2"}
 桌子情况变化
 *{"opt":"change","type":"ready","desk":12,"site":2}

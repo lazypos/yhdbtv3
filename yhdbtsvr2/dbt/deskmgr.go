@@ -96,6 +96,9 @@ func (this *DeskMgr) GetNextPut(site int32) int32 {
 func (this *DeskMgr) ProcessGame(m *Message) {
 	this.muxPlay.Lock()
 	defer this.muxPlay.Unlock()
+	if !this.IsStart {
+		return
+	}
 	next := this.GetNextPut(m.Site)
 	//没出牌
 	if len(m.Cards) == 0 {
@@ -194,6 +197,9 @@ func (this *DeskMgr) PostMsg(m *Message) {
 func (this *DeskMgr) PlayerReady(site int32) {
 	this.muxPlay.Lock()
 	defer this.muxPlay.Unlock()
+	if this.IsStart {
+		return
+	}
 	this.ArrPlayer[site].Ready = true
 	if this.IsAllReady() {
 		this.IsStart = true
@@ -238,6 +244,9 @@ func (this *DeskMgr) IsAllReady() bool {
 }
 
 func (this *DeskMgr) PlayerRun(site int32, name string) {
+	this.ArrPlayer[site].RunCounts ++ ;
+	SetDBValue(fmt.Sprint(this.ArrPlayer[site].OnlyId,"run"), fmt.Sprint(this.ArrPlayer[site].RunCounts))
+	this.ArrPlayer[site] = nil
 	for _, p := range this.ArrPlayer {
 		if p != nil {
 			p.AddMessage(fmt.Sprintf(fmt_run, site, name))
@@ -247,6 +256,9 @@ func (this *DeskMgr) PlayerRun(site int32, name string) {
 }
 
 func (this *DeskMgr) GameOver(run bool, arrRst []int32) {
+	if !this.IsStart {
+		return
+	}
 	this.IsStart = false
 	for _, p := range this.ArrPlayer {
 		if p != nil {
@@ -256,8 +268,17 @@ func (this *DeskMgr) GameOver(run bool, arrRst []int32) {
 		}
 	}
 	if !run {
-		for _, p := range this.ArrPlayer {
+		for i, p := range this.ArrPlayer {
 			if p != nil {
+				if arrRst[i] > 0 {
+					this.ArrPlayer[i].WinCounts += int(arrRst[i])
+					SetDBValue(fmt.Sprint(this.ArrPlayer[i].OnlyId,"win"), fmt.Sprint(this.ArrPlayer[i].WinCounts))
+				}
+				if arrRst[i] < 0 {
+					this.ArrPlayer[i].LoseCounts += int(-arrRst[i])
+					SetDBValue(fmt.Sprint(this.ArrPlayer[i].OnlyId,"lose"), fmt.Sprint(this.ArrPlayer[i].LoseCounts))
+				}
+
 				p.AddMessage(fmt.Sprintf(fmt_over, "", arrRst[0], "", arrRst[1], "", arrRst[2], "", arrRst[3]))
 			}
 		}
@@ -284,9 +305,9 @@ func (this *DeskMgr) PlayerLeave(site int32) {
 		return
 	}
 	name := this.ArrPlayer[site].Remote
-	this.ArrPlayer[site] = nil
 	//还没开始游戏
 	if !this.IsStart {
+		this.ArrPlayer[site] = nil
 		this.BroadDeskInfo()
 		return
 	}
@@ -298,6 +319,9 @@ func (this *DeskMgr) BroadDeskInfo() {
 	type DeskInfo struct {
 		name  string
 		ready int32
+		WinCounts	int
+		LoseCounts	int
+		RunCounts	int
 	}
 	//集中消息
 	arrDeskInfo := [4]*DeskInfo{}
@@ -310,15 +334,23 @@ func (this *DeskMgr) BroadDeskInfo() {
 			if v.Ready {
 				info.ready = 1
 			}
+			info.WinCounts = v.WinCounts
+			info.LoseCounts = v.LoseCounts
+			info.RunCounts = v.RunCounts
 		}
 		arrDeskInfo[i] = info
 	}
 	//广播
 	for _, p := range this.ArrPlayer {
 		if p != nil {
-			p.AddMessage(fmt.Sprintf(fmt_change, arrDeskInfo[0].name, arrDeskInfo[0].ready,
-				arrDeskInfo[1].name, arrDeskInfo[1].ready, arrDeskInfo[2].name, arrDeskInfo[2].ready,
-				arrDeskInfo[3].name, arrDeskInfo[3].ready))
+			p.AddMessage(fmt.Sprintf(fmt_change, arrDeskInfo[0].name, arrDeskInfo[0].ready, 
+				arrDeskInfo[0].WinCounts, arrDeskInfo[0].LoseCounts, arrDeskInfo[0].RunCounts,
+				arrDeskInfo[1].name, arrDeskInfo[1].ready, 
+				arrDeskInfo[1].WinCounts, arrDeskInfo[1].LoseCounts, arrDeskInfo[1].RunCounts,
+				arrDeskInfo[2].name, arrDeskInfo[2].ready,
+				arrDeskInfo[2].WinCounts, arrDeskInfo[2].LoseCounts, arrDeskInfo[2].RunCounts,
+				arrDeskInfo[3].name, arrDeskInfo[3].ready,
+				arrDeskInfo[3].WinCounts, arrDeskInfo[3].LoseCounts, arrDeskInfo[3].RunCounts))
 		}
 	}
 }

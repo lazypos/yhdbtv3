@@ -35,6 +35,19 @@ bool CMessageQueue::start()
 	if (connect(_sock, (struct sockaddr*)&_servAddr, sizeof(_servAddr)))
 		return false;
 
+	__Dictionary *_dictMgr = __Dictionary::createWithContentsOfFile("config/record.plist");
+	const char *p = _dictMgr->valueForKey("name")->getCString();
+	if (p == nullptr || strlen(p) == 0) {
+		ostringstream oss;
+		oss << chrono::system_clock::now().time_since_epoch().count();
+		__String skey(oss.str().c_str());
+		_dictMgr->setObject(&skey, "name");
+		_dictMgr->writeToFile("config/record.plist");
+		_playkey = oss.str();
+	}
+	else
+		_playkey = p;
+
 	thread(&CMessageQueue::threadWork, this).detach();
 	thread(&CMessageQueue::threadWork2, this).detach();
 	return true;
@@ -97,6 +110,10 @@ msgptr	CMessageQueue::getMessage() {
 	return ptr;
 }
 
+string CMessageQueue::getKey() {
+	return _playkey;
+}
+
 void CMessageQueue::threadWork()
 {
 	string strRecv;
@@ -116,7 +133,7 @@ void CMessageQueue::threadWork()
 		if (opt == "query"){
 			ptr->online = doc["online"].GetString();
 			ptr->version = doc["version"].GetString();
-			if (ptr->version != "35") {
+			if (ptr->version != "46") {
 				MessageBox("版本过低，请前往 http://www.yhdbt.pw 下载新版客户端!", "错误");
 				exit(-1);
 			}
@@ -128,6 +145,14 @@ void CMessageQueue::threadWork()
 			for (size_t i = 0; i < 4; ++i) {
 				ptr->arrPlayInfo[i].name = doc["info"][i]["name"].GetString();
 				ptr->arrPlayInfo[i].ready = atoi(doc["info"][i]["ready"].GetString());
+				if (!ptr->arrPlayInfo[i].name.empty()){
+					ostringstream osinfo;
+					osinfo << "win:" << doc["info"][i]["win"].GetString()
+						<< "  lose:" << doc["info"][i]["lose"].GetString()
+						<< "  run:" << doc["info"][i]["run"].GetString();
+					ptr->arrPlayInfo[i].info = osinfo.str();
+					ptr->arrPlayInfo[i].name = ptr->arrPlayInfo[i].name + " " + ptr->arrPlayInfo[i].info;
+				}
 			}
 		}else if (opt == "start") {
 			ptr->cards = doc["cards"].GetString();
