@@ -168,7 +168,7 @@ bool CDeskScene::init()
 	//->下家
 	playerPtr ptr1 = make_shared<st_player_info>();
 	ptr1->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 20);
-	ptr1->_nickName->setPosition(Vec2(visibleSize.width - 135,
+	ptr1->_nickName->setPosition(Vec2(visibleSize.width - 205,
 		userInfo1->getPosition().y));
 	ptr1->_nickName->setColor(Color3B::RED);
 	this->addChild(ptr1->_nickName,3);
@@ -247,7 +247,7 @@ bool CDeskScene::init()
 	//上家
 	playerPtr ptr3 = make_shared<st_player_info>();
 	ptr3->_nickName = Label::createWithTTF("", "fonts/arial.ttf", 20);
-	ptr3->_nickName->setPosition(Vec2(120,
+	ptr3->_nickName->setPosition(Vec2(200,
 		userInfo1->getPosition().y));
 	ptr3->_nickName->setColor(Color3B::RED);
 	this->addChild(ptr3->_nickName,3);
@@ -413,12 +413,12 @@ void CDeskScene::deskSchedule(float dt)
 			_mapPlayers[i]->_nickName->setString(ptr->arrPlayInfo[i].name);
 			if (ptr->arrPlayInfo[i].name.empty())
 				clearDesk(i);
-			if (ptr->arrPlayInfo[i].ready == 1)
-				//if (!_mapPlayers[i]->_ready->isVisible())
-				_mapPlayers[i]->_ready->setVisible(true);
-			else
-				//if (_mapPlayers[i]->_ready->isVisible())
-				_mapPlayers[i]->_ready->setVisible(false);
+			else {
+				if (ptr->arrPlayInfo[i].ready == 1)
+					_mapPlayers[i]->_ready->setVisible(true);
+				else
+					_mapPlayers[i]->_ready->setVisible(false);
+			}
 		}
 	}
 	//开始
@@ -713,9 +713,6 @@ void CDeskScene::gameSatrt()
 
 void CDeskScene::clearDesk(int siteid)
 {
-// 	_labelWeScore->setString("0");
-// 	_labelTheyScore->setString("0");
-//	_labelDeskScore->setString("0");
 	if (siteid == -1){
 		for (size_t i = 0; i < _lstCards.size(); i++)
 			this->removeChild(_lstCards[i]);

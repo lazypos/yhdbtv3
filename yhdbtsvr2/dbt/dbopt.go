@@ -37,6 +37,7 @@ func GetDBValueAsInt(key string) int {
 
 func SetDBValue(key,val string) error {
 	if err := GDBOpt.Put([]byte(key), []byte(val), nil); err != nil {
+		log.Println("SetDBValue error", err)
 		return err
 	}
 	return nil

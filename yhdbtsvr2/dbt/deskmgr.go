@@ -245,7 +245,7 @@ func (this *DeskMgr) IsAllReady() bool {
 
 func (this *DeskMgr) PlayerRun(site int32, name string) {
 	this.ArrPlayer[site].RunCounts ++ ;
-	SetDBValue(fmt.Sprint(this.ArrPlayer[site].OnlyId,"run"), fmt.Sprint(this.ArrPlayer[site].RunCounts))
+	SetDBValue(fmt.Sprint(this.ArrPlayer[site].OnlyId,"run"), fmt.Sprintf("%d",this.ArrPlayer[site].RunCounts))
 	this.ArrPlayer[site] = nil
 	for _, p := range this.ArrPlayer {
 		if p != nil {
@@ -272,11 +272,11 @@ func (this *DeskMgr) GameOver(run bool, arrRst []int32) {
 			if p != nil {
 				if arrRst[i] > 0 {
 					this.ArrPlayer[i].WinCounts += int(arrRst[i])
-					SetDBValue(fmt.Sprint(this.ArrPlayer[i].OnlyId,"win"), fmt.Sprint(this.ArrPlayer[i].WinCounts))
+					SetDBValue(fmt.Sprint(this.ArrPlayer[i].OnlyId,"win"), fmt.Sprintf("%d",this.ArrPlayer[i].WinCounts))
 				}
 				if arrRst[i] < 0 {
 					this.ArrPlayer[i].LoseCounts += int(-arrRst[i])
-					SetDBValue(fmt.Sprint(this.ArrPlayer[i].OnlyId,"lose"), fmt.Sprint(this.ArrPlayer[i].LoseCounts))
+					SetDBValue(fmt.Sprint(this.ArrPlayer[i].OnlyId,"lose"), fmt.Sprintf("%d",this.ArrPlayer[i].LoseCounts))
 				}
 
 				p.AddMessage(fmt.Sprintf(fmt_over, "", arrRst[0], "", arrRst[1], "", arrRst[2], "", arrRst[3]))

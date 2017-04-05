@@ -153,12 +153,15 @@ void CMessageQueue::threadWork()
 					ptr->arrPlayInfo[i].info = osinfo.str();
 					ptr->arrPlayInfo[i].name = ptr->arrPlayInfo[i].name + " " + ptr->arrPlayInfo[i].info;
 				}
+				else {
+					ptr->arrPlayInfo[i].info = "";
+				}
 			}
 		}else if (opt == "start") {
 			ptr->cards = doc["cards"].GetString();
 		}else if (opt == "over") {
 			for (size_t i = 0; i < 4; ++i) {
-				ptr->arrPlayInfo[i].name = doc["info"][i]["name"].GetString();
+				//ptr->arrPlayInfo[i].name = doc["info"][i]["name"].GetString();
 				ptr->arrPlayInfo[i].result = atoi(doc["info"][i]["result"].GetString());
 			}
 		}else if (opt == "game") {

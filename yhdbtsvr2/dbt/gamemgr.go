@@ -91,6 +91,7 @@ func (this *GameMgr) AddDesk(p *Player, m *Message) {
 		p.LoseCounts = GetDBValueAsInt(fmt.Sprint(m.Key,"lose"))
 		p.RunCounts = GetDBValueAsInt(fmt.Sprint(m.Key,"run"))
 	}
+	p.OnlyId = m.Key
 	p.AddMessage(fmt.Sprintf(fmt_add, deskNum, siteNum, p.Remote))
 
 	//广播信息
